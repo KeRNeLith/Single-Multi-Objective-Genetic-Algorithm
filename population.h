@@ -5,8 +5,9 @@
 #include <algorithm>
 
 #include "chromosome.h"
+#include "General.h"
 
-template<typename T, typename T2>
+template<typename T, typename T2, typename C>
 class Population
 {
 protected:
@@ -16,15 +17,11 @@ protected:
     static double m_crossOverProbability;  ///> Probability for a chromosome to crossover
     static double m_mutateProbability;     ///> Probability for a chromosome to mutate
 
-    std::vector< Chromosome<T, T2> > m_chromosomes;     ///> Chromosomes composing the population
-    std::vector< T > m_cumulatedFitness;                ///> Store the cumulated fitness
-
-    // Function of comparison
-    bool smallerToHigher(const T& param1, const T& param2);
+    std::vector< C > m_chromosomes;         ///> Chromosomes composing the population
 
 public:
     Population();
-    ~Population();
+    virtual ~Population();
 
     /**
      * @brief Evaluate the fitness for all chromosomes of the population
@@ -41,30 +38,30 @@ public:
      * @brief select a pair of Chromosomes
      * @return the pair of chromosomes chose as parent
      */
-    virtual std::pair< Chromosome<T, T2>, Chromosome<T, T2> > selectChromosomesPair() =0;
+    virtual std::pair< C, C > selectChromosomesPair() =0;
     /**
      * @brief perform a crossOver on chromosomes according to m_crossOverProbability
      * @param parents pair of chromosomes that will be use as parents
      * @return children Chromosomes generated
      */
-    virtual Chromosome<T, T2> crossOver(std::pair< Chromosome<T, T2>, Chromosome<T, T2> > parents) =0;
+    virtual C crossOver(std::pair< C, C > parents) =0;
 
     /**
      * @brief generateRandomChromosomes generate a random population of chromosomes
      */
-    void generateRandomChromosomes() =0;
+    virtual void generateRandomChromosomes();
 
     /**
      * @brief addChromosome add a Chromosome to m_chromosomes vector
      * @param chromosome will be add to m_chromosomes vector
      */
-    void addChromosome(Chromosome<T, T2> chromosome);
+    void addChromosome(C chromosome);
 
     /**
      * @brief isFull
      * @return true if the population is full (m_chromosomes.size() >= m_nbMaxChromosomes)
      */
-    bool isFull() { return m_chromosomes.size() >= m_nbMaxChromosomes; }
+    bool isFull();
 
     ////////////// Accessors/Setters //////////////
     /**
@@ -82,7 +79,7 @@ public:
      * @brief getCurrentNbChromosomes
      * @return number of members currently in the population
      */
-    int getCurrentNbChromosomes() { return m_chromosomes.size(); }
+    int getCurrentNbChromosomes();
 
     /**
      * @brief setCrossOverProbability set the probability to crossover
@@ -95,57 +92,103 @@ public:
      */
     static double getCrossOverProbability() { return m_crossOverProbability; }
 
-    T getBestSolution();
+    /**
+     * @brief setMutateProbability set the probability to mutate
+     * @param mutateProbability probability to mutate
+     */
+    static void setMutateProbability(const double mutateProbability) { m_mutateProbability = mutateProbability; }
+    /**
+     * @brief getMutateProbability get the probability to mutate
+     * @return the probability to mutate
+     */
+    static double getMutateProbability() { return m_mutateProbability; }
+
+    /**
+     * @brief getBestSolution best solution found by GA
+     * @return the solution to the problem
+     */
+    T getBestSolution() const;
 };
 
+template<typename T, typename T2, typename C>
+unsigned int Population<T, T2, C>::m_nbMaxChromosomes = 100;
 
-template<typename T, typename T2>
-Population<T, T2>::Population()
+template<typename T, typename T2, typename C>
+double Population<T, T2, C>::m_crossOverProbability = 0.3;
+template<typename T, typename T2, typename C>
+double Population<T, T2, C>::m_mutateProbability = 0.04;
+
+
+template<typename T, typename T2, typename C>
+Population<T, T2, C>::Population()
+    : m_chromosomes()
 {
 }
 
-template<typename T, typename T2>
-Population<T, T2>::~Population()
+template<typename T, typename T2, typename C>
+Population<T, T2, C>::~Population()
 {
 }
 
-template<typename T, typename T2>
-void Population<T, T2>::evaluateFitness()
+#include <iostream>
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::evaluateFitness()
 {
     for (unsigned int i = 0 ; i < m_chromosomes.size() ; i++)
         m_chromosomes[i].computeFitness();
 
-    std::sort(m_chromosomes.begin(), m_chromosomes.end(), smallerToHigher);
-
-    m_cumulatedFitness.clear();
-    m_cumulatedFitness[0] = m_chromosomes[0].getFitness();
-    for (unsigned int i = 1 ; i < m_chromosomes.size() ; i++)
-        m_cumulatedFitness[i] = m_cumulatedFitness[i-1] + m_chromosomes[i].getFitness();
+    // Sort chromosomes to have m_chromosomes[0] with the lower fitness
+    // and m_chromosomes[m_chromosomes.size()] with the hightest
+    std::sort(m_chromosomes.begin(), m_chromosomes.end(), smallerToHigher<C>);
 }
 
-template<typename T, typename T2>
-void Population<T, T2>::mutate()
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::mutate()
 {
     for (unsigned int i = 0 ; i < m_chromosomes.size() ; i++)
         m_chromosomes[i].mutate();
 }
 
-template<typename T, typename T2>
-void Population<T, T2>::addChromosome(Chromosome<T, T2> chromosome)
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::generateRandomChromosomes()
+{
+    while (!isFull())
+    {
+        C chromosome;
+        chromosome.generateRandomChromosome();
+        addChromosome(chromosome);
+    }
+}
+
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::addChromosome(C chromosome)
 {
     m_chromosomes.push_back(chromosome);
 }
 
-template<typename T, typename T2>
-T Population<T, T2>::getBestSolution()
+template<typename T, typename T2, typename C>
+bool Population<T, T2, C>::isFull()
 {
-    return m_chromosomes[m_chromosomes.size()-1].getFitness();
+    if (m_chromosomes.empty())
+        return false;
+    return m_chromosomes.size() >= m_nbMaxChromosomes;
 }
 
-template<typename T, typename T2>
-bool Population<T, T2>::smallerToHigher(const T& param1, const T& param2)
+template<typename T, typename T2, typename C>
+int Population<T, T2, C>::getCurrentNbChromosomes()
 {
-    return param1 < param2;
+    if (m_chromosomes.empty())
+        return 0;
+    return m_chromosomes.size();
+}
+
+template<typename T, typename T2, typename C>
+T Population<T, T2, C>::getBestSolution() const
+{
+    if (m_chromosomes.empty())
+        throw std::runtime_error("No Solution found !");
+
+    return m_chromosomes[m_chromosomes.size()-1].getFitness();
 }
 
 #endif // POPULATION_H

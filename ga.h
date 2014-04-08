@@ -3,7 +3,7 @@
 
 #include "population.h"
 
-template<typename T, typename T2>
+template<typename T, typename P, typename C>
 class GA
 {
 protected:
@@ -11,10 +11,11 @@ protected:
     int m_nbGenerationsWanted;
     int m_currentGeneration;
 
-    Population<T, T2>* m_population;
+    P* m_population;
 
     virtual void runOneGeneration();
     virtual void generateRandomPopulation();
+    virtual void releaseMemory();
 
 public:
     GA();
@@ -32,32 +33,34 @@ public:
     int getIndexCurrentGeneration() { return m_currentGeneration; }
 };
 
-template<typename T, typename T2>
-GA<T, T2>::GA()
+template<typename T, typename P, typename C>
+GA<T, P, C>::GA()
     : m_isInitialized(false)
     , m_nbGenerationsWanted(100)
+    , m_population(nullptr)
 {
 }
 
-template<typename T, typename T2>
-GA<T, T2>::~GA()
+template<typename T, typename P, typename C>
+GA<T, P, C>::~GA()
 {
-    delete m_population;
+    releaseMemory();
 }
 
-template<typename T, typename T2>
-void GA<T, T2>::initialize()
+template<typename T, typename P, typename C>
+void GA<T, P, C>::initialize()
 {
     generateRandomPopulation();
     m_population->evaluateFitness();
+    m_currentGeneration = 1;
     m_isInitialized = true;
 }
 
-template<typename T, typename T2>
-T GA<T, T2>::performGA()
+template<typename T, typename P, typename C>
+T GA<T, P, C>::performGA()
 {
     if (!m_isInitialized)
-        return;
+        throw std::runtime_error("GA not initialzed !");
 
     while (m_currentGeneration < m_nbGenerationsWanted)
         runOneGeneration();
@@ -65,33 +68,44 @@ T GA<T, T2>::performGA()
     return m_population->getBestSolution();
 }
 
-template<typename T, typename T2>
-void GA<T, T2>::reset()
+template<typename T, typename P, typename C>
+void GA<T, P, C>::reset()
 {
     m_currentGeneration = 1;
     m_isInitialized = false;
 }
 
-template<typename T, typename T2>
-void GA<T, T2>::runOneGeneration()
+#include <iostream>
+template<typename T, typename P, typename C>
+void GA<T, P, C>::runOneGeneration()
 {
-    Population<T, T2>* newPop;
-    while (!newPop.isFull())
+    P* newPop = new P;
+    while (!newPop->isFull())
     {
-        Chromosome<T, T2> chromosome = m_population->crossOver(m_population->selectChromosomesPair());
+        C chromosome = m_population->crossOver(m_population->selectChromosomesPair());
         newPop->addChromosome(chromosome);
     }
     newPop->mutate();
     newPop->evaluateFitness();
     delete m_population;
     m_population = newPop;
+    m_currentGeneration++;
 }
 
-template<typename T, typename T2>
-void GA<T, T2>::generateRandomPopulation()
+template<typename T, typename P, typename C>
+void GA<T, P, C>::generateRandomPopulation()
 {
-    m_population = new Population<T, T2>();
+    releaseMemory();
+    m_population = new P();
     m_population->generateRandomChromosomes();
+}
+
+template<typename T, typename P, typename C>
+void GA<T, P, C>::releaseMemory()
+{
+    if (m_population)
+        delete m_population;
+    m_population = nullptr;
 }
 
 #endif // GA_H
