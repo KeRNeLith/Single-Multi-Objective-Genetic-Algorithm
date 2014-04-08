@@ -11,7 +11,7 @@ protected:
     int m_nbGenerationsWanted;
     int m_currentGeneration;
 
-    Population<T, T2> m_population;
+    Population<T, T2>* m_population;
 
     virtual void runOneGeneration();
     virtual void generateRandomPopulation();
@@ -21,7 +21,7 @@ public:
     virtual ~GA();
 
     virtual void initialize();
-    virtual void performGA();
+    virtual T performGA();
 
     virtual void reset();
 
@@ -42,17 +42,19 @@ GA<T, T2>::GA()
 template<typename T, typename T2>
 GA<T, T2>::~GA()
 {
+    delete m_population;
 }
 
 template<typename T, typename T2>
 void GA<T, T2>::initialize()
 {
     generateRandomPopulation();
+    m_population->evaluateFitness();
     m_isInitialized = true;
 }
 
 template<typename T, typename T2>
-void GA<T, T2>::performGA()
+T GA<T, T2>::performGA()
 {
     if (!m_isInitialized)
         return;
@@ -60,7 +62,7 @@ void GA<T, T2>::performGA()
     while (m_currentGeneration < m_nbGenerationsWanted)
         runOneGeneration();
 
-    // TODO un return ?
+    return m_population->getBestSolution();
 }
 
 template<typename T, typename T2>
@@ -73,7 +75,23 @@ void GA<T, T2>::reset()
 template<typename T, typename T2>
 void GA<T, T2>::runOneGeneration()
 {
-    // TODO
+    Population<T, T2>* newPop;
+    while (!newPop.isFull())
+    {
+        Chromosome<T, T2> chromosome = m_population->crossOver(m_population->selectChromosomesPair());
+        newPop->addChromosome(chromosome);
+    }
+    newPop->mutate();
+    newPop->evaluateFitness();
+    delete m_population;
+    m_population = newPop;
+}
+
+template<typename T, typename T2>
+void GA<T, T2>::generateRandomPopulation()
+{
+    m_population = new Population<T, T2>();
+    m_population->generateRandomChromosomes();
 }
 
 #endif // GA_H
