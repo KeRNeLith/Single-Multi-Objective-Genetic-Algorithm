@@ -62,7 +62,7 @@ T GA<T, P, C>::performGA()
     if (!m_isInitialized)
         throw std::runtime_error("GA not initialzed !");
 
-    while (m_currentGeneration < m_nbGenerationsWanted)
+    while (m_currentGeneration <= m_nbGenerationsWanted)
         runOneGeneration();
 
     return m_population->getBestSolution();

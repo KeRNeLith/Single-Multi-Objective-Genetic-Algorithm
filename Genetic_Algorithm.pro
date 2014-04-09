@@ -4,18 +4,18 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
 
-SOURCES += main.cpp \
-    ga.cpp \
-    chromosome.cpp \
-    population.cpp \
-    roulettewheel.cpp \
-    chromosomeintint.cpp
+SOURCES += example/main.cpp \
+    src/ga.cpp \
+    src/chromosome.cpp \
+    src/population.cpp \
+    example/roulettewheel.cpp \
+    example/chromosomeintint.cpp
 
 HEADERS += \
-    ga.h \
-    chromosome.h \
-    population.h \
-    roulettewheel.h \
-    General.h \
-    chromosomeintint.h
+    include/ga.h \
+    include/chromosome.h \
+    include/population.h \
+    example/roulettewheel.h \
+    include/General.h \
+    example/chromosomeintint.h
 
