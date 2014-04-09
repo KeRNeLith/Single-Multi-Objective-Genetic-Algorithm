@@ -9,13 +9,13 @@ SOURCES += main.cpp \
     chromosome.cpp \
     population.cpp \
     roulettewheel.cpp \
-    chromosomeintstr.cpp
+    chromosomeintint.cpp
 
 HEADERS += \
     ga.h \
     chromosome.h \
     population.h \
     roulettewheel.h \
-    chromosomeintstr.h \
-    General.h
+    General.h \
+    chromosomeintint.h
 
