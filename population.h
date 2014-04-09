@@ -12,10 +12,11 @@ class Population
 {
 protected:
     // Counters
-    static unsigned int m_nbMaxChromosomes;///> Number maximum of member for a population of chromosomes
+    static unsigned int m_nbMaxChromosomes; ///> Number maximum of member for a population of chromosomes
+    static double m_proportionalChromosomesKeep; ///> Indicate a percentage of chromosomes that wil be keep in each generation
 
-    static double m_crossOverProbability;  ///> Probability for a chromosome to crossover
-    static double m_mutateProbability;     ///> Probability for a chromosome to mutate
+    static double m_crossOverProbability;   ///> Probability for a chromosome to crossover
+    static double m_mutateProbability;      ///> Probability for a chromosome to mutate
 
     std::vector< C > m_chromosomes;         ///> Chromosomes composing the population
 
@@ -104,14 +105,40 @@ public:
     static double getMutateProbability() { return m_mutateProbability; }
 
     /**
+     * @brief setProportionalKeeping set the coefficient of proportionnality for chromosomes that will be kept in the current generation for the next
+     * @param proportionalKeeping coefficient of proportionnality
+     */
+    static void setProportionalKeeping(const double proportionalKeeping) { m_proportionalChromosomesKeep = proportionalKeeping; if (m_proportionalChromosomesKeep > 1) m_proportionalChromosomesKeep = 1; if (m_proportionalChromosomesKeep < 0) m_proportionalChromosomesKeep = 0; }
+    /**
+     * @brief getProportionalKeeping get the coefficient of proportionnality for chromosomes that will be kept in the current generation for the next
+     * @return coefficient of proportionnality
+     */
+    static double getProportionalKeeping() { return m_proportionalChromosomesKeep; }
+
+    /**
      * @brief getBestSolution best solution found by GA
      * @return the solution to the problem
      */
     T getBestSolution() const;
+
+    /**
+     * @brief addKeptChromosomes add Chromosomes that must be kept between two generations
+     * @param chromosomes vector of chromosomes that will be insert in m_chromosomes
+     */
+    void addKeptChromosomes(std::vector< C > chromosomes);
+
+    /**
+     * @brief getKeptChromosomes compute the vector of chromosomes that must be kept between each generation
+     * @return vector of chromosomes that must be kept between each generation
+     */
+    std::vector< C > getKeptChromosomes();
 };
 
+// Init static variables
 template<typename T, typename T2, typename C>
 unsigned int Population<T, T2, C>::m_nbMaxChromosomes = 100;
+template<typename T, typename T2, typename C>
+double Population<T, T2, C>::m_proportionalChromosomesKeep = 0.2;
 
 template<typename T, typename T2, typename C>
 double Population<T, T2, C>::m_crossOverProbability = 0.3;
@@ -130,7 +157,6 @@ Population<T, T2, C>::~Population()
 {
 }
 
-#include <iostream>
 template<typename T, typename T2, typename C>
 void Population<T, T2, C>::evaluateFitness()
 {
@@ -186,9 +212,28 @@ template<typename T, typename T2, typename C>
 T Population<T, T2, C>::getBestSolution() const
 {
     if (m_chromosomes.empty())
-        throw std::runtime_error("No Solution found !");
+        throw std::runtime_error("Error in process !");
 
     return m_chromosomes[m_chromosomes.size()-1].getFitness();
+}
+
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::addKeptChromosomes(std::vector< C > chromosomes)
+{
+    unsigned int i = 0;
+    while (!isFull() && i < chromosomes.size())
+        m_chromosomes.push_back(chromosomes[i]);
+}
+
+template<typename T, typename T2, typename C>
+std::vector< C > Population<T, T2, C>::getKeptChromosomes()
+{
+    int nbChromosomesKeep = m_proportionalChromosomesKeep * m_nbMaxChromosomes;
+
+    std::vector< C > chromosomesKept;
+    for (unsigned int i = 0 ; i < nbChromosomesKeep ; i++)
+        chromosomesKept.push_back(m_chromosomes[m_chromosomes.size()-(1+i)]);
+    return chromosomesKept;
 }
 
 #endif // POPULATION_H

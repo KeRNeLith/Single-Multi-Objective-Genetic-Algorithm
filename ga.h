@@ -75,13 +75,13 @@ void GA<T, P, C>::reset()
     m_isInitialized = false;
 }
 
-#include <iostream>
 template<typename T, typename P, typename C>
 void GA<T, P, C>::runOneGeneration()
 {
     P* newPop = new P;
     while (!newPop->isFull())
     {
+        newPop->addKeptChromosomes(m_population->getKeptChromosomes());
         C chromosome = m_population->crossOver(m_population->selectChromosomesPair());
         newPop->addChromosome(chromosome);
     }
