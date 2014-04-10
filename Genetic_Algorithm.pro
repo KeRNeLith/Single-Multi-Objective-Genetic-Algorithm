@@ -4,6 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
 
+INCLUDEPATH +=  ./include
+
 SOURCES += example/main.cpp \
     src/ga.cpp \
     src/chromosome.cpp \

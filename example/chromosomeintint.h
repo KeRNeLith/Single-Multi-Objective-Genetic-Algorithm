@@ -2,7 +2,6 @@
 #define CHROMOSOMEINTINT_H
 
 #include <string>
-#include <sstream>
 
 #include "General.h"
 #include "chromosome.h"
