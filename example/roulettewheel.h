@@ -12,7 +12,7 @@ class RouletteWheel
 {
 protected:
     std::vector< int > m_cumulatedFitness;    ///> Store the cumulated fitness
-    std::vector< double > m_selectingProba;      ///> Store all probability to be selected by the roulette wheel
+    std::vector< double > m_selectingProba;   ///> Store all probability to be selected by the roulette wheel
 
 public:
     RouletteWheel();
