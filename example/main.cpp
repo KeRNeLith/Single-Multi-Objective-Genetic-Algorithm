@@ -10,6 +10,7 @@ int main()
     try {
         SingleObjectiveGA<int, RouletteWheel<ChromosomeIntInt>, ChromosomeIntInt> sGa;
 
+        //sGa.setElistism(true);
         //sGa.setNbGenerationsWanted(500);
         //ChromosomeIntInt::setNbGenes(100);
         //RouletteWheel<ChromosomeIntInt>::setNbMaxChromosomes(50);

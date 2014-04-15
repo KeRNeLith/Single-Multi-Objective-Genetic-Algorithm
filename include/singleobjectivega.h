@@ -45,6 +45,24 @@ SingleObjectiveGA<T, P, C>::SingleObjectiveGA()
 }
 
 template<typename T, typename P, typename C>
+void SingleObjectiveGA<T, P, C>::runOneGeneration()
+{
+    P* newPop = new P;
+    while (!newPop->isFull())
+    {
+        if (m_elitism)
+            newPop->addKeptChromosomes(this->m_population->getKeptChromosomes());
+        C chromosome = this->m_population->crossOver(this->m_population->selectChromosomesPair());
+        newPop->addChromosome(chromosome);
+    }
+    newPop->mutate();
+    newPop->evaluateFitness();
+    delete this->m_population;
+    this->m_population = newPop;
+    this->m_currentGeneration++;
+}
+
+template<typename T, typename P, typename C>
 void SingleObjectiveGA<T, P, C>::initialize()
 {
     if(this->m_isInitialized)
@@ -73,24 +91,6 @@ void SingleObjectiveGA<T, P, C>::reset()
 {
     this->m_currentGeneration = 1;
     this->m_isInitialized = false;
-}
-
-template<typename T, typename P, typename C>
-void SingleObjectiveGA<T, P, C>::runOneGeneration()
-{
-    P* newPop = new P;
-    while (!newPop->isFull())
-    {
-        if (m_elitism)
-            newPop->addKeptChromosomes(this->m_population->getKeptChromosomes());
-        C chromosome = this->m_population->crossOver(this->m_population->selectChromosomesPair());
-        newPop->addChromosome(chromosome);
-    }
-    newPop->mutate();
-    newPop->evaluateFitness();
-    delete this->m_population;
-    this->m_population = newPop;
-    this->m_currentGeneration++;
 }
 
 #endif // SINGLEOBJECTIVEGA_H

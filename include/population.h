@@ -31,7 +31,7 @@ public:
      * @brief Evaluate the fitness for all chromosomes of the population.
      * The function must rank all solutions according to their fitness in order : the worst to the better.
      */
-    virtual void evaluateFitness();
+    virtual void evaluateFitness() =0;
 
     /**
      * @brief Compute mutation for all chromosomes of the population according to m_mutateProbability.
@@ -122,19 +122,7 @@ public:
      * @brief getBestSolution Best solution found by GA.
      * @return The solution to the problem.
      */
-    C getBestSolution() const;
-
-    /**
-     * @brief addKeptChromosomes Add Chromosomes that must be kept between two generations.
-     * @param chromosomes Vector of chromosomes that will be insert in m_chromosomes.
-     */
-    void addKeptChromosomes(std::vector< C > chromosomes);
-
-    /**
-     * @brief getKeptChromosomes Compute the vector of chromosomes that must be kept between each generation.
-     * @return Vector of chromosomes that must be kept between each generation.
-     */
-    std::vector< C > getKeptChromosomes();
+    virtual C getBestSolution() const =0;
 };
 
 // Init static variables
@@ -158,17 +146,6 @@ Population<T, T2, C>::Population()
 template<typename T, typename T2, typename C>
 Population<T, T2, C>::~Population()
 {
-}
-
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::evaluateFitness()
-{
-    for (unsigned int i = 0 ; i < m_chromosomes.size() ; i++)
-        m_chromosomes[i].computeFitness();
-
-    // Sort chromosomes to have m_chromosomes[0] with the lower fitness
-    // and m_chromosomes[m_chromosomes.size()] with the hightest
-    std::sort(m_chromosomes.begin(), m_chromosomes.end(), smallerToHigher<C>);
 }
 
 template<typename T, typename T2, typename C>
@@ -209,34 +186,6 @@ int Population<T, T2, C>::getCurrentNbChromosomes()
     if (m_chromosomes.empty())
         return 0;
     return m_chromosomes.size();
-}
-
-template<typename T, typename T2, typename C>
-C Population<T, T2, C>::getBestSolution() const
-{
-    if (m_chromosomes.empty())
-        throw std::runtime_error("Error in process !");
-
-    return m_chromosomes[m_chromosomes.size()-1];
-}
-
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::addKeptChromosomes(std::vector< C > chromosomes)
-{
-    unsigned int i = 0;
-    while (!isFull() && i < chromosomes.size())
-        m_chromosomes.push_back(chromosomes[i]);
-}
-
-template<typename T, typename T2, typename C>
-std::vector< C > Population<T, T2, C>::getKeptChromosomes()
-{
-    int nbChromosomesKeep = m_proportionalChromosomesKeep * m_nbMaxChromosomes;
-
-    std::vector< C > chromosomesKept;
-    for (unsigned int i = 0 ; i < nbChromosomesKeep ; i++)
-        chromosomesKept.push_back(m_chromosomes[m_chromosomes.size()-(1+i)]);
-    return chromosomesKept;
 }
 
 #endif // POPULATION_H

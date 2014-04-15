@@ -21,6 +21,19 @@ public:
     virtual void evaluateFitness();
     virtual std::pair< C, C > selectChromosomesPair();
     virtual C crossOver(std::pair< C, C > parents);
+    virtual C getBestSolution() const;
+
+    /**
+     * @brief addKeptChromosomes Add Chromosomes that must be kept between two generations.
+     * @param chromosomes Vector of chromosomes that will be insert in m_chromosomes.
+     */
+    void addKeptChromosomes(std::vector< C > chromosomes);
+
+    /**
+     * @brief getKeptChromosomes Compute the vector of chromosomes that must be kept between each generation.
+     * @return Vector of chromosomes that must be kept between each generation.
+     */
+    std::vector< C > getKeptChromosomes();
 };
 
 template<typename C>
@@ -39,7 +52,13 @@ RouletteWheel<C>::~RouletteWheel()
 template<typename C>
 void RouletteWheel<C>::evaluateFitness()
 {
-    Population<int, int, ChromosomeIntInt>::evaluateFitness();
+    for (unsigned int i = 0 ; i < m_chromosomes.size() ; i++)
+        m_chromosomes[i].computeFitness();
+
+    // Sort chromosomes to have m_chromosomes[0] with the lower fitness
+    // and m_chromosomes[m_chromosomes.size()] with the hightest
+    std::sort(m_chromosomes.begin(), m_chromosomes.end(), smallerToHigher<C>);
+
 
     if (m_chromosomes.empty())
         return;
@@ -132,6 +151,34 @@ C RouletteWheel<C>::crossOver(std::pair<C, C> parents)
     offspring.setDatas(offspringGenes);
 
     return offspring;
+}
+
+template<typename C>
+C RouletteWheel<C>::getBestSolution() const
+{
+    if (m_chromosomes.empty())
+        throw std::runtime_error("Error in process !");
+
+    return m_chromosomes[m_chromosomes.size()-1];
+}
+
+template<typename C>
+void RouletteWheel<C>::addKeptChromosomes(std::vector< C > chromosomes)
+{
+    unsigned int i = 0;
+    while (!isFull() && i < chromosomes.size())
+        m_chromosomes.push_back(chromosomes[i]);
+}
+
+template<typename C>
+std::vector< C > RouletteWheel<C>::getKeptChromosomes()
+{
+    int nbChromosomesKeep = m_proportionalChromosomesKeep * m_nbMaxChromosomes;
+
+    std::vector< C > chromosomesKept;
+    for (unsigned int i = 0 ; i < nbChromosomesKeep ; i++)
+        chromosomesKept.push_back(m_chromosomes[m_chromosomes.size()-(1+i)]);
+    return chromosomesKept;
 }
 
 #endif // ROULETTEWHEEL_H
