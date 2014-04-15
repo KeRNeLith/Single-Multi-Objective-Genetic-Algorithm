@@ -22,7 +22,7 @@ public:
     /**
      * @brief mutate Method call to apply mutation on the chromosome.
      */
-    virtual void mutate() =0;
+    virtual bool mutate() =0;
 
     /**
      * @brief computeFitness Compute the fitness of the chromosome.

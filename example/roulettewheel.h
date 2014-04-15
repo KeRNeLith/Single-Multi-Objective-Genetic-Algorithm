@@ -125,10 +125,10 @@ C RouletteWheel<C>::crossOver(std::pair<C, C> parents)
     std::uniform_real_distribution<float> distribution(0.0, 1.0);
     float probaCrossOver = distribution(generator);
 
-    if (ChromosomeIntInt::getNbGenes() == 0)
+    if (C::getNbGenes() == 0)
         return offspring;
 
-    std::uniform_int_distribution<> distributionInt(0, ChromosomeIntInt::getNbGenes()-1);
+    std::uniform_int_distribution<> distributionInt(0, C::getNbGenes()-1);
     int indexCrossover = distributionInt(generator);
 
     if (probaCrossOver <= m_crossOverProbability)
@@ -136,7 +136,7 @@ C RouletteWheel<C>::crossOver(std::pair<C, C> parents)
         for (unsigned int i = 0 ; i <= indexCrossover ; i++)
             offspringGenes.push_back(mumGenes[i]);
 
-        for (unsigned int i = indexCrossover + 1 ; i < ChromosomeIntInt::getNbGenes()-1 ; i++)
+        for (unsigned int i = indexCrossover + 1 ; i < C::getNbGenes()-1 ; i++)
             offspringGenes.push_back(dadGenes[i]);
     }
     else
@@ -144,7 +144,7 @@ C RouletteWheel<C>::crossOver(std::pair<C, C> parents)
         for (unsigned int i = 0 ; i <= indexCrossover ; i++)
             offspringGenes.push_back(dadGenes[i]);
 
-        for (unsigned int i = indexCrossover + 1 ; i < ChromosomeIntInt::getNbGenes()-1 ; i++)
+        for (unsigned int i = indexCrossover + 1 ; i < C::getNbGenes()-1 ; i++)
             offspringGenes.push_back(mumGenes[i]);
     }
 

@@ -5,9 +5,10 @@ ChromosomeIntInt::ChromosomeIntInt()
 {
 }
 
-void ChromosomeIntInt::mutate()
+bool ChromosomeIntInt::mutate()
 {
     std::uniform_real_distribution<> distribution(0.0, 1.0);
+    bool flag = false;
 
     for (unsigned int i = 0 ; i < m_datas.size() ; i++)
     {
@@ -20,7 +21,10 @@ void ChromosomeIntInt::mutate()
             m_datas[i] = 1;
         else
             m_datas[i] = 0;
+        flag = true;
     }
+
+    return flag;
 }
 
 void ChromosomeIntInt::computeFitness()

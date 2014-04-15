@@ -13,7 +13,7 @@ class ChromosomeIntInt
 public:
     ChromosomeIntInt();
 
-    virtual void mutate();
+    virtual bool mutate();
     virtual void computeFitness();
     virtual void generateRandomChromosome();
 
