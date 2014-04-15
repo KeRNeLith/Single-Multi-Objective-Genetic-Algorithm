@@ -122,7 +122,7 @@ public:
      * @brief getBestSolution Best solution found by GA.
      * @return The solution to the problem.
      */
-    virtual C getBestSolution() const =0;
+    virtual std::vector< C > getBestSolution() const =0;
 };
 
 // Init static variables

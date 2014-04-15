@@ -21,7 +21,7 @@ public:
     virtual void evaluateFitness();
     virtual std::pair< C, C > selectChromosomesPair();
     virtual C crossOver(std::pair< C, C > parents);
-    virtual C getBestSolution() const;
+    virtual std::vector< C > getBestSolution() const;
 
     /**
      * @brief addKeptChromosomes Add Chromosomes that must be kept between two generations.
@@ -154,12 +154,14 @@ C RouletteWheel<C>::crossOver(std::pair<C, C> parents)
 }
 
 template<typename C>
-C RouletteWheel<C>::getBestSolution() const
+std::vector<C> RouletteWheel<C>::getBestSolution() const
 {
     if (m_chromosomes.empty())
         throw std::runtime_error("Error in process !");
 
-    return m_chromosomes[m_chromosomes.size()-1];
+    std::vector< C > bestSolution;
+    bestSolution.push_back(m_chromosomes[m_chromosomes.size()-1]);
+    return bestSolution;
 }
 
 template<typename C>

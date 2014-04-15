@@ -22,7 +22,7 @@ public:
     SingleObjectiveGA();
 
     virtual void initialize();
-    virtual C performGA();
+    virtual std::vector< C > performGA();
     virtual void reset();
 
     /**
@@ -75,7 +75,7 @@ void SingleObjectiveGA<T, P, C>::initialize()
 }
 
 template<typename T, typename P, typename C>
-C SingleObjectiveGA<T, P, C>::performGA()
+std::vector<C> SingleObjectiveGA<T, P, C>::performGA()
 {
     if (!this->m_isInitialized)
         throw std::runtime_error("GA not initialzed !");

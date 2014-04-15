@@ -17,7 +17,7 @@ int main()
         //RouletteWheel<ChromosomeIntInt>::setProportionalKeeping(0.3);
 
         sGa.initialize();
-        int ret = sGa.performGA().getFitness();
+        int ret = sGa.performGA()[0].getFitness();
         cout << "Result : " << ret << endl;
     }
     catch(std::runtime_error& e)

@@ -1,6 +1,8 @@
 #ifndef GA_H
 #define GA_H
 
+#include <vector>
+
 #include "population.h"
 
 template<typename T, typename P, typename C>
@@ -40,7 +42,7 @@ public:
      * @brief performGA Run the genetic algorithm.
      * @return the best solution found.
      */
-    virtual C performGA() =0;
+    virtual std::vector< C > performGA() =0;
 
     /**
      * @brief reset Reset all values in order to do another run of the algorithm.
