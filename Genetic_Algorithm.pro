@@ -10,6 +10,7 @@ SOURCES += example/main.cpp \
     src/ga.cpp \
     src/chromosome.cpp \
     src/population.cpp \
+    src/singleobjectivega.cpp \
     example/roulettewheel.cpp \
     example/chromosomeintint.cpp
 
@@ -17,7 +18,8 @@ HEADERS += \
     include/ga.h \
     include/chromosome.h \
     include/population.h \
-    example/roulettewheel.h \
     include/General.h \
+    include/singleobjectivega.h \
+    example/roulettewheel.h \
     example/chromosomeintint.h
 

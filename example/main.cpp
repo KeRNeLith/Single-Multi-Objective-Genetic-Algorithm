@@ -1,5 +1,5 @@
 #include <iostream>
-#include "ga.h"
+#include "singleobjectivega.h"
 #include "roulettewheel.h"
 #include "chromosomeintint.h"
 
@@ -8,15 +8,15 @@ using namespace std;
 int main()
 {
     try {
-        GA<int, RouletteWheel<ChromosomeIntInt>, ChromosomeIntInt> ga;
+        SingleObjectiveGA<int, RouletteWheel<ChromosomeIntInt>, ChromosomeIntInt> sGa;
 
-        //ga.setNbGenerationsWanted(500);
+        //sGa.setNbGenerationsWanted(500);
         //ChromosomeIntInt::setNbGenes(100);
         //RouletteWheel<ChromosomeIntInt>::setNbMaxChromosomes(50);
         //RouletteWheel<ChromosomeIntInt>::setProportionalKeeping(0.3);
 
-        ga.initialize();
-        int ret = ga.performGA().getFitness();
+        sGa.initialize();
+        int ret = sGa.performGA().getFitness();
         cout << "Result : " << ret << endl;
     }
     catch(std::runtime_error& e)

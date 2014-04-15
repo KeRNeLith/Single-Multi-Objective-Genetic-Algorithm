@@ -18,11 +18,6 @@ protected:
     P* m_population;            ///> Current population of solutions.
 
     /**
-     * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
-     */
-    virtual void runOneGeneration();
-
-    /**
      * @brief generateRandomPopulation Generate a random Population, use mainly at the beginning of the algorithm.
      */
     virtual void generateRandomPopulation();
@@ -39,18 +34,18 @@ public:
     /**
      * @brief initialize Do all things that are needed to do before running the algorithm.
      */
-    virtual void initialize();
+    virtual void initialize() =0;
 
     /**
      * @brief performGA Run the genetic algorithm.
      * @return the best solution found.
      */
-    virtual C performGA();
+    virtual C performGA() =0;
 
     /**
      * @brief reset Reset all values in order to do another run of the algorithm.
      */
-    virtual void reset();
+    virtual void reset() =0;
 
     ////////////// Accessors/Setters //////////////
     /**
@@ -84,54 +79,6 @@ template<typename T, typename P, typename C>
 GA<T, P, C>::~GA()
 {
     releaseMemory();
-}
-
-template<typename T, typename P, typename C>
-void GA<T, P, C>::initialize()
-{
-    if(m_isInitialized)
-        return;
-
-    generateRandomPopulation();
-    m_population->evaluateFitness();
-    m_currentGeneration = 1;
-    m_isInitialized = true;
-}
-
-template<typename T, typename P, typename C>
-C GA<T, P, C>::performGA()
-{
-    if (!m_isInitialized)
-        throw std::runtime_error("GA not initialzed !");
-
-    while (m_currentGeneration <= m_nbGenerationsWanted)
-        runOneGeneration();
-
-    return m_population->getBestSolution();
-}
-
-template<typename T, typename P, typename C>
-void GA<T, P, C>::reset()
-{
-    m_currentGeneration = 1;
-    m_isInitialized = false;
-}
-
-template<typename T, typename P, typename C>
-void GA<T, P, C>::runOneGeneration()
-{
-    P* newPop = new P;
-    while (!newPop->isFull())
-    {
-        newPop->addKeptChromosomes(m_population->getKeptChromosomes());
-        C chromosome = m_population->crossOver(m_population->selectChromosomesPair());
-        newPop->addChromosome(chromosome);
-    }
-    newPop->mutate();
-    newPop->evaluateFitness();
-    delete m_population;
-    m_population = newPop;
-    m_currentGeneration++;
 }
 
 template<typename T, typename P, typename C>

@@ -17,6 +17,7 @@ public:
     virtual void computeFitness();
     virtual void generateRandomChromosome();
 
+    // Operator
     bool operator <(const ChromosomeIntInt& chromosome) const { return Chromosome<int, int>::operator <(chromosome);}
 };
 
