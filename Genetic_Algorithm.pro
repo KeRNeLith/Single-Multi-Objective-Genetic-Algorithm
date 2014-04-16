@@ -12,7 +12,8 @@ SOURCES += example/main.cpp \
     src/population.cpp \
     src/singleobjectivega.cpp \
     example/roulettewheel.cpp \
-    example/chromosomeintint.cpp
+    example/chromosomeintint.cpp \
+    include/nsgaii.cpp
 
 HEADERS += \
     include/ga.h \
@@ -22,5 +23,6 @@ HEADERS += \
     include/singleobjectivega.h \
     example/roulettewheel.h \
     example/chromosomeintint.h \
-    include/AlgoString.h
+    include/AlgoString.h \
+    include/nsgaii.h
 

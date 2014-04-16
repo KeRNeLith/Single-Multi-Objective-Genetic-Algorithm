@@ -1,14 +1,14 @@
 #include <iostream>
+
 #include "singleobjectivega.h"
+#include "nsgaii.h"
+
 #include "roulettewheel.h"
 #include "chromosomeintint.h"
-
-using namespace std;
 
 int main()
 {
     try {
-
         // Count the number of one in a serie of bits
         // Return the solution that for a given number of bits have the higher number of bits to 1.
 
@@ -19,25 +19,32 @@ int main()
         //          \-> second : It's the type of data used the chromosomes.
         //          \-> third : It's the type of chromosomes used.
         // third : It's the type of chromosomes used.
-        SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
+        /*SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
         sGa.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
         //sGa.setElistism(false);
         //sGa.setNbGenerationsWanted(500);
         //ChromosomeIntInt::setNbGenes(100);
-        //RouletteWheel<ChromosomeIntInt>::setNbMaxChromosomes(50);
+        //RouletteWheel<ChromosomeIntInt>::setSNbMaxChromosomes(50);
         //RouletteWheel<ChromosomeIntInt>::setProportionalKeeping(0.3);
         //RouletteWheel<ChromosomeIntInt>::setCrossOverProbability(0.35);
         //RouletteWheel<ChromosomeIntInt>::setMutateProbability(0.03);
 
         sGa.initialize();
         int ret = sGa.performGA()[0].getFitness()[0];
-        cout << "Result : " << ret << endl;
+        std::cout << "Result : " << ret << std::endl;*/
+
+        NSGAII<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> nsga2;
+        nsga2.readParamsFromFile("params.txt");
+        nsga2.initialize();
+        std::vector<ChromosomeIntInt> results = nsga2.performGA();
+
+        std::cout << std::endl << "Done !" << std::endl;
     }
     catch(std::runtime_error& e)
     {
-        cout << e.what() << endl;
+        std::cout << e.what() << std::endl;
     }
 
     return 0;

@@ -15,7 +15,8 @@ class Population
 {
 protected:
     // Counters
-    static unsigned int m_nbMaxChromosomes;         ///> Number maximum of member for a population of chromosomes.
+    unsigned int m_nbMaxChromosomes;                ///> Number maximum of member of chromosomes for this population.
+    static unsigned int m_sNbMaxChromosomes;        ///> Number maximum of member for a population of chromosomes (common to all population).
     static double m_proportionalChromosomesKeep;    ///> Indicate a percentage of chromosomes that wil be keep in each generation.
 
     static double m_crossOverProbability;           ///> Probability for a chromosome to crossover.
@@ -69,15 +70,26 @@ public:
 
     ////////////// Accessors/Setters //////////////
     /**
-     * @brief setNbMaxChromosomes Set the number max of chromosomes for a population.
-     * @param nbMaxChromosomes Number max of chromosomes.
+     * @brief setSNbMaxChromosomes Set the number max of chromosomes for a population (common to all population).
+     * @param sNbMaxChromosomes Number max of chromosomes.
      */
-    static void setNbMaxChromosomes(const int nbMaxChromosomes) { m_nbMaxChromosomes = nbMaxChromosomes; }
+    static void setSNbMaxChromosomes(const int sNbMaxChromosomes) { m_sNbMaxChromosomes = sNbMaxChromosomes; }
     /**
-     * @brief getNbMaxChromosomes Get the numbr max of chromosomes.
+     * @brief getSNbMaxChromosomes Get the numbr max of chromosomes (common to all population).
      * @return Number max of chromosomes for the population.
      */
-    static int getNbMaxChromosomes() { return m_nbMaxChromosomes; }
+    static int getSNbMaxChromosomes() { return m_sNbMaxChromosomes; }
+
+    /**
+     * @brief setNbMaxChromosomes Set the number max of chromosomes for a population for this population.
+     * @param nbMaxChromosomes Number max of chromosomes.
+     */
+    void setNbMaxChromosomes(const int nbMaxChromosomes) { this->m_nbMaxChromosomes = nbMaxChromosomes; }
+    /**
+     * @brief getNbMaxChromosomes Get the numbr max of chromosomes for this population.
+     * @return Number max of chromosomes for this population.
+     */
+    int getNbMaxChromosomes() { return this->m_nbMaxChromosomes; }
 
     /**
      * @brief getCurrentNbChromosomes Get the current number of chromosomes in the population.
@@ -127,7 +139,7 @@ public:
 
 // Init static variables
 template<typename T, typename T2, typename C>
-unsigned int Population<T, T2, C>::m_nbMaxChromosomes = 100;
+unsigned int Population<T, T2, C>::m_sNbMaxChromosomes = 100;
 template<typename T, typename T2, typename C>
 double Population<T, T2, C>::m_proportionalChromosomesKeep = 0.2;
 
@@ -139,7 +151,8 @@ double Population<T, T2, C>::m_mutateProbability = 0.04;
 
 template<typename T, typename T2, typename C>
 Population<T, T2, C>::Population()
-    : m_chromosomes()
+    : m_nbMaxChromosomes(m_sNbMaxChromosomes)
+    , m_chromosomes()
 {
 }
 
@@ -158,6 +171,7 @@ void Population<T, T2, C>::mutate()
 template<typename T, typename T2, typename C>
 void Population<T, T2, C>::generateRandomChromosomes()
 {
+    m_chromosomes.clear();
     // Fill the population until it is full
     while (!isFull())
     {

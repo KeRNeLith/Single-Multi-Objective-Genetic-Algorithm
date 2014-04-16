@@ -69,7 +69,9 @@ void SingleObjectiveGA<T, P, C>::initialize()
         return;
 
     // Generate a random population make step that need to be done before running algorithm
-    this->generateRandomPopulation();
+    this->releaseMemory();
+    this->m_population = new P;
+    this->m_population->generateRandomChromosomes();
     this->m_population->evaluateFitness();
     this->m_currentGeneration = 1;
     this->m_isInitialized = true;

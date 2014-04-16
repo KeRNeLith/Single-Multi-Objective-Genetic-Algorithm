@@ -23,11 +23,6 @@ protected:
     P* m_population;            ///> Current population of solutions.
 
     /**
-     * @brief generateRandomPopulation Generate a random Population, use mainly at the beginning of the algorithm.
-     */
-    virtual void generateRandomPopulation();
-
-    /**
      * @brief releaseMemory Free all the memory used by the algorithm that haven't been deallocate during the processing.
      */
     virtual void releaseMemory();
@@ -99,14 +94,6 @@ GA<T, P, C>::~GA()
 }
 
 template<typename T, typename P, typename C>
-void GA<T, P, C>::generateRandomPopulation()
-{
-    releaseMemory();
-    m_population = new P();
-    m_population->generateRandomChromosomes();
-}
-
-template<typename T, typename P, typename C>
 void GA<T, P, C>::releaseMemory()
 {
     if (m_population)
@@ -154,7 +141,7 @@ void GA<T, P, C>::readParamsFromFile(const char* fileName)
             else if (lineLabel == "numbergenerationswanted")
                 m_nbGenerationsWanted = getNumber<int>(lineSplited[1]);
             else if (lineLabel == "numbermaxchromosomes")
-                P::setNbMaxChromosomes(getNumber<int>(lineSplited[1]));
+                P::setSNbMaxChromosomes(getNumber<int>(lineSplited[1]));
             else if (lineLabel == "numbergenes")
                 C::setNbGenes(getNumber<int>(lineSplited[1]));
             else if (lineLabel == "proportionalkeeping")

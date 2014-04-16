@@ -184,7 +184,7 @@ template<typename T, typename T2, typename C>
 std::vector< C > RouletteWheel<T, T2, C>::getKeptChromosomes()
 {
     // Determine the number of chromosome that will be kept
-    int nbChromosomesKeep = this->m_proportionalChromosomesKeep * this->m_nbMaxChromosomes;
+    int nbChromosomesKeep = this->m_proportionalChromosomesKeep * this->m_sNbMaxChromosomes;
 
     // Create a vector with the previous number of chromosome
     // Those which have the best fitness (so begin to the end of vector)
