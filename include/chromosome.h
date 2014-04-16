@@ -11,7 +11,7 @@ template<typename T, typename T2>
 class Chromosome
 {
 protected:
-    T m_fitness;                        ///> Fitness of the individual for the given problem
+    std::vector < T > m_fitness;        ///> Fitness of the individual for the given problem
     std::vector< T2> m_datas;           ///> Describe how the chromosome is represented to apply the GA
     static unsigned int m_nbGenes;      ///> Number of genes
 
@@ -39,7 +39,7 @@ public:
      * @brief getFitness Fitness of the chromosome.
      * @return The fitness.
      */
-    virtual T getFitness() const { return m_fitness; }
+    virtual std::vector < T > getFitness() const { return m_fitness; }
 
     /**
      * @brief getDatas Allow to get all genes of the chromosome.

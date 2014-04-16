@@ -29,7 +29,10 @@ bool ChromosomeIntInt::mutate()
 
 void ChromosomeIntInt::computeFitness()
 {
-    m_fitness = std::count(m_datas.begin(), m_datas.end(), 1);
+    if (m_fitness.size() != 0)
+       m_fitness[0] = std::count(m_datas.begin(), m_datas.end(), 1);
+    else
+        m_fitness.push_back(std::count(m_datas.begin(), m_datas.end(), 1));
 }
 
 void ChromosomeIntInt::generateRandomChromosome()
