@@ -21,5 +21,6 @@ HEADERS += \
     include/General.h \
     include/singleobjectivega.h \
     example/roulettewheel.h \
-    example/chromosomeintint.h
+    example/chromosomeintint.h \
+    include/AlgoString.h
 

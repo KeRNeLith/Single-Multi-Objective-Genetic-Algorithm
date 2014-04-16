@@ -2,6 +2,9 @@
 #define GA_H
 
 #include <vector>
+#include <fstream>
+
+#include "AlgoString.h"
 
 #include "population.h"
 
@@ -48,6 +51,18 @@ public:
      * @brief reset Reset all values in order to do another run of the algorithm.
      */
     virtual void reset() =0;
+
+    /**
+     * @brief readParamsFromFile Read and set params of GA to the values read in the file passed in parameter.
+     * @param fileName Name of the file to read.
+     */
+    virtual void readParamsFromFile(const char* fileName);
+    /**
+     * @brief readParamsFromFile Read and set params of GA to the values read in the file passed in parameter.
+     * @param fileName Name of the file to read.
+     */
+    virtual void readParamsFromFile(const std::string& fileName);
+
 
     ////////////// Accessors/Setters //////////////
     /**
@@ -97,6 +112,67 @@ void GA<T, P, C>::releaseMemory()
     if (m_population)
         delete m_population;
     m_population = nullptr;
+}
+
+template<typename T, typename P, typename C>
+void GA<T, P, C>::readParamsFromFile(const char* fileName)
+{
+    if (m_isInitialized)
+        throw std::runtime_error("Impossible to set parameters. Please reset GA before.");
+
+    std::ifstream file(fileName, std::ios::in);  // Open file
+
+    if(file)  // Open Success
+    {
+        while (!file.eof())
+        {
+            std::string line;           // One line of the file
+            std::getline(file, line);   // Recuperate one line
+
+            std::vector<std::string> lineSplited = split(line, '=');    // Split the line on char '='
+            for (int i = 0 ; i < lineSplited.size() ; i++)              // Delete all space at the beginning and end of each splited strings
+                lineSplited[i] = trim(lineSplited[i]);
+
+            if (lineSplited.size() < 2) // If there aren't 2 arguments (label + value) => error
+                throw std::runtime_error("There is an error in file.");
+
+            // Recover the label without space and in lower case
+            std::string lineLabel = "";
+            std::vector<std::string> lineLabelSplited = split(lineSplited[0], ' ');
+            for (int i = 0 ; i < lineLabelSplited.size() ; i++)
+            {
+                lineLabelSplited[i] = trim(lineLabelSplited[i]);
+                lineLabel += lineLabelSplited[i];
+            }
+            lineLabel = lowerCase(lineLabel);
+
+            // Check the property to update
+            if (lineLabel == "probabilitycrossover")
+                P::setCrossOverProbability(getNumber<double>(lineSplited[1]));
+            else if (lineLabel == "probabilitymutate")
+                P::setMutateProbability(getNumber<double>(lineSplited[1]));
+            else if (lineLabel == "numbergenerationswanted")
+                m_nbGenerationsWanted = getNumber<int>(lineSplited[1]);
+            else if (lineLabel == "numbermaxchromosomes")
+                P::setNbMaxChromosomes(getNumber<int>(lineSplited[1]));
+            else if (lineLabel == "numbergenes")
+                C::setNbGenes(getNumber<int>(lineSplited[1]));
+            else if (lineLabel == "proportionalkeeping")
+                P::setProportionalKeeping(getNumber<double>(lineSplited[1]));
+            else
+                throw std::runtime_error("There is an error in file.");
+        }
+
+        file.close();  // Close file
+    }
+    else
+        throw std::runtime_error("Impossible to open file or file doesn't exist!");
+}
+
+template<typename T, typename P, typename C>
+void GA<T, P, C>::readParamsFromFile(const std::string& fileName)
+{
+    readParamsFromFile(fileName.c_str());
 }
 
 #endif // GA_H

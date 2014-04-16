@@ -20,6 +20,7 @@ int main()
         //          \-> third : It's the type of chromosomes used.
         // third : It's the type of chromosomes used.
         SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
+        sGa.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
         //sGa.setElistism(false);
