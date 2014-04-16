@@ -9,7 +9,8 @@
 #include <algorithm>
 #include <limits>
 
-// Function of comparison
+// Declarations
+
 template<typename T>
 bool smallerToHigher(const T& param1, const T& param2);
 
@@ -18,6 +19,9 @@ std::basic_string<T> lowerCase(std::basic_string<T>& s);
 
 template<typename T>
 T getNumber(std::string& s);
+
+
+// Definitions
 
 template<typename T>
 bool smallerToHigher(const T &param1, const T &param2)

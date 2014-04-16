@@ -77,6 +77,11 @@ void RouletteWheel<T, T2, C>::evaluateFitness()
 template<typename T, typename T2, typename C>
 std::pair<C, C> RouletteWheel<T, T2, C>::selectChromosomesPair()
 {
+    // Select 2 chromosomes based on their probability beteween [0, 1] to be selected
+    // It's the principle of roulette wheel, because chromosome with a better fitness
+    // Have larger interval of probability to be selected
+
+    // Select a chromosome mum and a chromosome dad
     std::uniform_real_distribution<float> distribution(0.0, 1.0);
     float probaMum = distribution(generator);
     float probaDad = distribution(generator);
@@ -112,19 +117,22 @@ std::pair<C, C> RouletteWheel<T, T2, C>::selectChromosomesPair()
 template<typename T, typename T2, typename C>
 C RouletteWheel<T, T2, C>::crossOver(std::pair<C, C> parents)
 {
+    // Children Chromosome
     ChromosomeIntInt offspring;
 
-    std::vector<int> offspringGenes;
+    std::vector<int> offspringGenes;    // Children chromosome => will be fill
+    // Get parents genes
     std::vector<int> mumGenes = parents.first.getDatas();
     std::vector<int> dadGenes = parents.second.getDatas();
 
-
+    // According to crossover probability it's the dad or mum that will begin to fill offspring genes
     std::uniform_real_distribution<float> distribution(0.0, 1.0);
     float probaCrossOver = distribution(generator);
 
     if (C::getNbGenes() == 0)
         return offspring;
 
+    // Random number to define on which genes crossover begin
     std::uniform_int_distribution<> distributionInt(0, C::getNbGenes()-1);
     int indexCrossover = distributionInt(generator);
 
@@ -145,6 +153,7 @@ C RouletteWheel<T, T2, C>::crossOver(std::pair<C, C> parents)
             offspringGenes.push_back(mumGenes[i]);
     }
 
+    // Set offspring genes
     offspring.setDatas(offspringGenes);
 
     return offspring;
@@ -156,6 +165,7 @@ std::vector<C> RouletteWheel<T, T2, C>::getBestSolution() const
     if (this->m_chromosomes.empty())
         throw std::runtime_error("Error in process !");
 
+    // Because solutions are sort, the last chromosome is the best
     std::vector< C > bestSolution;
     bestSolution.push_back(this->m_chromosomes[this->m_chromosomes.size()-1]);
     return bestSolution;
@@ -164,6 +174,7 @@ std::vector<C> RouletteWheel<T, T2, C>::getBestSolution() const
 template<typename T, typename T2, typename C>
 void RouletteWheel<T, T2, C>::addKeptChromosomes(std::vector< C > chromosomes)
 {
+    // Fill the population of chromosomes until it's full with chromosomes in parameter
     unsigned int i = 0;
     while (!this->isFull() && i < chromosomes.size())
         this->m_chromosomes.push_back(chromosomes[i]);
@@ -172,8 +183,11 @@ void RouletteWheel<T, T2, C>::addKeptChromosomes(std::vector< C > chromosomes)
 template<typename T, typename T2, typename C>
 std::vector< C > RouletteWheel<T, T2, C>::getKeptChromosomes()
 {
+    // Determine the number of chromosome that will be kept
     int nbChromosomesKeep = this->m_proportionalChromosomesKeep * this->m_nbMaxChromosomes;
 
+    // Create a vector with the previous number of chromosome
+    // Those which have the best fitness (so begin to the end of vector)
     std::vector< C > chromosomesKept;
     for (unsigned int i = 0 ; i < nbChromosomesKeep ; i++)
         chromosomesKept.push_back(this->m_chromosomes[this->m_chromosomes.size()-(1+i)]);

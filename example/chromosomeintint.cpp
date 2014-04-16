@@ -7,6 +7,8 @@ ChromosomeIntInt::ChromosomeIntInt()
 
 bool ChromosomeIntInt::mutate()
 {
+    // Flip bit according to mutate probability
+    // and indicate if there has been a mutation with a flag.
     std::uniform_real_distribution<> distribution(0.0, 1.0);
     bool flag = false;
 
@@ -29,6 +31,7 @@ bool ChromosomeIntInt::mutate()
 
 void ChromosomeIntInt::computeFitness()
 {
+    // Compute the fitness, in this case, it count the number of bit that value is 1
     if (m_fitness.size() != 0)
        m_fitness[0] = std::count(m_datas.begin(), m_datas.end(), 1);
     else

@@ -65,9 +65,10 @@ void SingleObjectiveGA<T, P, C>::runOneGeneration()
 template<typename T, typename P, typename C>
 void SingleObjectiveGA<T, P, C>::initialize()
 {
-    if(this->m_isInitialized)
+    if(this->m_isInitialized)   // already initialized
         return;
 
+    // Generate a random population make step that need to be done before running algorithm
     this->generateRandomPopulation();
     this->m_population->evaluateFitness();
     this->m_currentGeneration = 1;
@@ -77,6 +78,7 @@ void SingleObjectiveGA<T, P, C>::initialize()
 template<typename T, typename P, typename C>
 std::vector<C> SingleObjectiveGA<T, P, C>::performGA()
 {
+    // Run the algorithm if it is initialized, and return the best solution found
     if (!this->m_isInitialized)
         throw std::runtime_error("GA not initialzed !");
 

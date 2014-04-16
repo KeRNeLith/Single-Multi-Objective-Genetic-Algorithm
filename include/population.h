@@ -158,6 +158,7 @@ void Population<T, T2, C>::mutate()
 template<typename T, typename T2, typename C>
 void Population<T, T2, C>::generateRandomChromosomes()
 {
+    // Fill the population until it is full
     while (!isFull())
     {
         C chromosome;
