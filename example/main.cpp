@@ -5,10 +5,12 @@
 
 #include "roulettewheel.h"
 #include "chromosomeintint.h"
+#include "chromosomemintint.h"
 
 int main()
 {
     try {
+        ////////////////// SINGLE OBJECTIVE GA (Roulette Wheel) //////////////////
         // Count the number of one in a serie of bits
         // Return the solution that for a given number of bits have the higher number of bits to 1.
 
@@ -35,12 +37,18 @@ int main()
         int ret = sGa.performGA()[0].getFitness()[0];
         std::cout << "Result : " << ret << std::endl;*/
 
-        NSGAII<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> nsga2;
-        nsga2.readParamsFromFile("params.txt");
-        nsga2.initialize();
-        std::vector<ChromosomeIntInt> results = nsga2.performGA();
 
-        std::cout << std::endl << "Done !" << std::endl;
+        ////////////////// MULTI OBJECTIVE GA (NSGA-II) //////////////////
+        NSGAII<int, RouletteWheel<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
+        nsga2.readParamsFromFile("params.txt");
+
+        // Example of changing parameters to have a specific configuration of the GA used.
+        // Same method, described above, except there isn't function setElitism.
+
+        nsga2.initialize();
+        std::vector<ChromosomeMIntInt> results = nsga2.performGA();
+
+        std::cout << std::endl << "Done... !" << std::endl;
     }
     catch(std::runtime_error& e)
     {

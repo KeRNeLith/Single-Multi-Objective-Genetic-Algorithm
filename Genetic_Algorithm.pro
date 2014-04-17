@@ -13,7 +13,8 @@ SOURCES += example/main.cpp \
     src/singleobjectivega.cpp \
     example/roulettewheel.cpp \
     example/chromosomeintint.cpp \
-    include/nsgaii.cpp
+    include/nsgaii.cpp \
+    example/chromosomemintint.cpp
 
 HEADERS += \
     include/ga.h \
@@ -24,5 +25,6 @@ HEADERS += \
     example/roulettewheel.h \
     example/chromosomeintint.h \
     include/AlgoString.h \
-    include/nsgaii.h
+    include/nsgaii.h \
+    example/chromosomemintint.h
 

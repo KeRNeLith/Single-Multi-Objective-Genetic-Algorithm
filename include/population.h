@@ -73,6 +73,13 @@ public:
     void addChromosome(C chromosome);
 
     /**
+     * @brief addChromosomes Add a vector of Chromosomes to m_chromosomes vector.
+     * @param chromosomes Will be add to m_chromosomes vector.
+     * @param number Number of element that will be added from chromosomes
+     */
+    void addChromosomes(std::vector<C> chromosomes, int number = -1);
+
+    /**
      * @brief isFull Check if the population is completely filled.
      * @return true if the population is full (m_chromosomes.size() >= m_nbMaxChromosomes).
      */
@@ -139,6 +146,17 @@ public:
      * @return Coefficient of proportionnality.
      */
     static double getProportionalKeeping() { return m_proportionalChromosomesKeep; }
+
+    /**
+     * @brief getChromosomes Get the vector storing all chromosomes composing the Population.
+     * @return Vector of chromosomes.
+     */
+    std::vector< C > getChromosomes() { return m_chromosomes; }
+    /**
+     * @brief setChromosomes Set the vector storing all chromosomes composing the Population to those in parameter.
+     * @param chromosomes Vector of chromosomes
+     */
+    void setChromosomes(const std::vector< C > chromosomes) { m_chromosomes = chromosomes; }
 
     /**
      * @brief getBestSolution Best solution found by GA.
@@ -218,7 +236,20 @@ void Population<T, T2, C>::generateRandomChromosomes()
 template<typename T, typename T2, typename C>
 void Population<T, T2, C>::addChromosome(C chromosome)
 {
-    m_chromosomes.push_back(chromosome);
+    if (!isFull())
+        m_chromosomes.push_back(chromosome);
+}
+
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::addChromosomes(std::vector<C> chromosomes, int number)
+{
+    unsigned int limit = number == -1 ? chromosomes.size() : number;
+    int i = 0;
+    while (!isFull() && i < limit)
+    {
+        m_chromosomes.push_back(chromosomes[i]);
+        i++;
+    }
 }
 
 template<typename T, typename T2, typename C>

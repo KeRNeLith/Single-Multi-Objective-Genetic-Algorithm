@@ -20,6 +20,8 @@ std::basic_string<T> lowerCase(std::basic_string<T>& s);
 template<typename T>
 T getNumber(std::string& s);
 
+template<typename T>
+bool crowdingOperator(const T& param1, const T& param2);
 
 // Definitions
 
@@ -42,6 +44,13 @@ T getNumber(std::string& s)
     std::stringstream ss(s);
     T ret;
     return ss >> ret ? ret : std::numeric_limits<T>::max();
+}
+
+template<typename T>
+bool crowdingOperator(const T& param1, const T& param2)
+{
+    return (param1.getRank() < param2.getRank())
+            || ((param1.getRank() == param2.getRank()) && (param1.getDistance() > param2.getDistance()));
 }
 
 // Random number generator

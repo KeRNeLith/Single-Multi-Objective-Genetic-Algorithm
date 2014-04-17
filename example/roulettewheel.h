@@ -149,7 +149,7 @@ template<typename T, typename T2, typename C>
 C RouletteWheel<T, T2, C>::crossOver(std::pair<C, C> parents)
 {
     // Children Chromosome
-    ChromosomeIntInt offspring;
+    C offspring;
 
     std::vector<int> offspringGenes;    // Children chromosome => will be fill
     // Get parents genes
