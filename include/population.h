@@ -24,8 +24,18 @@ protected:
 
     std::vector< C > m_chromosomes;                 ///> Chromosomes composing the population.
 
+    /**
+     * @brief destroy Clear Datas.
+     */
+    virtual void destroy();
+    /**
+     * @brief copy Copy content of other datas.
+     */
+    virtual void copy(const Population& other);
+
 public:
-    Population();
+    Population(const int maxChromosome = -1);
+    Population(const Population& other);
     virtual ~Population();
 
     /**
@@ -135,6 +145,11 @@ public:
      * @return The solution to the problem.
      */
     virtual std::vector< C > getBestSolution() const =0;
+
+    // Operator+ like
+    Population& add(const Population& op);
+    // Operator
+    Population& operator=(const Population& other);
 };
 
 // Init static variables
@@ -150,15 +165,34 @@ double Population<T, T2, C>::m_mutateProbability = 0.04;
 
 
 template<typename T, typename T2, typename C>
-Population<T, T2, C>::Population()
-    : m_nbMaxChromosomes(m_sNbMaxChromosomes)
+Population<T, T2, C>::Population(const int maxChromosome)
+    : m_nbMaxChromosomes(maxChromosome == -1 ? m_sNbMaxChromosomes : maxChromosome)
     , m_chromosomes()
 {
 }
 
 template<typename T, typename T2, typename C>
+Population<T, T2, C>::Population(const Population<T, T2, C>& other)
+{
+    copy(other);
+}
+
+template<typename T, typename T2, typename C>
 Population<T, T2, C>::~Population()
 {
+}
+
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::destroy()
+{
+    m_chromosomes.clear();
+}
+
+template<typename T, typename T2, typename C>
+void Population<T, T2, C>::copy(const Population<T, T2, C>& other)
+{
+    m_nbMaxChromosomes = other.m_nbMaxChromosomes;
+    m_chromosomes = other.m_chromosomes;
 }
 
 template<typename T, typename T2, typename C>
@@ -201,6 +235,27 @@ int Population<T, T2, C>::getCurrentNbChromosomes()
     if (m_chromosomes.empty())
         return 0;
     return m_chromosomes.size();
+}
+
+template<typename T, typename T2, typename C>
+Population<T, T2, C>& Population<T, T2, C>::add(const Population<T, T2, C>& op)
+{
+    this->m_chromosomes.reserve(this->m_chromosomes.size() + op.m_chromosomes.size());
+    this->m_chromosomes.insert(this->m_chromosomes.end(), op.m_chromosomes.begin(), op.m_chromosomes.end());
+    this->m_nbMaxChromosomes += op.m_nbMaxChromosomes;
+
+    return *this;
+}
+
+template<typename T, typename T2, typename C>
+Population<T, T2, C>& Population<T, T2, C>::operator=(const Population<T, T2, C>& other)
+{
+    if(this != dynamic_cast<Population<T, T2, C>*>(&other))
+    {
+        destroy();
+        copy(other);
+    }
+    return *this;
 }
 
 #endif // POPULATION_H

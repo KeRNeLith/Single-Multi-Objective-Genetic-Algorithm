@@ -17,8 +17,12 @@ protected:
     std::vector< T > m_cumulatedFitness;        ///> Store the cumulated fitness
     std::vector< double > m_selectingProba;     ///> Store all probability to be selected by the roulette wheel
 
+    virtual void destroy();
+    virtual void copy(const RouletteWheel<T, T2, C> &other);
+
 public:
-    RouletteWheel();
+    RouletteWheel(const int maxChromosome = -1);
+    RouletteWheel(const RouletteWheel& other);
 
     virtual void evaluateFitness();
     virtual std::pair< C, C > selectChromosomesPair();
@@ -36,14 +40,41 @@ public:
      * @return Vector of chromosomes that must be kept between each generation.
      */
     std::vector< C > getKeptChromosomes();
+
+    // Operator Like
+    RouletteWheel& add(const RouletteWheel& op);
+    // Operator
+    RouletteWheel& operator=(const RouletteWheel& other);
 };
 
 template<typename T, typename T2, typename C>
-RouletteWheel<T, T2, C>::RouletteWheel()
-    : Population<int, int, ChromosomeIntInt>()
+RouletteWheel<T, T2, C>::RouletteWheel(const int maxChromosome)
+    : Population<T, T2, C>(maxChromosome == -1 ? this->m_sNbMaxChromosomes : maxChromosome)
     , m_cumulatedFitness()
     , m_selectingProba()
 {
+}
+
+template<typename T, typename T2, typename C>
+RouletteWheel<T, T2, C>::RouletteWheel(const RouletteWheel& other)
+    : Population<T, T2, C>(other)
+{
+    copy(other);
+}
+
+template<typename T, typename T2, typename C>
+void RouletteWheel<T, T2, C>::destroy()
+{
+    m_cumulatedFitness.clear();
+    m_selectingProba.clear();
+}
+
+template<typename T, typename T2, typename C>
+void RouletteWheel<T, T2, C>::copy(const RouletteWheel<T, T2, C>& other)
+{
+    Population<T, T2, C>::copy(other);
+    m_cumulatedFitness = other.m_cumulatedFitness;
+    m_selectingProba = other.m_selectingProba;
 }
 
 template<typename T, typename T2, typename C>
@@ -192,6 +223,33 @@ std::vector< C > RouletteWheel<T, T2, C>::getKeptChromosomes()
     for (unsigned int i = 0 ; i < nbChromosomesKeep ; i++)
         chromosomesKept.push_back(this->m_chromosomes[this->m_chromosomes.size()-(1+i)]);
     return chromosomesKept;
+}
+
+template<typename T, typename T2, typename C>
+RouletteWheel<T, T2, C>& RouletteWheel<T, T2, C>::add(const RouletteWheel<T, T2, C>& op)
+{
+    Population<T, T2, C>::add(op);
+
+    this->m_cumulatedFitness.reserve(this->m_cumulatedFitness.size() + op.m_cumulatedFitness.size());
+    this->m_selectingProba.reserve(this->m_selectingProba.size() + op.m_selectingProba.size());
+    this->m_cumulatedFitness.insert(this->m_cumulatedFitness.end(), op.m_cumulatedFitness.begin(), op.m_cumulatedFitness.end());
+    this->m_selectingProba.insert(this->m_selectingProba.end(), op.m_selectingProba.begin(), op.m_selectingProba.end());
+
+    evaluateFitness();
+
+    return *this;
+}
+
+template<typename T, typename T2, typename C>
+RouletteWheel<T, T2, C>& RouletteWheel<T, T2, C>::operator=(const RouletteWheel<T, T2, C>& other)
+{
+    if(this != dynamic_cast<const RouletteWheel<T, T2, C>*>(&other))
+    {
+        destroy();
+        copy(other);
+    }
+
+    return *this;
 }
 
 #endif // ROULETTEWHEEL_H
