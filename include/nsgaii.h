@@ -139,7 +139,44 @@ std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
 template<typename T, typename P, typename C>
 void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance)
 {
-    // TODO
+    // Number of solutions in popToAssignCrowdingDistance
+    unsigned int nbSolutions = popToAssignCrowdingDistance->getCurrentNbChromosomes();
+
+    // Initialize distance
+    for (unsigned int i = 0 ; i < nbSolutions ; i++)
+        popToAssignCrowdingDistance->getChromosomes()[i].setDistance(0);
+
+    if (popToAssignCrowdingDistance->getChromosomes().empty())
+        return;
+
+    Ascending<C> comparator;    // Comaparator using to sort on ascending order each objectives
+    unsigned int nbObjective = popToAssignCrowdingDistance->getChromosomes()[0].getNbObjective();
+    for (unsigned int m = 0 ; m < nbObjective ; m++)
+    {
+        // Sort using each objective value
+        comparator.index = m;
+        std::sort(popToAssignCrowdingDistance->getChromosomes().begin(),
+                  popToAssignCrowdingDistance->getChromosomes().end(),
+                  comparator);
+
+        // Assigne value min and max of fitness for the objective m
+        T minFitnessValue, maxFitnessValue;
+        minFitnessValue = popToAssignCrowdingDistance->getChromosomes()[0].getFitness()[m];
+        maxFitnessValue = popToAssignCrowdingDistance->getChromosomes()[nbSolutions-1].getFitness()[m];
+
+        // So that boundary point are always selected
+        // Extremes chromosomes of the vector are initialized with an infinite distance
+        popToAssignCrowdingDistance->getChromosomes()[0].setDistance(std::numeric_limits<double>::max());
+        popToAssignCrowdingDistance->getChromosomes()[nbSolutions-1].setDistance(std::numeric_limits<double>::max());
+
+        // For all other points
+        for (unsigned int i = 1 ; i < nbSolutions-2 ; i++)
+            popToAssignCrowdingDistance->getChromosomes()[i].setDistance(
+                                                                         popToAssignCrowdingDistance->getChromosomes()[i].getDistance()
+                                                                         + (popToAssignCrowdingDistance->getChromosomes()[i+1].getFitness()[m] - popToAssignCrowdingDistance->getChromosomes()[i-1].getFitness()[m])
+                                                                         / (maxFitnessValue - minFitnessValue)
+                                                                         );
+    }
 }
 
 template<typename T, typename P, typename C>

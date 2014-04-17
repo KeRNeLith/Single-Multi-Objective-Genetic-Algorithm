@@ -23,6 +23,17 @@ T getNumber(std::string& s);
 template<typename T>
 bool crowdingOperator(const T& param1, const T& param2);
 
+template<typename T>
+class Ascending
+{
+public:
+    int index;
+    bool operator()(const T& param1, const T& param2) const
+    {
+        return param1.getFitness()[index] < param2.getFitness()[index];
+    }
+};
+
 // Definitions
 
 template<typename T>

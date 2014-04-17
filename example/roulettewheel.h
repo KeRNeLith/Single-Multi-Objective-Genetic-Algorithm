@@ -65,6 +65,7 @@ RouletteWheel<T, T2, C>::RouletteWheel(const RouletteWheel& other)
 template<typename T, typename T2, typename C>
 void RouletteWheel<T, T2, C>::destroy()
 {
+    Population<T, T2, C>::destroy();
     m_cumulatedFitness.clear();
     m_selectingProba.clear();
 }

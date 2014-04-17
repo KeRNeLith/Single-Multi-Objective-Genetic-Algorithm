@@ -18,10 +18,16 @@ public:
     virtual void generateRandomChromosome();
 
     /**
-     * @brief getDistance Crowding distance of the chromosome.
+     * @brief getDistance Get crowding distance of the chromosome.
      * @return Crowding distance.
      */
     virtual double getDistance() const { return m_crowdingDistance; }
+    /**
+     * @brief setDistance Set crowding distance of the chromosome.
+     * @param dist Crowding distance.
+     */
+    virtual void setDistance(const double dist) { m_crowdingDistance = dist; }
+
     /**
      * @brief getRank Rank of the chromosome.
      * @return Rank

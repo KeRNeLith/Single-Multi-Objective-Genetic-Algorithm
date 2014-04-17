@@ -42,6 +42,12 @@ public:
     virtual std::vector < T > getFitness() const { return m_fitness; }
 
     /**
+     * @brief getNbObjective Get the number of objective.
+     * @return Number of Objective.
+     */
+    virtual unsigned int getNbObjective() const { return m_fitness.size(); }
+
+    /**
      * @brief getDatas Allow to get all genes of the chromosome.
      * @return Genes's vector of the chromosome.
      */

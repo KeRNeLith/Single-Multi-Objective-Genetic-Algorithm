@@ -4,6 +4,7 @@
 #include "nsgaii.h"
 
 #include "roulettewheel.h"
+#include "tournamentm.h"
 #include "chromosomeintint.h"
 #include "chromosomemintint.h"
 
@@ -39,7 +40,7 @@ int main()
 
 
         ////////////////// MULTI OBJECTIVE GA (NSGA-II) //////////////////
-        NSGAII<int, RouletteWheel<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
+        NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
         nsga2.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
