@@ -1,7 +1,9 @@
 #ifndef CHROMOSOMEMINTINT_H
 #define CHROMOSOMEMINTINT_H
 
+#include "General.h"
 #include "chromosome.h"
+#include "population.h"
 
 class ChromosomeMIntInt
         : public Chromosome<int, int>

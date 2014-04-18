@@ -1,8 +1,6 @@
 #ifndef CHROMOSOMEINTINT_H
 #define CHROMOSOMEINTINT_H
 
-#include <string>
-
 #include "General.h"
 #include "chromosome.h"
 #include "population.h"
