@@ -38,7 +38,6 @@ int main()
         int ret = sGa.performGA()[0].getFitness()[0];
         std::cout << "Result : " << ret << std::endl;*/
 
-
         ////////////////// MULTI OBJECTIVE GA (NSGA-II) //////////////////
         NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
         nsga2.readParamsFromFile("params.txt");

@@ -11,9 +11,9 @@ SOURCES += example/main.cpp \
     src/chromosome.cpp \
     src/population.cpp \
     src/singleobjectivega.cpp \
+    src/nsgaii.cpp \
     example/roulettewheel.cpp \
     example/chromosomeintint.cpp \
-    include/nsgaii.cpp \
     example/chromosomemintint.cpp \
     example/tournamentm.cpp
 

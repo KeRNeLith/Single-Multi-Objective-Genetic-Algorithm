@@ -34,6 +34,9 @@ public:
     }
 };
 
+template<typename T>
+bool emptyPopulation(const T& param);
+
 // Definitions
 
 template<typename T>
@@ -62,6 +65,12 @@ bool crowdingOperator(const T& param1, const T& param2)
 {
     return (param1.getRank() < param2.getRank())
             || ((param1.getRank() == param2.getRank()) && (param1.getDistance() > param2.getDistance()));
+}
+
+template<typename T>
+bool emptyPopulation(const T& param)
+{
+    return param.getCurrentNbChromosomes() != 0;
 }
 
 // Random number generator

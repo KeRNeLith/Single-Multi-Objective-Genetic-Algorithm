@@ -37,6 +37,8 @@ protected:
      */
     virtual void crowdingDistanceAssignement(P* popToAssignCrowdingDistance);
 
+    virtual void addChromosomeWithoutControl(P* pop, const C& chromosome);
+
 public:
     NSGAII();
     virtual ~NSGAII();
@@ -68,6 +70,7 @@ void NSGAII<T, P, C>::releaseMemory()
     m_offspring = nullptr;
 }
 
+#include <iostream>
 template<typename T, typename P, typename C>
 void NSGAII<T, P, C>::runOneGeneration()
 {
@@ -76,6 +79,9 @@ void NSGAII<T, P, C>::runOneGeneration()
 
     // Determine all non dominated fronts
     std::vector < P > fronts = fastNonDominatedSort(this->m_population);
+    std::cout << "pop size : " << this->m_population->getCurrentNbChromosomes() << std::endl
+                << "pop max : " << this->m_population->getNbMaxChromosomes() << std::endl
+                << "size fronts : " << fronts.size() << std::endl << std::endl;
 
     // Secure check if it's not empty (should never arrived)
     if (fronts.empty())
@@ -86,6 +92,13 @@ void NSGAII<T, P, C>::runOneGeneration()
 
     P* newParents = new P;  // Future population
     int i = 0;              // Index front
+
+    std::cout << "newParents size : " << newParents->getCurrentNbChromosomes()<<std::endl
+              << "newParents max : " << newParents->getNbMaxChromosomes() <<std::endl
+              << "front0 size : " << fronts[i].getCurrentNbChromosomes()<<std::endl
+              << "front0 max : " << fronts[i].getNbMaxChromosomes()<<std::endl
+              << "condition loop : " << (newParents->getCurrentNbChromosomes() + fronts[i].getCurrentNbChromosomes() <= newParents->getNbMaxChromosomes() ? "true" : "false") << std::endl;
+
     // Until the population is filled
     while (newParents->getCurrentNbChromosomes() + fronts[i].getCurrentNbChromosomes() <= newParents->getNbMaxChromosomes())
     {
@@ -132,8 +145,70 @@ P* NSGAII<T, P, C>::breeding()
 template<typename T, typename P, typename C>
 std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
 {
-    // TODO
-    return std::vector<P>();
+    std::cout << "'fastNonDominatedSort' : size popToSort " << popToSort->getCurrentNbChromosomes() << std::endl;
+    std::cout << "'fastNonDominatedSort' : max popToSort " << popToSort->getNbMaxChromosomes() << std::endl;
+
+    // Will contain all fronts
+    std::vector< P > fronts;
+
+    P* front1 = new P;
+    // Determine first front
+    for (unsigned int p = 0 ; p < popToSort->getCurrentNbChromosomes() ; p++)
+    {
+        // Sp = void | np = 0
+        popToSort->getChromosomes()[p].resetDominance();
+        for (unsigned int q = 0 ; q < popToSort->getCurrentNbChromosomes() ; q++ )
+        {
+            if (popToSort->getChromosomes()[p].dominates(popToSort->getChromosomes()[q]))       // p dominates q
+                popToSort->getChromosomes()[p].addDominatedSolution(popToSort->getChromosomes()[q]);    // Add q to the set of solutions dominated by p
+            else if (popToSort->getChromosomes()[q].dominates(popToSort->getChromosomes()[p]))  // q dominates p
+                popToSort->getChromosomes()[p].setNbSolutionDominatesMe(popToSort->getChromosomes()[p].getNbSolutionDominatesMe()+1);   // domination counter ++
+        }
+
+        // p belongs to the first front
+        if (popToSort->getChromosomes()[p].getNbSolutionDominatesMe() == 0)
+        {
+            popToSort->getChromosomes()[p].setRank(1);
+            addChromosomeWithoutControl(front1, popToSort->getChromosomes()[p]);
+        }
+    }
+    fronts.push_back(*front1);
+    delete front1;
+
+    std::cout << "'fastNonDominatedSort' : size fronts (after f1 determine) " << fronts.size() << std::endl;
+    std::cout << "'fastNonDominatedSort' : size front1 " << fronts[0].getCurrentNbChromosomes() << std::endl<< std::endl;
+
+    // Determine other fronts
+    int i = 0; // Initialize front counter
+    P* Q = new P;
+    while (fronts[i].getCurrentNbChromosomes() != 0)
+    {
+        Q->reset();
+        for (unsigned int p = 0 ; p < fronts[i].getCurrentNbChromosomes() ; p++)
+        {
+            for (unsigned int q = 0 ; q < fronts[i].getChromosomes()[p].getDominatedSolution().size() ; q++)
+            {
+                // nq = nq - 1
+                fronts[i].getChromosomes()[p].getDominatedSolution()[q].setNbSolutionDominatesMe(fronts[i].getChromosomes()[p].getDominatedSolution()[q].getNbSolutionDominatesMe()-1);
+                if (fronts[i].getChromosomes()[p].getDominatedSolution()[q].getNbSolutionDominatesMe() == 0)    // q belongs to the next front
+                {
+                    fronts[i].getChromosomes()[p].getDominatedSolution()[q].setRank(i+1);   // qrank = i + 1
+                    addChromosomeWithoutControl(Q, fronts[i].getChromosomes()[p]);          // add chromosome to Q
+                }
+            }
+        }
+        i++;
+        fronts.push_back(*Q);
+    }
+    // Delete last front created because it is empty.
+    fronts.erase(fronts.end());
+
+    // TO REMOVE
+    std::cout << "'fastNonDominatedSort' : size fronts " << fronts.size() << std::endl;
+    for (int j = 0 ; j < fronts.size() ; j++)
+        std::cout << "front " << j << " : size : " << fronts[j].getCurrentNbChromosomes() << std::endl;
+
+    return fronts;
 }
 
 template<typename T, typename P, typename C>
@@ -177,6 +252,14 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
                                                                          / (maxFitnessValue - minFitnessValue)
                                                                          );
     }
+}
+
+template<typename T, typename P, typename C>
+void NSGAII<T, P, C>::addChromosomeWithoutControl(P* pop, const C& chromosome)
+{
+    if (pop->isFull())
+        pop->setNbMaxChromosomes(pop->getNbMaxChromosomes()+1);
+    pop->addChromosome(chromosome);
 }
 
 template<typename T, typename P, typename C>

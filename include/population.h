@@ -70,20 +70,25 @@ public:
      * @brief addChromosome Add a Chromosome to m_chromosomes vector.
      * @param chromosome Will be add to m_chromosomes vector.
      */
-    void addChromosome(C chromosome);
+    virtual void addChromosome(const C& chromosome);
 
     /**
      * @brief addChromosomes Add a vector of Chromosomes to m_chromosomes vector.
      * @param chromosomes Will be add to m_chromosomes vector.
      * @param number Number of element that will be added from chromosomes
      */
-    void addChromosomes(std::vector<C> chromosomes, int number = -1);
+    virtual void addChromosomes(std::vector<C> chromosomes, int number = -1);
 
     /**
      * @brief isFull Check if the population is completely filled.
      * @return true if the population is full (m_chromosomes.size() >= m_nbMaxChromosomes).
      */
-    bool isFull();
+    virtual bool isFull();
+
+    /**
+     * @brief reset Reset a population.
+     */
+    virtual void reset();
 
     ////////////// Accessors/Setters //////////////
     /**
@@ -112,7 +117,7 @@ public:
      * @brief getCurrentNbChromosomes Get the current number of chromosomes in the population.
      * @return Number of members currently in the population.
      */
-    int getCurrentNbChromosomes();
+    int getCurrentNbChromosomes() const;
 
     /**
      * @brief setCrossOverProbability Set the probability to crossover.
@@ -234,7 +239,7 @@ void Population<T, T2, C>::generateRandomChromosomes()
 }
 
 template<typename T, typename T2, typename C>
-void Population<T, T2, C>::addChromosome(C chromosome)
+void Population<T, T2, C>::addChromosome(const C &chromosome)
 {
     if (!isFull())
         m_chromosomes.push_back(chromosome);
@@ -261,7 +266,14 @@ bool Population<T, T2, C>::isFull()
 }
 
 template<typename T, typename T2, typename C>
-int Population<T, T2, C>::getCurrentNbChromosomes()
+void Population<T, T2, C>::reset()
+{
+    m_chromosomes.clear();
+    m_nbMaxChromosomes = m_sNbMaxChromosomes;
+}
+
+template<typename T, typename T2, typename C>
+int Population<T, T2, C>::getCurrentNbChromosomes() const
 {
     if (m_chromosomes.empty())
         return 0;
