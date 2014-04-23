@@ -86,7 +86,7 @@ void RouletteWheel<T, T2, C>::evaluateFitness()
 
     // Sort chromosomes to have m_chromosomes[0] with the lower fitness
     // and m_chromosomes[m_chromosomes.size()] with the hightest
-    std::sort(this->m_chromosomes.begin(), this->m_chromosomes.end(), smallerToHigher<C>);
+    std::sort(this->m_chromosomes.begin(), this->m_chromosomes.end(), less<C>);
 
 
     if (this->m_chromosomes.empty())

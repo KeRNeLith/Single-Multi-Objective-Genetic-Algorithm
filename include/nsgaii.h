@@ -175,7 +175,6 @@ std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
     fronts.push_back(*front1);
     delete front1;
 
-    std::cout << "'fastNonDominatedSort' : size fronts (after f1 determine) " << fronts.size() << std::endl;
     std::cout << "'fastNonDominatedSort' : size front1 " << fronts[0].getCurrentNbChromosomes() << std::endl<< std::endl;
 
     // Determine other fronts

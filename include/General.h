@@ -12,7 +12,7 @@
 // Declarations
 
 template<typename T>
-bool smallerToHigher(const T& param1, const T& param2);
+bool less(const T& param1, const T& param2);
 
 template<typename T>
 std::basic_string<T> lowerCase(std::basic_string<T>& s);
@@ -40,7 +40,7 @@ bool emptyPopulation(const T& param);
 // Definitions
 
 template<typename T>
-bool smallerToHigher(const T &param1, const T &param2)
+bool less(const T &param1, const T &param2)
 {
     return param1 < param2;
 }
