@@ -71,6 +71,7 @@ public:
 
     // Operator
     bool operator<(const Chromosome<T, T2>& chromosome) const { return m_fitness < chromosome.m_fitness; }
+    bool operator ==(const Chromosome<T, T2>& chromosome) const { return m_fitness == chromosome.m_fitness && m_datas == chromosome.m_datas; }
 };
 
 template<typename T, typename T2>

@@ -67,7 +67,12 @@ bool ChromosomeMIntInt::mutate()
 
 void ChromosomeMIntInt::computeFitness()
 {
+    m_fitness.clear();
 
+    // TO TEST
+    std::uniform_int_distribution<> distribution(0, 100);
+    for (int i = 0 ; i < 3 ; i++)
+        this->m_fitness.push_back(distribution(generator));
 }
 
 void ChromosomeMIntInt::generateRandomChromosome()
