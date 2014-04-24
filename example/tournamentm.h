@@ -65,20 +65,13 @@ void TournamentM<T, T2, C>::copy(const TournamentM<T, T2, C> &other)
 template<typename T, typename T2, typename C>
 C TournamentM<T, T2, C>::selectOneChromosome()
 {
-    int nbSolutions;
-    if (this->m_nbMaxChromosomes != 0)
-        nbSolutions = this->m_nbMaxChromosomes;
-    else
-        nbSolutions = this->m_sNbMaxChromosomes;
-
-    std::uniform_int_distribution<> distributionPoolSize(2, nbSolutions);
+    std::uniform_int_distribution<> distributionPoolSize(2, this->m_nbMaxChromosomes);
     int poolSize = distributionPoolSize(generator);
     int proba[poolSize];
 
-    std::uniform_int_distribution<> distribution(0, nbSolutions);
+    std::uniform_int_distribution<> distribution(0, this->m_nbMaxChromosomes-1);
 
     int counter = 0;
-    //double max_value = 0.0;
     bool equalIndex = false;
     do{
         // Generate random Index (different of of each other index already selected)
@@ -99,7 +92,6 @@ C TournamentM<T, T2, C>::selectOneChromosome()
 
     } while(counter != poolSize);
 
-
     C chromosome = this->m_chromosomes[proba[0]];
     for (int i = 0 ; i < poolSize ; i++)
     {
@@ -108,7 +100,7 @@ C TournamentM<T, T2, C>::selectOneChromosome()
             chromosome = this->m_chromosomes[proba[i]];
     }
 
-   return chromosome;
+    return chromosome;
 }
 
 template<typename T, typename T2, typename C>

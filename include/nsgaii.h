@@ -1,6 +1,8 @@
 #ifndef NSGAII_H
 #define NSGAII_H
 
+#include <iostream>
+
 #include "ga.h"
 
 template<typename T, typename P, typename C>
@@ -80,7 +82,6 @@ void NSGAII<T, P, C>::releaseMemory()
     m_offspring = nullptr;
 }
 
-#include <iostream>
 template<typename T, typename P, typename C>
 void NSGAII<T, P, C>::runOneGeneration()
 {
@@ -139,16 +140,16 @@ void NSGAII<T, P, C>::runOneGeneration()
 template<typename T, typename P, typename C>
 P* NSGAII<T, P, C>::breeding()
 {
-    // TODO
     P* newPop = new P;
-    newPop->generateRandomChromosomes();
-    /*while (!newPop->isFull())
+
+    while (!newPop->isFull())
     {
         C chromosome = this->m_population->crossOver(this->m_population->selectChromosomesPair());
         newPop->addChromosome(chromosome);
     }
+
     newPop->mutate();
-    newPop->evaluateFitness();*/
+    newPop->evaluateFitness();
 
     return newPop;
 }
@@ -223,15 +224,15 @@ std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
 template<typename T, typename P, typename C>
 void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance)
 {
+    if (popToAssignCrowdingDistance->getChromosomes().empty())
+        return;
+
     // Number of solutions in popToAssignCrowdingDistance
     unsigned int nbSolutions = popToAssignCrowdingDistance->getCurrentNbChromosomes();
 
     // Initialize distance
     for (unsigned int i = 0 ; i < nbSolutions ; i++)
         popToAssignCrowdingDistance->getChromosomes()[i].setDistance(0);
-
-    if (popToAssignCrowdingDistance->getChromosomes().empty())
-        return;
 
     Ascending<C> comparator;    // Comparator using to sort on ascending order each objectives
     unsigned int nbObjective = popToAssignCrowdingDistance->getChromosomes()[0].getNbObjective();
@@ -245,10 +246,23 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
                   chromosomes.end(),
                   comparator);
 
-        // Assigne value min and max of fitness for the objective m
-        T minFitnessValue, maxFitnessValue;
-        minFitnessValue = chromosomes[0].getFitness()[m];
-        maxFitnessValue = chromosomes[nbSolutions-1].getFitness()[m];
+        // Assigne value of max minus min of fitness for the objective m
+        T maxMinusMinFitness = chromosomes[nbSolutions-1].getFitness()[m] - chromosomes[0].getFitness()[m];
+
+        if (maxMinusMinFitness == 0) // Little cheat to prevent division by 0
+            maxMinusMinFitness = 0.000000001;
+        if (chromosomes.size() == 1) // Little cheat to prevent out of range access
+        {
+            double distance =   chromosomes[0].getDistance()
+                                + (chromosomes[0].getFitness()[m] - chromosomes[0].getFitness()[m])
+                                / (double)(maxMinusMinFitness);
+
+            chromosomes[0].setDistance(distance);
+
+            // Reaffect chromosomes to the population
+            popToAssignCrowdingDistance->setChromosomes(chromosomes);
+            continue;
+        }
 
         // So that boundary point are always selected
         // Extremes chromosomes of the vector are initialized with an infinite distance
@@ -260,7 +274,7 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
         {
             double distance =   chromosomes[i].getDistance()
                                 + (chromosomes[i+1].getFitness()[m] - chromosomes[i-1].getFitness()[m])
-                                / (double)(maxFitnessValue - minFitnessValue);
+                                / (double)(maxMinusMinFitness);
 
             chromosomes[i].setDistance(distance);
         }
@@ -298,7 +312,6 @@ void NSGAII<T, P, C>::displayAdvancement()
 template<typename T, typename P, typename C>
 void NSGAII<T, P, C>::initialize()
 {
-    // TODO
     if(this->m_isInitialized)   // already initialized
         return;
 
@@ -310,8 +323,7 @@ void NSGAII<T, P, C>::initialize()
     this->m_population->evaluateFitness();
 
     // Create offspring of the random population
-    this->m_offspring = new P;
-    this->m_offspring->generateRandomChromosomes(); // TO CHANGE
+    this->m_offspring = breeding();
     this->m_offspring->evaluateFitness();
 
     this->m_currentGeneration = 1;
