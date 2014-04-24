@@ -70,7 +70,7 @@ bool crowdingOperator(const T& param1, const T& param2)
 template<typename T>
 bool emptyPopulation(const T& param)
 {
-    return param.getCurrentNbChromosomes() != 0;
+    return param.getCurrentNbChromosomes() == 0;
 }
 
 // Random number generator

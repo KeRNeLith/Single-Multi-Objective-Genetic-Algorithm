@@ -11,7 +11,7 @@ class ChromosomeMIntInt
 protected:
     double m_crowdingDistance;                          ///> Crowding distance (to measure how solutions are crowed).
     int m_rank;                                         ///> Rank of the solution (or front).
-    std::vector<ChromosomeMIntInt> m_dominatedSolutions;///> Solution dominated by this one.
+    std::vector<ChromosomeMIntInt*> m_dominatedSolutions;///> Solution dominated by this one.
     int m_nbSolutionDominatesMe;                        ///> Number of solutions that dominates this solution.
 
 public:
@@ -58,13 +58,13 @@ public:
      * @brief getDominatedSolution Solutions dominated by this chromosome.
      * @return Vector of solutions dominated by this chromosome.
      */
-    virtual std::vector<ChromosomeMIntInt> getDominatedSolution() { return m_dominatedSolutions; }
+    virtual std::vector<ChromosomeMIntInt*> getDominatedSolution() { return m_dominatedSolutions; }
 
     /**
      * @brief addDominatedSolution Add a Chromosome to the vector of solutions dominated.
      * @param other Chromosome to add.
      */
-    virtual void addDominatedSolution(const ChromosomeMIntInt& other);
+    virtual void addDominatedSolution(ChromosomeMIntInt *other);
 
     /**
      * @brief setNbSolutionDominatesMe Set the number of solutions that dominates this one.

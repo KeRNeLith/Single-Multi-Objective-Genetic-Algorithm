@@ -42,7 +42,7 @@ protected:
      * @param pop Population that we want to add Chromosome.
      * @param chromosome Chromosome to add.
      */
-    virtual void addChromosomeWithoutControl(P* pop, const C& chromosome);
+    virtual void addChromosomeWithoutControl(P* pop, C* chromosome);
 
 public:
     NSGAII();
@@ -82,20 +82,10 @@ void NSGAII<T, P, C>::runOneGeneration()
     // Combine parent and offsprings population
     this->m_population->add(*m_offspring);
 
-    // TO REMOVE
-    /*for (unsigned int i = 0 ; i < this->m_population->getCurrentNbChromosomes() ; i++)
-        std::cout << "chromosome " << i << " : nb objective : "<<  this->m_population->getChromosomes()[i].getFitness().size() << std::endl;
-    std::cout << "Last chromosome " << " : objectives :";
-    for (unsigned int i = 0 ; i < this->m_population->getChromosomes()[this->m_population->getCurrentNbChromosomes()-1].getFitness().size() ; i++)
-        std::cout << " " <<  this->m_population->getChromosomes()[this->m_population->getCurrentNbChromosomes()-1].getFitness()[i];
-    std::cout << std::endl;*/
-    // TO REMOVE
-
     // Determine all non dominated fronts
     std::vector < P > fronts = fastNonDominatedSort(this->m_population);
-    /*std::cout /*<< "pop size : " << this->m_population->getCurrentNbChromosomes() << std::endl
-                << "pop max : " << this->m_population->getNbMaxChromosomes() << std::endl
-                *//*<< "size fronts : " << fronts.size() << std::endl << std::endl;*/
+
+    std::cout << "size fronts : " << fronts.size() << std::endl << std::endl;
 
     // Secure check if it's not empty (should never arrived)
     if (fronts.empty())
@@ -176,7 +166,7 @@ std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
                 continue;
 
             if (chromosomes[p].dominates(chromosomes[q]))       // p dominates q
-                chromosomes[p].addDominatedSolution(chromosomes[q]);    // Sp = Sp U {p}
+                chromosomes[p].addDominatedSolution(&chromosomes[q]);    // Sp = Sp U {p}
             else if (chromosomes[q].dominates(chromosomes[p]))  // q dominates p
                 chromosomes[p].setNbSolutionDominatesMe(chromosomes[p].getNbSolutionDominatesMe()+1);   // np + 1
         }
@@ -185,22 +175,13 @@ std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
         if (chromosomes[p].getNbSolutionDominatesMe() == 0)
         {
             chromosomes[p].setRank(0);
-            addChromosomeWithoutControl(front1, chromosomes[p]);
+            addChromosomeWithoutControl(front1, &chromosomes[p]);
         }
     }
     fronts.push_back(*front1);
     delete front1;
     // Reaffect chromosomes to the population to sort
     popToSort->setChromosomes(chromosomes);
-
-
-
-    std::cout << "Size " <<fronts[0].getCurrentNbChromosomes() << " => rank front 1 :"<< std::endl;
-    for(unsigned int i = 0 ; i < fronts[0].getCurrentNbChromosomes() ; i++)
-        std::cout << " " << fronts[0].getChromosomes()[i].getRank();
-    std::cout <<std::endl<<std::endl<<std::endl;
-
-    //std::cout << "'fastNonDominatedSort' : size front1 " << fronts[0].getCurrentNbChromosomes() << std::endl<< std::endl;
 
     // Determine other fronts
     int i = 0; // Initialize front counter
@@ -212,39 +193,22 @@ std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
         {
             for (unsigned int q = 0 ; q < fronts[i].getChromosomes()[p].getDominatedSolution().size() ; q++)
             {
-                //std::cout << "loop on front "<<i<<" chromosome "<<p<<"/" << fronts[i].getCurrentNbChromosomes()-1<<" : "<<q<<"/"<< frontiChromosomes[p].getDominatedSolution().size()-1 << std::endl;
-                // nq = nq - 1
-                int nq = fronts[i].getChromosomes()[p].getDominatedSolution()[q].getNbSolutionDominatesMe();
-                /*std::cout << "n avant = "<< nq<<std::endl;
-                nq -=1;
-                std::cout << "je pige rien n vaut : "<<nq<<std::endl;*/
-                fronts[i].getChromosomes()[p].getDominatedSolution()[q].setNbSolutionDominatesMe(nq-1);
-
-                std::cout << "n = "<< fronts[i].getChromosomes()[p].getDominatedSolution()[q].getNbSolutionDominatesMe()<<std::endl;
-
-                if (fronts[i].getChromosomes()[p].getDominatedSolution()[q].getNbSolutionDominatesMe() == 0)    // q belongs to the next front, nq = 0
+                int nq = fronts[i].getChromosomes()[p].getDominatedSolution()[q]->getNbSolutionDominatesMe();
+                fronts[i].getChromosomes()[p].getDominatedSolution()[q]->setNbSolutionDominatesMe(nq-1);
+                if (fronts[i].getChromosomes()[p].getDominatedSolution()[q]->getNbSolutionDominatesMe() == 0)    // q belongs to the next front, nq = 0
                 {
-                    std::cout << "n ds if = "<< fronts[i].getChromosomes()[p].getDominatedSolution()[q].getNbSolutionDominatesMe()<< " solution q= " <<q<<std::endl;
-                    fronts[i].getChromosomes()[p].getDominatedSolution()[q].setRank(i+1);   // qrank = i + 1
+                    fronts[i].getChromosomes()[p].getDominatedSolution()[q]->setRank(i+1);   // qrank = i + 1
                     addChromosomeWithoutControl(Q, fronts[i].getChromosomes()[p].getDominatedSolution()[q]);    // Q = Q U {q}
                 }
             }
         }
         i++;
         fronts.push_back(*Q);
-        //TO REMOVE
-        std::cout << "LOOP => "<<i-1<<" "<<std::endl;
-        for (unsigned int k = 0 ; k < fronts.size() ; k++)
-        {
-            std::cout << "Size " << fronts[k].getCurrentNbChromosomes() << " => rank front " <<k<<" :"<< std::endl<<"[";
-            for(unsigned int j = 0 ; j < fronts[k].getCurrentNbChromosomes() ; j++)
-                std::cout << " " << fronts[k].getChromosomes()[j].getRank();
-            std::cout<< "]"<<std::endl<<std::endl;
-        }
-        std::cout <<std::endl<<std::endl<<std::endl;
     }
-    // Delete last front created because it is empty.
-    //fronts.erase(fronts.end());
+    // Delete fronts created if it is empty.
+    auto removeEnd = std::remove_if(fronts.begin(), fronts.end(), emptyPopulation<P>);
+    if (removeEnd != fronts.end())
+        fronts.erase(removeEnd, fronts.end());
 
     return fronts;
 }
@@ -293,11 +257,11 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
 }
 
 template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::addChromosomeWithoutControl(P* pop, const C& chromosome)
+void NSGAII<T, P, C>::addChromosomeWithoutControl(P* pop, C* chromosome)
 {
     if (pop->isFull())
         pop->setNbMaxChromosomes(pop->getNbMaxChromosomes()+1);
-    pop->addChromosome(chromosome);
+    pop->addChromosome(*chromosome);
 }
 
 template<typename T, typename P, typename C>

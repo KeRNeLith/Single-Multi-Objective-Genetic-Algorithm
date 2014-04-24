@@ -83,7 +83,7 @@ void ChromosomeMIntInt::generateRandomChromosome()
         m_datas.push_back(distribution(generator));
 }
 
-void ChromosomeMIntInt::addDominatedSolution(const ChromosomeMIntInt& other)
+void ChromosomeMIntInt::addDominatedSolution(ChromosomeMIntInt* other)
 {
     m_dominatedSolutions.push_back(other);
 }
