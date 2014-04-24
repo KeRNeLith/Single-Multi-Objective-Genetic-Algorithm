@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-SET ( EXECUTABLE geneticAlgo )
+SET ( EXECUTABLE geneticAlgorithm )
 
 #This is for heterogenous groups
 #add_definitions(-D_HETERO_)

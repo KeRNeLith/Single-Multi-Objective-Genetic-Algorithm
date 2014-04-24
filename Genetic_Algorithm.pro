@@ -4,7 +4,10 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
 
-INCLUDEPATH +=  ./include
+DESTDIR = $$_PRO_FILE_PWD_/build
+
+INCLUDEPATH +=  ./include \
+                ./example
 
 SOURCES += example/main.cpp \
     src/ga.cpp \
