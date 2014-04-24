@@ -1,6 +1,8 @@
 #ifndef SINGLEOBJECTIVEGA_H
 #define SINGLEOBJECTIVEGA_H
 
+#include <iostream>
+
 #include "ga.h"
 
 template<typename T, typename P, typename C>
@@ -59,6 +61,21 @@ void SingleObjectiveGA<T, P, C>::runOneGeneration()
     newPop->evaluateFitness();
     delete this->m_population;
     this->m_population = newPop;
+
+    // Only for Display
+    const int nbSymbols = 40;
+    double advancement = this->m_currentGeneration / (double)this->m_nbGenerationsWanted;
+    double nbSymbolsToDraw = nbSymbols * advancement;
+    std::cout << "\r" << "[";
+    for (int i = 0 ; i < nbSymbols ; i++)
+    {
+        if (i <= nbSymbolsToDraw)
+            std::cout << "=";
+        else
+            std::cout << " ";
+    }
+    std::cout << "]" << "\t" << advancement*100 << "%";
+
     this->m_currentGeneration++;
 }
 

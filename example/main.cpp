@@ -22,7 +22,7 @@ int main()
         //          \-> second : It's the type of data used the chromosomes.
         //          \-> third : It's the type of chromosomes used.
         // third : It's the type of chromosomes used.
-        /*SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
+        SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
         sGa.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
@@ -36,17 +36,17 @@ int main()
 
         sGa.initialize();
         int ret = sGa.performGA()[0].getFitness()[0];
-        std::cout << "Result : " << ret << std::endl;*/
+        std::cout << std::endl << "Result : " << ret << std::endl;
 
         ////////////////// MULTI OBJECTIVE GA (NSGA-II) //////////////////
-        NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
+        /*NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
         nsga2.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
         // Same method, described above, except there isn't function setElitism.
 
         nsga2.initialize();
-        std::vector<ChromosomeMIntInt> results = nsga2.performGA();
+        std::vector<ChromosomeMIntInt> results = nsga2.performGA();*/
 
         std::cout << std::endl << "Done... !" << std::endl;
     }
