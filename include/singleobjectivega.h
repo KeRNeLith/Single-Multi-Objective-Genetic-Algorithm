@@ -20,6 +20,11 @@ protected:
      */
     virtual void runOneGeneration();
 
+    /**
+     * @brief displayAdvancement Display in the console advancement of the algorithm.
+     */
+    virtual void displayAdvancement();
+
 public:
     SingleObjectiveGA();
 
@@ -63,18 +68,7 @@ void SingleObjectiveGA<T, P, C>::runOneGeneration()
     this->m_population = newPop;
 
     // Only for Display
-    const int nbSymbols = 40;
-    double advancement = this->m_currentGeneration / (double)this->m_nbGenerationsWanted;
-    double nbSymbolsToDraw = nbSymbols * advancement;
-    std::cout << "\r" << "[";
-    for (int i = 0 ; i < nbSymbols ; i++)
-    {
-        if (i <= nbSymbolsToDraw)
-            std::cout << "=";
-        else
-            std::cout << " ";
-    }
-    std::cout << "]" << "\t" << advancement*100 << "%";
+    displayAdvancement();
 
     this->m_currentGeneration++;
 }
@@ -112,6 +106,23 @@ void SingleObjectiveGA<T, P, C>::reset()
 {
     this->m_currentGeneration = 1;
     this->m_isInitialized = false;
+}
+
+template<typename T, typename P, typename C>
+void SingleObjectiveGA<T, P, C>::displayAdvancement()
+{
+    const int nbSymbols = 40;
+    double advancement = this->m_currentGeneration / (double)this->m_nbGenerationsWanted;
+    double nbSymbolsToDraw = nbSymbols * advancement;
+    std::cout << "\r" << "[";
+    for (int i = 0 ; i < nbSymbols ; i++)
+    {
+        if (i <= nbSymbolsToDraw)
+            std::cout << "=";
+        else
+            std::cout << " ";
+    }
+    std::cout << "]" << "\t" << advancement*100 << "%";
 }
 
 #endif // SINGLEOBJECTIVEGA_H

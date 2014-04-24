@@ -44,6 +44,11 @@ protected:
      */
     virtual void addChromosomeWithoutControl(P* pop, C* chromosome);
 
+    /**
+     * @brief displayAdvancement Display in the console advancement of the algorithm.
+     */
+    virtual void displayAdvancement();
+
 public:
     NSGAII();
     virtual ~NSGAII();
@@ -85,8 +90,6 @@ void NSGAII<T, P, C>::runOneGeneration()
     // Determine all non dominated fronts
     std::vector < P > fronts = fastNonDominatedSort(this->m_population);
 
-    std::cout << "size fronts : " << fronts.size() << std::endl << std::endl;
-
     // Secure check if it's not empty (should never arrived)
     if (fronts.empty())
     {
@@ -96,13 +99,6 @@ void NSGAII<T, P, C>::runOneGeneration()
 
     P* newParents = new P;  // Future population
     int i = 0;              // Index front
-
-    std::cout << "newParents size : " << newParents->getCurrentNbChromosomes()<<std::endl
-              << "newParents max : " << newParents->getNbMaxChromosomes() <<std::endl
-              << "front0 size : " << fronts[i].getCurrentNbChromosomes()<<std::endl
-              << "front0 max : " << fronts[i].getNbMaxChromosomes()<<std::endl
-              << "condition loop : " << (newParents->getCurrentNbChromosomes() + fronts[i].getCurrentNbChromosomes() <= newParents->getNbMaxChromosomes() ? "true" : "false") << std::endl;
-
     // Until the population is filled
     while (newParents->getCurrentNbChromosomes() + fronts[i].getCurrentNbChromosomes() <= newParents->getNbMaxChromosomes())
     {
@@ -113,18 +109,29 @@ void NSGAII<T, P, C>::runOneGeneration()
         i++;    // Check the next front for inclusion
     }
 
-    // Sort in descending order the ith front using crowding operator
-    std::sort(fronts[i].getChromosomes().begin(), fronts[i].getChromosomes().end(), crowdingOperator<C>);
+    if (!newParents->isFull())
+    {
+        // Calculate crowding-distance in ith Front, because previous loop stop just before calculate these values
+        crowdingDistanceAssignement(&fronts[i]);
+        std::vector< C > chromosomes = fronts[i].getChromosomes();
 
-    // Choose the first (max chromosomes - size newParents) of ith front
+        // Sort in descending order the ith front using crowding operator
+        std::sort(chromosomes.begin(), chromosomes.end(), crowdingOperator<C>);
+
+        // Choose the first (max chromosomes - size newParents) of ith front
+        newParents->addChromosomes(fronts[i].getChromosomes(), newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes());
+    }
+
     delete this->m_population;
     this->m_population = new P;
-    newParents->addChromosomes(fronts[i].getChromosomes(), newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes());
     *this->m_population = *newParents;
     // Use selection, crossover and mutation to create new offspring population
     delete m_offspring;
     // Execute breeding (create offspring using GA)
     m_offspring = breeding();
+
+    // Only for Display
+    displayAdvancement();
 
     this->m_currentGeneration++;    // Generation counter
 }
@@ -226,33 +233,40 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
     if (popToAssignCrowdingDistance->getChromosomes().empty())
         return;
 
-    Ascending<C> comparator;    // Comaparator using to sort on ascending order each objectives
+    Ascending<C> comparator;    // Comparator using to sort on ascending order each objectives
     unsigned int nbObjective = popToAssignCrowdingDistance->getChromosomes()[0].getNbObjective();
     for (unsigned int m = 0 ; m < nbObjective ; m++)
     {
+        std::vector< C > chromosomes = popToAssignCrowdingDistance->getChromosomes();
+
         // Sort using each objective value
         comparator.index = m;
-        std::sort(popToAssignCrowdingDistance->getChromosomes().begin(),
-                  popToAssignCrowdingDistance->getChromosomes().end(),
+        std::sort(chromosomes.begin(),
+                  chromosomes.end(),
                   comparator);
 
         // Assigne value min and max of fitness for the objective m
         T minFitnessValue, maxFitnessValue;
-        minFitnessValue = popToAssignCrowdingDistance->getChromosomes()[0].getFitness()[m];
-        maxFitnessValue = popToAssignCrowdingDistance->getChromosomes()[nbSolutions-1].getFitness()[m];
+        minFitnessValue = chromosomes[0].getFitness()[m];
+        maxFitnessValue = chromosomes[nbSolutions-1].getFitness()[m];
 
         // So that boundary point are always selected
         // Extremes chromosomes of the vector are initialized with an infinite distance
-        popToAssignCrowdingDistance->getChromosomes()[0].setDistance(std::numeric_limits<double>::max());
-        popToAssignCrowdingDistance->getChromosomes()[nbSolutions-1].setDistance(std::numeric_limits<double>::max());
+        chromosomes[0].setDistance(std::numeric_limits<double>::max());
+        chromosomes[nbSolutions-1].setDistance(std::numeric_limits<double>::max());
 
         // For all other points
         for (unsigned int i = 1 ; i < nbSolutions-2 ; i++)
-            popToAssignCrowdingDistance->getChromosomes()[i].setDistance(
-                                                                         popToAssignCrowdingDistance->getChromosomes()[i].getDistance()
-                                                                         + (popToAssignCrowdingDistance->getChromosomes()[i+1].getFitness()[m] - popToAssignCrowdingDistance->getChromosomes()[i-1].getFitness()[m])
-                                                                         / (maxFitnessValue - minFitnessValue)
-                                                                         );
+        {
+            double distance =   chromosomes[i].getDistance()
+                                + (chromosomes[i+1].getFitness()[m] - chromosomes[i-1].getFitness()[m])
+                                / (double)(maxFitnessValue - minFitnessValue);
+
+            chromosomes[i].setDistance(distance);
+        }
+
+        // Reaffect chromosomes to the population
+        popToAssignCrowdingDistance->setChromosomes(chromosomes);
     }
 }
 
@@ -262,6 +276,23 @@ void NSGAII<T, P, C>::addChromosomeWithoutControl(P* pop, C* chromosome)
     if (pop->isFull())
         pop->setNbMaxChromosomes(pop->getNbMaxChromosomes()+1);
     pop->addChromosome(*chromosome);
+}
+
+template<typename T, typename P, typename C>
+void NSGAII<T, P, C>::displayAdvancement()
+{
+    const int nbSymbols = 40;
+    double advancement = this->m_currentGeneration / (double)this->m_nbGenerationsWanted;
+    double nbSymbolsToDraw = nbSymbols * advancement;
+    std::cout << "\r" << "[";
+    for (int i = 0 ; i < nbSymbols ; i++)
+    {
+        if (i <= nbSymbolsToDraw)
+            std::cout << "=";
+        else
+            std::cout << " ";
+    }
+    std::cout << "]" << "\t" << advancement*100 << "%";
 }
 
 template<typename T, typename P, typename C>
