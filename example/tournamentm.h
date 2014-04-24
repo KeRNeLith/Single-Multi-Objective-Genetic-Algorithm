@@ -180,7 +180,7 @@ C TournamentM<T, T2, C>::crossOver(std::pair< C, C > parents)
 template<typename T, typename T2, typename C>
 std::vector< C > TournamentM<T, T2, C>::getBestSolution() const
 {
-    return std::vector < C >();
+    return this->m_chromosomes;
 }
 
 template<typename T, typename T2, typename C>

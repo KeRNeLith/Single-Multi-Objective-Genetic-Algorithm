@@ -47,6 +47,9 @@ int main()
 
         nsga2.initialize();
         std::vector<ChromosomeMIntInt> results = nsga2.performGA();
+        std::cout << std::endl << std::endl << "Solutions : " << std::endl;
+        for (unsigned int i = 0 ; i < results.size() ; i++)
+            std::cout << "(" << i+1 << ")\t Rank : " << results[i].getRank() << " || Distance : " << results[i].getDistance() << std::endl;
 
         std::cout << std::endl << "Done... !" << std::endl;
     }

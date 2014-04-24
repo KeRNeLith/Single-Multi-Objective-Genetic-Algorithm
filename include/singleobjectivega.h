@@ -14,6 +14,7 @@ class SingleObjectiveGA
 {
 protected:
     bool m_elitism;             ///> Specify that we want to use elitism between each generation (conserve a percentage of chromosomes).
+    bool m_consoleDisplay;
 
     /**
      * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
@@ -26,12 +27,13 @@ protected:
     virtual void displayAdvancement();
 
 public:
-    SingleObjectiveGA();
+    SingleObjectiveGA(bool consoleDisplay = true);
 
     virtual void initialize();
     virtual std::vector< C > performGA();
     virtual void reset();
 
+    ////////////// Accessors/Setters //////////////
     /**
      * @brief setElistism Enable/Disable the elitism selection.
      * @param elitismState State enable or disable of the elitism selection.
@@ -42,12 +44,24 @@ public:
      * @return State of the elitism selection.
      */
     bool getElistism() { return m_elitism; }
+
+    /**
+     * @brief setConsoleDisplay Enable/Disable console display of the advancement of algorithm.
+     * @param state true if want display, else false.
+     */
+    virtual void setConsoleDisplay(bool state) { m_consoleDisplay = state; }
+    /**
+     * @brief getConsoleDsiplay Get state Enable/Disable of the console display of the advancement of algorithm.
+     * @return Bool of the state (m_consoleDisplay).
+     */
+    virtual bool getConsoleDsiplay() const { return m_consoleDisplay; }
 };
 
 template<typename T, typename P, typename C>
-SingleObjectiveGA<T, P, C>::SingleObjectiveGA()
+SingleObjectiveGA<T, P, C>::SingleObjectiveGA(bool consoleDisplay)
     : GA<T, P, C>()
     , m_elitism(true)
+    , m_consoleDisplay(consoleDisplay)
 {
 }
 
@@ -68,7 +82,8 @@ void SingleObjectiveGA<T, P, C>::runOneGeneration()
     this->m_population = newPop;
 
     // Only for Display
-    displayAdvancement();
+    if (m_consoleDisplay)
+        displayAdvancement();
 
     this->m_currentGeneration++;
 }

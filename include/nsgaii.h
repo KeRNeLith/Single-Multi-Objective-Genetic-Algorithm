@@ -12,6 +12,7 @@ class NSGAII
 protected:
 
     P* m_offspring; ///> Offspring of m_population.
+    bool m_consoleDisplay; ///> To have a display in console.
 
     virtual void releaseMemory();
 
@@ -52,18 +53,31 @@ protected:
     virtual void displayAdvancement();
 
 public:
-    NSGAII();
+    NSGAII(bool consoleDisplay = true);
     virtual ~NSGAII();
 
     virtual void initialize();
     virtual std::vector< C > performGA();
     virtual void reset();
+
+    ////////////// Accessors/Setters //////////////
+    /**
+     * @brief setConsoleDisplay Enable/Disable console display of the advancement of algorithm.
+     * @param state true if want display, else false.
+     */
+    virtual void setConsoleDisplay(bool state) { m_consoleDisplay = state; }
+    /**
+     * @brief getConsoleDsiplay Get state Enable/Disable of the console display of the advancement of algorithm.
+     * @return Bool of the state (m_consoleDisplay).
+     */
+    virtual bool getConsoleDsiplay() const { return m_consoleDisplay; }
 };
 
 template<typename T, typename P, typename C>
-NSGAII<T, P, C>::NSGAII()
+NSGAII<T, P, C>::NSGAII(bool consoleDisplay)
     : GA<T, P, C>()
     , m_offspring(nullptr)
+    , m_consoleDisplay(consoleDisplay)
 {
 }
 
@@ -132,7 +146,8 @@ void NSGAII<T, P, C>::runOneGeneration()
     m_offspring = breeding();
 
     // Only for Display
-    displayAdvancement();
+    if (m_consoleDisplay)
+        displayAdvancement();
 
     this->m_currentGeneration++;    // Generation counter
 }
@@ -340,9 +355,7 @@ std::vector< C > NSGAII<T, P, C>::performGA()
     while (this->m_currentGeneration <= this->m_nbGenerationsWanted)
         runOneGeneration();
 
-    // TODO
-    //return this->m_population->getBestSolution();
-    return std::vector < C >();
+    return this->m_population->getBestSolution();
 }
 
 template<typename T, typename P, typename C>
