@@ -27,3 +27,5 @@ Makefile*
 
 *.autosave
 /build/*.exe
+/GA-NSGAII/build/*.exe
+/GUIGeneticAlgorithms/build/*.exe
