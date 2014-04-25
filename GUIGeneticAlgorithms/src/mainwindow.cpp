@@ -37,50 +37,93 @@ void MainWindow::openParamsFile()
 
 void MainWindow::runGAAlgorithm()
 {
-    changePushButtonState();
+    changePushButtonState(false);
 
-    //SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
-    if (m_paramsDW->getReadParamsFromFileState())
-    {
-        if (m_paramsFileName == "") // no file known
+    try {
+        SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
+        if (m_paramsDW->getReadParamsFromFileState())
         {
-            QMessageBox::warning(this,
-                                 tr("File Unknown"),
-                                 tr("You haven't specified settings file."));
+            if (m_paramsFileName == "") // No file known
+            {
+                QMessageBox::warning(this,
+                                     tr("File Unknown"),
+                                     tr("You haven't specified settings file."));
 
-            changePushButtonState();
-            return;
+                changePushButtonState();
+                return;
+            }
+
+            sGa.readParamsFromFile(m_paramsFileName.toStdString());
+        }
+        else
+        {
+            sGa.setNbGenerationsWanted(m_paramsDW->getNbGenerationsWanted());
+            ChromosomeIntInt::setNbGenes(m_paramsDW->getNbGenes());
+            RouletteWheel<int, int, ChromosomeIntInt>::setSNbMaxChromosomes(m_paramsDW->getNbMaxChromosomes());
+            RouletteWheel<int, int, ChromosomeIntInt>::setCrossOverProbability(m_paramsDW->getCrossoverProbability());
+            RouletteWheel<int, int, ChromosomeIntInt>::setMutateProbability(m_paramsDW->getMutateProbability());
         }
 
-        //sGa.readParamsFromFile(m_paramsFileName.toStdString());
+        sGa.initialize();
+        int ret = sGa.performGA()[0].getFitness()[0];
     }
-    else
+    catch (std::runtime_error& e)
     {
-        /*sGa.setNbGenerationsWanted(m_paramsDW->getNbGenerationsWanted());
-        ChromosomeIntInt::setNbGenes(m_paramsDW->getNbGenes());
-        RouletteWheel<ChromosomeIntInt>::setSNbMaxChromosomes(m_paramsDW->getNbMaxChromosomes());
-        RouletteWheel<ChromosomeIntInt>::setCrossOverProbability(m_paramsDW->getCrossoverProbability());
-        RouletteWheel<ChromosomeIntInt>::setMutateProbability(m_paramsDW->getMutateProbability());*/
+        QMessageBox::critical(this,
+                              tr("Process Error"),
+                              e.what());
     }
 
-    //sGa.initialize();
-    //int ret = sGa.performGA()[0].getFitness()[0];
     changePushButtonState();
 }
 
 void MainWindow::runNSGA2Algorithm()
 {
-    changePushButtonState();
+    changePushButtonState(false);
 
-    // TODO
+    try {
+        NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
+        if (m_paramsDW->getReadParamsFromFileState())
+        {
+            if (m_paramsFileName == "") // No file known
+            {
+                QMessageBox::warning(this,
+                                     tr("File Unknown"),
+                                     tr("You haven't specified settings file."));
+
+                changePushButtonState();
+                return;
+            }
+
+            nsga2.readParamsFromFile(m_paramsFileName.toStdString());
+        }
+        else
+        {
+            nsga2.setNbGenerationsWanted(m_paramsDW->getNbGenerationsWanted());
+            ChromosomeMIntInt::setNbGenes(m_paramsDW->getNbGenes());
+            TournamentM<int, int, ChromosomeMIntInt>::setSNbMaxChromosomes(m_paramsDW->getNbMaxChromosomes());
+            TournamentM<int, int, ChromosomeMIntInt>::setCrossOverProbability(m_paramsDW->getCrossoverProbability());
+            TournamentM<int, int, ChromosomeMIntInt>::setMutateProbability(m_paramsDW->getMutateProbability());
+        }
+
+        nsga2.initialize();
+        nsga2.performGA();
+    }
+    catch (std::runtime_error& e)
+    {
+        QMessageBox::critical(this,
+                              tr("Process Error"),
+                              e.what());
+    }
 
     changePushButtonState();
 }
 
-void MainWindow::changePushButtonState()
+void MainWindow::changePushButtonState(bool state)
 {
-    ui->gaPushButton->setEnabled(!ui->gaPushButton->isEnabled());
-    ui->nsga2PushButton->setEnabled(!ui->nsga2PushButton->isEnabled());
+    ui->gaPushButton->setEnabled(state);
+    ui->nsga2PushButton->setEnabled(state);
+    repaint();
 }
 
 void MainWindow::about()

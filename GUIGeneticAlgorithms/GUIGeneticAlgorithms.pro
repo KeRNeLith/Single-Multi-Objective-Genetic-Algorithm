@@ -16,14 +16,18 @@ DESTDIR = $$_PRO_FILE_PWD_/build
 
 INCLUDEPATH +=  ./include \
                 ../GA-NSGAII/include \
-                #../GA-NSGAII/example
+                ../GA-NSGAII/example
 
 SOURCES +=  ./src/main.cpp \
             ./src/mainwindow.cpp \
-            ./src/paramsdockwidget.cpp
+            ./src/paramsdockwidget.cpp \
+            ../GA-NSGAII/example/chromosomeintint.cpp \
+            ../GA-NSGAII/example/chromosomemintint.cpp
 
 HEADERS  += ./include/mainwindow.h \
-            ./include/paramsdockwidget.h
+            ./include/paramsdockwidget.h \
+            ../GA-NSGAII/example/chromosomeintint.h \
+            ../GA-NSGAII/example/chromosomemintint.h
 
 FORMS    += ./gui/mainwindow.ui \
             ./gui/paramsdockwidget.ui

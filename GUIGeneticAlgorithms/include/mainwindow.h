@@ -8,10 +8,11 @@
 #include "singleobjectivega.h"
 #include "nsgaii.h"
 
-//#include "../GA-NSGAII/example/roulettewheel.h"
-//#include "../GA-NSGAII/example/chromosomeintint.h"
-//#include "roulettewheel.h"
-//#include "chromosomeintint.h"
+#include "roulettewheel.h"
+#include "chromosomeintint.h"
+
+#include "tournamentm.h"
+#include "chromosomemintint.h"
 
 #include "paramsdockwidget.h"
 
@@ -42,7 +43,7 @@ private:
 
     QString m_paramsFileName;
 
-    void changePushButtonState();
+    void changePushButtonState(bool state = true);
 };
 
 #endif // MAINWINDOW_H
