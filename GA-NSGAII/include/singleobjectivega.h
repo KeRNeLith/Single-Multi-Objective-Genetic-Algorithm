@@ -17,11 +17,6 @@ protected:
     bool m_consoleDisplay;
 
     /**
-     * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
-     */
-    virtual void runOneGeneration();
-
-    /**
      * @brief displayAdvancement Display in the console advancement of the algorithm.
      */
     virtual void displayAdvancement();
@@ -32,6 +27,11 @@ public:
     virtual void initialize();
     virtual std::vector< C > performGA();
     virtual void reset();
+
+    /**
+     * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
+     */
+    virtual void runOneGeneration();
 
     ////////////// Accessors/Setters //////////////
     /**

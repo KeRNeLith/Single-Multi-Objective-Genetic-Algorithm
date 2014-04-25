@@ -17,11 +17,6 @@ protected:
     virtual void releaseMemory();
 
     /**
-     * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
-     */
-    virtual void runOneGeneration();
-
-    /**
      * @brief breeding Perform GA operators (selection, crossover, mutation) on m_population.
      * @return The offspring population.
      */
@@ -59,6 +54,11 @@ public:
     virtual void initialize();
     virtual std::vector< C > performGA();
     virtual void reset();
+
+    /**
+     * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
+     */
+    virtual void runOneGeneration();
 
     ////////////// Accessors/Setters //////////////
     /**

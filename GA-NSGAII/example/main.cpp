@@ -29,10 +29,10 @@ int main()
         //sGa.setElistism(false);
         //sGa.setNbGenerationsWanted(500);
         //ChromosomeIntInt::setNbGenes(100);
-        //RouletteWheel<ChromosomeIntInt>::setSNbMaxChromosomes(50);
-        //RouletteWheel<ChromosomeIntInt>::setProportionalKeeping(0.3);
-        //RouletteWheel<ChromosomeIntInt>::setCrossOverProbability(0.35);
-        //RouletteWheel<ChromosomeIntInt>::setMutateProbability(0.03);
+        //RouletteWheel<int, int, ChromosomeIntInt>::setSNbMaxChromosomes(50);
+        //RouletteWheel<int, int, ChromosomeIntInt>::setProportionalKeeping(0.3);
+        //RouletteWheel<int, int, ChromosomeIntInt>::setCrossOverProbability(0.35);
+        //RouletteWheel<int, int, ChromosomeIntInt>::setMutateProbability(0.03);
 
         sGa.initialize();
         int ret = sGa.performGA()[0].getFitness()[0];
@@ -43,7 +43,7 @@ int main()
         nsga2.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
-        // Same method, described above, except there isn't function setElitism.
+        // Same method, described above, except there isn't function setElitism and setProportionalKeeping.
 
         nsga2.initialize();
         std::vector<ChromosomeMIntInt> results = nsga2.performGA();
