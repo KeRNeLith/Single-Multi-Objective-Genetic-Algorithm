@@ -84,6 +84,12 @@ public:
     int getIndexCurrentGeneration() const { return m_currentGeneration; }
 
     bool getIfIsInitialized() const { return m_isInitialized; }
+
+    /**
+     * @brief getPopulation Get the current population of the algorithm.
+     * @return m_population content.
+     */
+    virtual const P& getPopulation() const {return *m_population;}
 };
 
 template<typename T, typename P, typename C>

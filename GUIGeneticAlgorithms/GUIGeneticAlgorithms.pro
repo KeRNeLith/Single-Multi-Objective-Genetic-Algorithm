@@ -22,12 +22,15 @@ SOURCES +=  ./src/main.cpp \
             ./src/mainwindow.cpp \
             ./src/paramsdockwidget.cpp \
             ../GA-NSGAII/example/chromosomeintint.cpp \
-            ../GA-NSGAII/example/chromosomemintint.cpp
+            ../GA-NSGAII/example/chromosomemintint.cpp \
+            ./src/solutionlisterdockwidget.cpp
 
 HEADERS  += ./include/mainwindow.h \
             ./include/paramsdockwidget.h \
             ../GA-NSGAII/example/chromosomeintint.h \
-            ../GA-NSGAII/example/chromosomemintint.h
+            ../GA-NSGAII/example/chromosomemintint.h \
+            ./include/solutionlisterdockwidget.h
 
 FORMS    += ./gui/mainwindow.ui \
-            ./gui/paramsdockwidget.ui
+            ./gui/paramsdockwidget.ui \
+            ./gui/solutionlisterdockwidget.ui

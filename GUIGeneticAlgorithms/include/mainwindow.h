@@ -16,6 +16,7 @@
 #include "chromosomemintint.h"
 
 #include "paramsdockwidget.h"
+#include "solutionlisterdockwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,6 +42,7 @@ private:
     Ui::MainWindow *ui;
 
     ParamsDockWidget* m_paramsDW;
+    SolutionListerDockWidget* m_solutionsDW;
 
     QString m_paramsFileName;
 
@@ -48,6 +50,9 @@ private:
 
     template<typename T, typename P, typename C>
     void performAlgorithm(GA<T, P, C>* algorithm);
+
+    template<typename C>
+    std::vector<QString> formattingSolutions(const std::vector<C> solutions);
 };
 
 #endif // MAINWINDOW_H

@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_paramsDW = new ParamsDockWidget;
     addDockWidget(Qt::LeftDockWidgetArea, m_paramsDW);
+    m_solutionsDW = new SolutionListerDockWidget;
+    addDockWidget(Qt::BottomDockWidgetArea, m_solutionsDW);
 
     m_paramsFileName = "";
 
@@ -44,6 +46,8 @@ void MainWindow::runGAAlgorithm()
 {
     changePushButtonState(false);
 
+    m_solutionsDW->clearSolutionList();
+
     try {
         SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa(false);
         if (m_paramsDW->getReadParamsFromFileState())
@@ -71,6 +75,7 @@ void MainWindow::runGAAlgorithm()
 
         sGa.initialize();
         performAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>(&sGa);
+        m_solutionsDW->setSolutionList(formattingSolutions<ChromosomeIntInt>(sGa.getPopulation().getBestSolution()));
     }
     catch (std::runtime_error& e)
     {
@@ -85,6 +90,8 @@ void MainWindow::runGAAlgorithm()
 void MainWindow::runNSGA2Algorithm()
 {
     changePushButtonState(false);
+
+    m_solutionsDW->clearSolutionList();
 
     try {
         NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2(false);
@@ -113,6 +120,7 @@ void MainWindow::runNSGA2Algorithm()
 
         nsga2.initialize();
         performAlgorithm<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt>(&nsga2);
+        m_solutionsDW->setSolutionList(formattingSolutions<ChromosomeMIntInt>(nsga2.getPopulation().getBestSolution()));
     }
     catch (std::runtime_error& e)
     {
@@ -143,6 +151,32 @@ void MainWindow::performAlgorithm(GA<T, P, C>* algorithm)
         ui->algorithmProgressBar->setValue((algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted())*100);
         algorithm->runOneGeneration();
     }
+}
+
+template<typename C>
+std::vector<QString> MainWindow::formattingSolutions(const std::vector<C> solutions)
+{
+    std::vector<QString> stringSolutions;
+
+    QString datas = "";
+    std::vector<int> genes;
+    int index = 0;
+    for (auto it = solutions.begin() ; it != solutions.end() ; it++)
+    {
+        genes = it->getDatas();
+
+        datas += QString::number(index) += " => ";
+
+        for (auto it2 = genes.begin() ; it2 != genes.end() ; it2++)
+            datas += QString::number(*it2);
+        stringSolutions.push_back(datas);
+
+        datas = "";
+        genes.clear();
+        index++;
+    }
+
+    return stringSolutions;
 }
 
 void MainWindow::about()
