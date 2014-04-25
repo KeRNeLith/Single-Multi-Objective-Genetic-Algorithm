@@ -156,18 +156,18 @@ C TournamentM<T, T2, C>::crossOver(std::pair< C, C > parents)
 
     if (probaCrossOver <= this->m_crossOverProbability)
     {
-        for (unsigned int i = 0 ; i <= indexCrossover ; i++)
+        for (unsigned int i = 0 ; i < indexCrossover ; i++)
             offspringGenes.push_back(mumGenes[i]);
 
-        for (unsigned int i = indexCrossover + 1 ; i < C::getNbGenes()-1 ; i++)
+        for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
             offspringGenes.push_back(dadGenes[i]);
     }
     else
     {
-        for (unsigned int i = 0 ; i <= indexCrossover ; i++)
+        for (unsigned int i = 0 ; i < indexCrossover ; i++)
             offspringGenes.push_back(dadGenes[i]);
 
-        for (unsigned int i = indexCrossover + 1 ; i < C::getNbGenes()-1 ; i++)
+        for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
             offspringGenes.push_back(mumGenes[i]);
     }
 
