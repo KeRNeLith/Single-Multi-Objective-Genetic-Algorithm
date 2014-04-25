@@ -18,6 +18,11 @@ bool ParamsDockWidget::getReadParamsFromFileState() const
     return ui->readFileCheckBox->isChecked();
 }
 
+void ParamsDockWidget::setReadParamsFromFileState(bool state)
+{
+    ui->readFileCheckBox->setChecked(state);
+}
+
 int ParamsDockWidget::getNbGenerationsWanted() const
 {
     return ui->nbGenerationsWantedSpinBox->value();

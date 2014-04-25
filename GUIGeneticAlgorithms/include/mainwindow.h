@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
+#include "ga.h"
 #include "singleobjectivega.h"
 #include "nsgaii.h"
 
@@ -44,6 +45,9 @@ private:
     QString m_paramsFileName;
 
     void changePushButtonState(bool state = true);
+
+    template<typename T, typename P, typename C>
+    void performAlgorithm(GA<T, P, C>* algorithm);
 };
 
 #endif // MAINWINDOW_H

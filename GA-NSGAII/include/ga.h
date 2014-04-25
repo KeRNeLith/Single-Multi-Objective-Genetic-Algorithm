@@ -48,6 +48,11 @@ public:
     virtual void reset() =0;
 
     /**
+     * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
+     */
+    virtual void runOneGeneration() =0;
+
+    /**
      * @brief readParamsFromFile Read and set params of GA to the values read in the file passed in parameter.
      * @param fileName Name of the file to read.
      */
@@ -70,13 +75,15 @@ public:
      * @brief getNbGenerationsWanted Get the number of generation that will be run to nbGenerationsWanted.
      * @return the number of generations wanted for the run.
      */
-    int getNbGenerationsWanted() { return m_nbGenerationsWanted; }
+    int getNbGenerationsWanted() const { return m_nbGenerationsWanted; }
 
     /**
      * @brief getIndexCurrentGeneration Get the index of the current generation.
      * @return the index of the current generation.
      */
-    int getIndexCurrentGeneration() { return m_currentGeneration; }
+    int getIndexCurrentGeneration() const { return m_currentGeneration; }
+
+    bool getIfIsInitialized() const { return m_isInitialized; }
 };
 
 template<typename T, typename P, typename C>

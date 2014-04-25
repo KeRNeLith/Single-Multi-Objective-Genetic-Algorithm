@@ -15,8 +15,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Connect
     connect(ui->action_Search_Params, SIGNAL(triggered()), this, SLOT(openParamsFile()));
-    connect(ui->gaPushButton, SIGNAL(clicked()), this, SLOT(runGAAlgorithm()));
-    connect(ui->nsga2PushButton, SIGNAL(clicked()), this, SLOT(runNSGA2Algorithm()));
+    connect(ui->gaPushButton, SIGNAL(released()), this, SLOT(runGAAlgorithm()));
+    connect(ui->nsga2PushButton, SIGNAL(released()), this, SLOT(runNSGA2Algorithm()));
+    connect(ui->gaPushButton, SIGNAL(pressed()), ui->algorithmProgressBar, SLOT(reset()));
+    connect(ui->nsga2PushButton, SIGNAL(pressed()), ui->algorithmProgressBar, SLOT(reset()));
 
     connect(ui->action_About, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -32,7 +34,10 @@ void MainWindow::openParamsFile()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Params File"), "./", tr("Params (*.txt)"));
     if (!filename.isEmpty())
+    {
         m_paramsFileName = filename;
+        m_paramsDW->setReadParamsFromFileState(true);
+    }
 }
 
 void MainWindow::runGAAlgorithm()
@@ -40,7 +45,7 @@ void MainWindow::runGAAlgorithm()
     changePushButtonState(false);
 
     try {
-        SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
+        SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa(false);
         if (m_paramsDW->getReadParamsFromFileState())
         {
             if (m_paramsFileName == "") // No file known
@@ -65,7 +70,7 @@ void MainWindow::runGAAlgorithm()
         }
 
         sGa.initialize();
-        int ret = sGa.performGA()[0].getFitness()[0];
+        performAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>(&sGa);
     }
     catch (std::runtime_error& e)
     {
@@ -82,7 +87,7 @@ void MainWindow::runNSGA2Algorithm()
     changePushButtonState(false);
 
     try {
-        NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
+        NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2(false);
         if (m_paramsDW->getReadParamsFromFileState())
         {
             if (m_paramsFileName == "") // No file known
@@ -107,7 +112,7 @@ void MainWindow::runNSGA2Algorithm()
         }
 
         nsga2.initialize();
-        nsga2.performGA();
+        performAlgorithm<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt>(&nsga2);
     }
     catch (std::runtime_error& e)
     {
@@ -124,6 +129,20 @@ void MainWindow::changePushButtonState(bool state)
     ui->gaPushButton->setEnabled(state);
     ui->nsga2PushButton->setEnabled(state);
     repaint();
+}
+
+template<typename T, typename P, typename C>
+void MainWindow::performAlgorithm(GA<T, P, C>* algorithm)
+{
+    // Run the algorithm if it is initialized
+    if (!algorithm->getIfIsInitialized())
+        throw std::runtime_error("Algorithm not initialzed !");
+
+    while (algorithm->getIndexCurrentGeneration() <= algorithm->getNbGenerationsWanted())
+    {
+        ui->algorithmProgressBar->setValue((algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted())*100);
+        algorithm->runOneGeneration();
+    }
 }
 
 void MainWindow::about()

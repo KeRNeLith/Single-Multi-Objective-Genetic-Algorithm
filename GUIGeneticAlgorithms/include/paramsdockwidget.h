@@ -17,6 +17,8 @@ public:
     ~ParamsDockWidget();
 
     bool getReadParamsFromFileState() const;
+    void setReadParamsFromFileState(bool state);
+
     int getNbGenerationsWanted() const;
     int getNbMaxChromosomes() const;
     int getNbGenes() const;

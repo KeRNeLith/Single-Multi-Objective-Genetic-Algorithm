@@ -350,7 +350,7 @@ std::vector< C > NSGAII<T, P, C>::performGA()
 {
     // Run the algorithm if it is initialized, and return Pareto Optimal Set
     if (!this->m_isInitialized)
-        throw std::runtime_error("GA not initialzed !");
+        throw std::runtime_error("NSGA-II not initialzed !");
 
     while (this->m_currentGeneration <= this->m_nbGenerationsWanted)
         runOneGeneration();
