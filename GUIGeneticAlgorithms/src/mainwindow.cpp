@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Register Meta Type for signals and solts
     qRegisterMetaType<StringVector>("StringVector");
+
+    statusBar()->showMessage(tr("Ready..."), 3000);
 }
 
 MainWindow::~MainWindow()
@@ -45,6 +47,8 @@ void MainWindow::openParamsFile()
         m_paramsFileName = filename;
         m_paramsDW->setReadParamsFromFileState(true);
     }
+
+    statusBar()->showMessage(tr("File ready to be load in the next algorithm run ..."), 7000);
 }
 
 void MainWindow::runGAAlgorithm()
@@ -52,6 +56,8 @@ void MainWindow::runGAAlgorithm()
     initThreadAlgorithm();
 
     emit launchAlgorithm(QString("ga"));
+
+    statusBar()->showMessage(tr("Launch GA algorithm..."), 2000);
 }
 
 void MainWindow::runNSGA2Algorithm()
@@ -59,6 +65,8 @@ void MainWindow::runNSGA2Algorithm()
     initThreadAlgorithm();
 
     emit launchAlgorithm(QString("nsga2"));
+
+    statusBar()->showMessage(tr("Launch NSGA-II algorithm..."), 2000);
 }
 
 void MainWindow::handleResults(const std::vector<QString> &result)
@@ -67,6 +75,7 @@ void MainWindow::handleResults(const std::vector<QString> &result)
     m_solutionsDW->setSolutionList(result);
 
     changePushButtonState();
+    statusBar()->showMessage(tr("Algorithm finished..."), 4000);
 }
 
 void MainWindow::showFileUnknownMessage()
