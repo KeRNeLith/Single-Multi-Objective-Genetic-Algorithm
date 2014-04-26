@@ -1,6 +1,6 @@
 Probability Crossover = 0.3
 Probability Mutate = 0.03
-Number Max Chromosomes = 20
+Number Max Chromosomes = 100
 Number Genes = 10
 Proportional Keeping = 0.3
-Number Generations Wanted = 50
+Number Generations Wanted = 500

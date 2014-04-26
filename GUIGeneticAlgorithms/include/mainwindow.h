@@ -1,22 +1,21 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <vector>
+
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QFileDialog>
-
-#include "ga.h"
-#include "singleobjectivega.h"
-#include "nsgaii.h"
-
-#include "roulettewheel.h"
-#include "chromosomeintint.h"
-
-#include "tournamentm.h"
-#include "chromosomemintint.h"
+#include <QThread>
+#include <QMetaType>
 
 #include "paramsdockwidget.h"
 #include "solutionlisterdockwidget.h"
+#include "algorithmrunner.h"
+
+#include "ui_mainwindow.h"
+
+typedef std::vector<QString> StringVector;
 
 namespace Ui {
 class MainWindow;
@@ -27,17 +26,6 @@ class MainWindow
 {
     Q_OBJECT
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-
-public slots:
-    void openParamsFile();
-    void runGAAlgorithm();
-    void runNSGA2Algorithm();
-
-    void about();
-
 private:
     Ui::MainWindow *ui;
 
@@ -46,13 +34,31 @@ private:
 
     QString m_paramsFileName;
 
+    QThread m_mainWindowThread;
+
     void changePushButtonState(bool state = true);
 
-    template<typename T, typename P, typename C>
-    void performAlgorithm(GA<T, P, C>* algorithm);
+public:
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
-    template<typename C>
-    std::vector<QString> formattingSolutions(const std::vector<C> solutions);
+    QString getParamsFileName() { return m_paramsFileName; }
+    Ui::MainWindow* getUI() { return ui; }
+    ParamsDockWidget* getParamsDockWidget() { return m_paramsDW; }
+
+public slots:
+    void openParamsFile();
+    void runGAAlgorithm();
+    void runNSGA2Algorithm();
+    void handleResults(const std::vector<QString>& result);
+    void showFileUnknownMessage();
+    void showAlgorithmFailureMessage(const char* message);
+    void updateProgressBarValue(int value);
+
+    void about();
+
+signals:
+    void launchAlgorithm(const QString& parameters);
 };
 
 #endif // MAINWINDOW_H

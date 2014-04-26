@@ -25,11 +25,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->action_About, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->action_Quit, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+    // Register Meta Type for signals and solts
+    qRegisterMetaType<StringVector>("StringVector");
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    m_mainWindowThread.quit();
+    m_mainWindowThread.wait();
 }
 
 void MainWindow::openParamsFile()
@@ -48,48 +53,22 @@ void MainWindow::runGAAlgorithm()
 
     m_solutionsDW->clearSolutionList();
 
-    try {
-        SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa(false);
-        if (m_paramsDW->getReadParamsFromFileState())
-        {
-            if (m_paramsFileName == "") // No file known
-            {
-                QMessageBox::warning(this,
-                                     tr("File Unknown"),
-                                     tr("You haven't specified settings file."));
+    AlgorithmRunner* algorithmRunner = new AlgorithmRunner(this);
+    algorithmRunner->moveToThread(&m_mainWindowThread);
+    // To delete the pointer later
+    connect(&m_mainWindowThread, SIGNAL(finished()), algorithmRunner, SLOT(deleteLater()));
+    // To launch algorithm
+    connect(this, SIGNAL(launchAlgorithm(QString)), algorithmRunner, SLOT(runAlgorithm(QString)));
+    // To recover results
+    connect(algorithmRunner, SIGNAL(algorithmExecuted(std::vector<QString>)), this, SLOT(handleResults(std::vector<QString>)));
+    m_mainWindowThread.start();
 
-                changePushButtonState();
-                return;
-            }
-
-            sGa.readParamsFromFile(m_paramsFileName.toStdString());
-        }
-        else
-        {
-            sGa.setNbGenerationsWanted(m_paramsDW->getNbGenerationsWanted());
-            ChromosomeIntInt::setNbGenes(m_paramsDW->getNbGenes());
-            RouletteWheel<int, int, ChromosomeIntInt>::setSNbMaxChromosomes(m_paramsDW->getNbMaxChromosomes());
-            RouletteWheel<int, int, ChromosomeIntInt>::setCrossOverProbability(m_paramsDW->getCrossoverProbability());
-            RouletteWheel<int, int, ChromosomeIntInt>::setMutateProbability(m_paramsDW->getMutateProbability());
-        }
-
-        sGa.initialize();
-        performAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>(&sGa);
-        m_solutionsDW->setSolutionList(formattingSolutions<ChromosomeIntInt>(sGa.getPopulation().getBestSolution()));
-    }
-    catch (std::runtime_error& e)
-    {
-        QMessageBox::critical(this,
-                              tr("Process Error"),
-                              e.what());
-    }
-
-    changePushButtonState();
+    emit launchAlgorithm(QString());
 }
 
 void MainWindow::runNSGA2Algorithm()
 {
-    changePushButtonState(false);
+    /*changePushButtonState(false);
 
     m_solutionsDW->clearSolutionList();
 
@@ -129,7 +108,34 @@ void MainWindow::runNSGA2Algorithm()
                               e.what());
     }
 
+    changePushButtonState();*/
+}
+
+void MainWindow::handleResults(const std::vector<QString> &result)
+{
+    m_mainWindowThread.quit();
+    m_solutionsDW->setSolutionList(result);
+
     changePushButtonState();
+}
+
+void MainWindow::showFileUnknownMessage()
+{
+    QMessageBox::warning(this,
+                         tr("File Unknown"),
+                         tr("You haven't specified settings file."));
+}
+
+void MainWindow::showAlgorithmFailureMessage(const char *message)
+{
+    QMessageBox::critical(this,
+                          tr("Process Error"),
+                          message);
+}
+
+void MainWindow::updateProgressBarValue(int value)
+{
+    ui->algorithmProgressBar->setValue(value);
 }
 
 void MainWindow::changePushButtonState(bool state)
@@ -137,46 +143,6 @@ void MainWindow::changePushButtonState(bool state)
     ui->gaPushButton->setEnabled(state);
     ui->nsga2PushButton->setEnabled(state);
     repaint();
-}
-
-template<typename T, typename P, typename C>
-void MainWindow::performAlgorithm(GA<T, P, C>* algorithm)
-{
-    // Run the algorithm if it is initialized
-    if (!algorithm->getIfIsInitialized())
-        throw std::runtime_error("Algorithm not initialzed !");
-
-    while (algorithm->getIndexCurrentGeneration() <= algorithm->getNbGenerationsWanted())
-    {
-        ui->algorithmProgressBar->setValue((algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted())*100);
-        algorithm->runOneGeneration();
-    }
-}
-
-template<typename C>
-std::vector<QString> MainWindow::formattingSolutions(const std::vector<C> solutions)
-{
-    std::vector<QString> stringSolutions;
-
-    QString datas = "";
-    std::vector<int> genes;
-    int index = 0;
-    for (auto it = solutions.begin() ; it != solutions.end() ; it++)
-    {
-        genes = it->getDatas();
-
-        datas += QString::number(index) += " => ";
-
-        for (auto it2 = genes.begin() ; it2 != genes.end() ; it2++)
-            datas += QString::number(*it2);
-        stringSolutions.push_back(datas);
-
-        datas = "";
-        genes.clear();
-        index++;
-    }
-
-    return stringSolutions;
 }
 
 void MainWindow::about()
