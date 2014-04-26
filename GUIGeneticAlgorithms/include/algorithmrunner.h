@@ -2,8 +2,12 @@
 #define ALGORITHMRUNNER_H
 
 #include <vector>
+#include <string>
 
 #include <QObject>
+
+#include "General.h"
+#include "AlgoString.h"
 
 #include "ga.h"
 #include "singleobjectivega.h"
@@ -29,6 +33,15 @@ private:
 
     template<typename T, typename P, typename C>
     void performAlgorithm(GA<T, P, C>* algorithm);
+
+    template<typename T, typename P, typename C>
+    void configureAndRunAlgorithm(GA<T, P, C>* algorithm);
+
+    template<typename T, typename P, typename C>
+    NSGAII<T, P, C>* createNSGAIIAlgorithm();
+
+    template<typename T, typename P, typename C>
+    SingleObjectiveGA<T, P, C>* createSingleObjectiveAlgorithm();
 
     template<typename C>
     std::vector<QString> formattingSolutions(const std::vector<C> solutions);

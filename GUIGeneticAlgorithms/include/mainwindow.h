@@ -37,6 +37,7 @@ private:
     QThread m_mainWindowThread;
 
     void changePushButtonState(bool state = true);
+    void initThreadAlgorithm();
 
 public:
     explicit MainWindow(QWidget *parent = 0);

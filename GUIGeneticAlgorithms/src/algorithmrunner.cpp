@@ -10,7 +10,26 @@ AlgorithmRunner::AlgorithmRunner(MainWindow *mainWindow)
 
 void AlgorithmRunner::runAlgorithm(const QString& parameter)
 {
-    SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa(false);
+    // Parameter handling
+    std::vector<std::string> splitedParameter = split(parameter.toStdString(), ' ');
+    std::string identificator = "";
+    for (unsigned int i = 0 ; i < splitedParameter.size() ; i++)
+    {
+        splitedParameter[i] = trim(splitedParameter[i]);
+        identificator += splitedParameter[i];
+    }
+
+    if (identificator == "ga")
+        configureAndRunAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>(createSingleObjectiveAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>());
+    else if (identificator == "nsga2")
+        configureAndRunAlgorithm<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt>(createNSGAIIAlgorithm<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt>());
+    else
+        emit algorithmExecuted(std::vector<QString>());
+}
+
+template<typename T, typename P, typename C>
+void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
+{
     try {
         if (m_mainwindow->getParamsDockWidget()->getReadParamsFromFileState())
         {
@@ -18,31 +37,35 @@ void AlgorithmRunner::runAlgorithm(const QString& parameter)
             {
                 emit fileUnknown();
                 emit algorithmExecuted(std::vector<QString>());
+                delete algorithm;
                 return;
             }
 
-            sGa.readParamsFromFile(m_mainwindow->getParamsFileName().toStdString());
+            algorithm->readParamsFromFile(m_mainwindow->getParamsFileName().toStdString());
         }
         else
         {
-            sGa.setNbGenerationsWanted(m_mainwindow->getParamsDockWidget()->getNbGenerationsWanted());
-            ChromosomeIntInt::setNbGenes(m_mainwindow->getParamsDockWidget()->getNbGenes());
-            RouletteWheel<int, int, ChromosomeIntInt>::setSNbMaxChromosomes(m_mainwindow->getParamsDockWidget()->getNbMaxChromosomes());
-            RouletteWheel<int, int, ChromosomeIntInt>::setCrossOverProbability(m_mainwindow->getParamsDockWidget()->getCrossoverProbability());
-            RouletteWheel<int, int, ChromosomeIntInt>::setMutateProbability(m_mainwindow->getParamsDockWidget()->getMutateProbability());
+            algorithm->setNbGenerationsWanted(m_mainwindow->getParamsDockWidget()->getNbGenerationsWanted());
+            C::setNbGenes(m_mainwindow->getParamsDockWidget()->getNbGenes());
+            P::setSNbMaxChromosomes(m_mainwindow->getParamsDockWidget()->getNbMaxChromosomes());
+            P::setCrossOverProbability(m_mainwindow->getParamsDockWidget()->getCrossoverProbability());
+            P::setMutateProbability(m_mainwindow->getParamsDockWidget()->getMutateProbability());
         }
 
-        sGa.initialize();
-        performAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>(&sGa);
+        algorithm->initialize();
+        performAlgorithm<T, P, C>(algorithm);
     }
     catch (std::runtime_error& e)
     {
         emit algorithmFailure(e.what());
         emit algorithmExecuted(std::vector<QString>());
+        delete algorithm;
         return;
     }
 
-    emit algorithmExecuted(formattingSolutions<ChromosomeIntInt>(sGa.getPopulation().getBestSolution()));
+    emit algorithmExecuted(formattingSolutions<C>(algorithm->getPopulation().getBestSolution()));
+
+    delete algorithm;
 }
 
 template<typename T, typename P, typename C>
@@ -57,6 +80,18 @@ void AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
         emit updateProgressBar(algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted()*100);
         algorithm->runOneGeneration();
     }
+}
+
+template<typename T, typename P, typename C>
+NSGAII<T, P, C>* AlgorithmRunner::createNSGAIIAlgorithm()
+{
+    return new NSGAII<T, P, C>(false);
+}
+
+template<typename T, typename P, typename C>
+SingleObjectiveGA<T, P, C>* AlgorithmRunner::createSingleObjectiveAlgorithm()
+{
+    return new SingleObjectiveGA<T, P, C>(false);
 }
 
 template<typename C>
