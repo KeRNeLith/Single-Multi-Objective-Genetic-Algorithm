@@ -70,13 +70,13 @@ void ChromosomeMDoubleInt::computeFitness()
     m_fitness.clear();
 
     // Problem SCH1 :
-    // Minimize f1 = x²
+    // Minimize f1 =   x²
     // Minimize f2 = (x-2)²
 
     const int forbidenValue1 = 0;
     const int forbidenValue2 = 2;
 
-    int value = getDecimalFromBinary(m_datas);
+    double value = getDoubleFromBinary(m_datas);
 
     if(value == forbidenValue1)
     {

@@ -111,7 +111,7 @@ std::vector<QString> AlgorithmRunner::formattingSolutions(const std::vector<C> s
         for (auto it2 = genes.begin() ; it2 != genes.end() ; it2++)
             datas += QString::number(*it2);
 
-        int value = getDecimalFromBinary(genes);
+        double value = getDoubleFromBinary(genes);
 
         datas += " => ";
         datas += QString::number(value);

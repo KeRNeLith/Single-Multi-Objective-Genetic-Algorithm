@@ -83,6 +83,10 @@ public:
      */
     int getIndexCurrentGeneration() const { return m_currentGeneration; }
 
+    /**
+     * @brief getIfIsInitialized Get the state of the algorithm : initialized or not.
+     * @return Algorithm initialization state.
+     */
     bool getIfIsInitialized() const { return m_isInitialized; }
 
     /**

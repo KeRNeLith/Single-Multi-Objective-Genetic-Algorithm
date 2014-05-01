@@ -18,7 +18,8 @@ SOURCES +=  example/main.cpp \
             example/roulettewheel.cpp \
             example/chromosomeintint.cpp \
             example/chromosomemdoubleint.cpp \
-            example/tournamentm.cpp
+            example/tournamentm.cpp \
+            src/General.cpp
 
 HEADERS +=  include/ga.h \
             include/chromosome.h \
