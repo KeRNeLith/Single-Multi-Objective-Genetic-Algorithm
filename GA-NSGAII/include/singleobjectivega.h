@@ -5,12 +5,12 @@
 
 #include "ga.h"
 
-template<typename T, typename P, typename C>
+template<typename F, typename P, typename C>
 /**
  * @brief The SingleObjectiveGA class extends GA to implement basic behaviour of single objective GA.
  */
 class SingleObjectiveGA
-        : public GA<T, P, C>
+        : public GA<F, P, C>
 {
 protected:
     bool m_elitism;             ///> Specify that we want to use elitism between each generation (conserve a percentage of chromosomes).
@@ -57,16 +57,16 @@ public:
     virtual bool getConsoleDsiplay() const { return m_consoleDisplay; }
 };
 
-template<typename T, typename P, typename C>
-SingleObjectiveGA<T, P, C>::SingleObjectiveGA(bool consoleDisplay)
-    : GA<T, P, C>()
+template<typename F, typename P, typename C>
+SingleObjectiveGA<F, P, C>::SingleObjectiveGA(bool consoleDisplay)
+    : GA<F, P, C>()
     , m_elitism(true)
     , m_consoleDisplay(consoleDisplay)
 {
 }
 
-template<typename T, typename P, typename C>
-void SingleObjectiveGA<T, P, C>::runOneGeneration()
+template<typename F, typename P, typename C>
+void SingleObjectiveGA<F, P, C>::runOneGeneration()
 {
     P* newPop = new P;
     while (!newPop->isFull())
@@ -88,8 +88,8 @@ void SingleObjectiveGA<T, P, C>::runOneGeneration()
     this->m_currentGeneration++;
 }
 
-template<typename T, typename P, typename C>
-void SingleObjectiveGA<T, P, C>::initialize()
+template<typename F, typename P, typename C>
+void SingleObjectiveGA<F, P, C>::initialize()
 {
     if(this->m_isInitialized)   // already initialized
         return;
@@ -103,8 +103,8 @@ void SingleObjectiveGA<T, P, C>::initialize()
     this->m_isInitialized = true;
 }
 
-template<typename T, typename P, typename C>
-std::vector<C> SingleObjectiveGA<T, P, C>::performGA()
+template<typename F, typename P, typename C>
+std::vector< C > SingleObjectiveGA<F, P, C>::performGA()
 {
     // Run the algorithm if it is initialized, and return the best solution found
     if (!this->m_isInitialized)
@@ -116,15 +116,15 @@ std::vector<C> SingleObjectiveGA<T, P, C>::performGA()
     return this->m_population->getBestSolution();
 }
 
-template<typename T, typename P, typename C>
-void SingleObjectiveGA<T, P, C>::reset()
+template<typename F, typename P, typename C>
+void SingleObjectiveGA<F, P, C>::reset()
 {
     this->m_currentGeneration = 1;
     this->m_isInitialized = false;
 }
 
-template<typename T, typename P, typename C>
-void SingleObjectiveGA<T, P, C>::displayAdvancement()
+template<typename F, typename P, typename C>
+void SingleObjectiveGA<F, P, C>::displayAdvancement()
 {
     const int nbSymbols = 40;
     double advancement = this->m_currentGeneration / (double)this->m_nbGenerationsWanted;

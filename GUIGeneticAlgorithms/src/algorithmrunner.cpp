@@ -22,7 +22,7 @@ void AlgorithmRunner::runAlgorithm(const QString& parameter)
     if (identificator == "ga")
         configureAndRunAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>(createSingleObjectiveAlgorithm<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt>());
     else if (identificator == "nsga2")
-        configureAndRunAlgorithm<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt>(createNSGAIIAlgorithm<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt>());
+        configureAndRunAlgorithm<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt>(createNSGAIIAlgorithm<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt>());
     else
         emit algorithmExecuted(std::vector<QString>());
 }
@@ -110,6 +110,19 @@ std::vector<QString> AlgorithmRunner::formattingSolutions(const std::vector<C> s
 
         for (auto it2 = genes.begin() ; it2 != genes.end() ; it2++)
             datas += QString::number(*it2);
+
+        int value = getDecimalFromBinary(genes);
+
+        datas += " => ";
+        datas += QString::number(value);
+
+        datas += " => \t| ";
+        for (unsigned int j = 0 ; j < it->getFitness().size() ; j++)
+        {
+            datas += QString::number(it->getFitness()[j]);
+            datas += " | ";
+        }
+
         stringSolutions.push_back(datas);
 
         datas = "";

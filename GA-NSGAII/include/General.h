@@ -69,6 +69,12 @@ template<typename T>
  */
 bool emptyPopulation(const T& param);
 
+template <typename T>
+int getDecimalFromBinary(std::vector<T> binary);
+
+template <typename T>
+T power(T nb, int pow);
+
 // Random number generator
 static std::mt19937 generator(std::chrono::system_clock::now().time_since_epoch().count());
 
@@ -109,6 +115,40 @@ template<typename T>
 bool emptyPopulation(const T& param)
 {
     return param.getCurrentNbChromosomes() == 0;
+}
+
+template <typename T>
+int getDecimalFromBinary(std::vector<T> binary)
+{
+    int value = 0;
+    int index = 0;
+    for (unsigned int i = binary.size()-1 ; i >= 1 ; i--)
+    {
+        if (binary[i] == 1)
+            value += power(2, index);
+        index++;
+    }
+
+    if (binary[0] == 1)
+        value = -value;
+
+    return value;
+}
+
+template <typename T>
+T power(T nb, int pow)
+{
+    if (pow < 0)
+        return -1;
+
+    if (pow == 0)
+        return 1;
+
+    T result = 1;
+    for (int i = 1 ; i <= pow ; i++)
+        result *= nb;
+
+    return result;
 }
 
 #endif // GENERAL_H

@@ -8,7 +8,7 @@
 
 #include "population.h"
 
-template<typename T, typename P, typename C>
+template<typename F, typename P, typename C>
 /**
  * @brief The GA class Provide some prototypes of function to run genetic algorithms.
  */
@@ -92,30 +92,30 @@ public:
     virtual const P& getPopulation() const {return *m_population;}
 };
 
-template<typename T, typename P, typename C>
-GA<T, P, C>::GA()
+template<typename F, typename P, typename C>
+GA<F, P, C>::GA()
     : m_isInitialized(false)
     , m_nbGenerationsWanted(100)
     , m_population(nullptr)
 {
 }
 
-template<typename T, typename P, typename C>
-GA<T, P, C>::~GA()
+template<typename F, typename P, typename C>
+GA<F, P, C>::~GA()
 {
     releaseMemory();
 }
 
-template<typename T, typename P, typename C>
-void GA<T, P, C>::releaseMemory()
+template<typename F, typename P, typename C>
+void GA<F, P, C>::releaseMemory()
 {
     if (m_population)
         delete m_population;
     m_population = nullptr;
 }
 
-template<typename T, typename P, typename C>
-void GA<T, P, C>::readParamsFromFile(const char* fileName)
+template<typename F, typename P, typename C>
+void GA<F, P, C>::readParamsFromFile(const char* fileName)
 {
     if (m_isInitialized)
         throw std::runtime_error("Impossible to set parameters. Please reset GA before.");
@@ -169,8 +169,8 @@ void GA<T, P, C>::readParamsFromFile(const char* fileName)
         throw std::runtime_error("Impossible to open file or file doesn't exist!");
 }
 
-template<typename T, typename P, typename C>
-void GA<T, P, C>::readParamsFromFile(const std::string& fileName)
+template<typename F, typename P, typename C>
+void GA<F, P, C>::readParamsFromFile(const std::string& fileName)
 {
     readParamsFromFile(fileName.c_str());
 }

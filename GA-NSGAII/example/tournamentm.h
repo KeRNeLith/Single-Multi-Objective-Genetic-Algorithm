@@ -3,19 +3,19 @@
 
 #include "population.h"
 
-template<typename T, typename T2, typename C>
+template<typename F, typename DATA, typename C>
 /**
  * @brief The RouletteWheel class Provide a selection of parents to breeding based on a Tournament and for Multi objective GA.
  */
 class TournamentM
-        : public Population<T, T2, C>
+        : public Population<F, DATA, C>
 {
 protected:
 
-    std::vector< std::vector<C> > m_sortedChromosomes;
+    std::vector< std::vector< C > > m_sortedChromosomes;
 
     virtual void destroy();
-    virtual void copy(const TournamentM<T, T2, C> &other);
+    virtual void copy(const TournamentM<F, DATA, C> &other);
     /**
      * @brief selectOneChromosome Select one chromosome from m_chromosomes based on the crowded tournament.
      * @return A chromosome.
@@ -37,33 +37,33 @@ public:
     TournamentM& operator=(const TournamentM& other);
 };
 
-template<typename T, typename T2, typename C>
-TournamentM<T, T2, C>::TournamentM(const int maxChromosome)
-    : Population<T, T2, C>(maxChromosome == -1 ? this->m_sNbMaxChromosomes : maxChromosome)
+template<typename F, typename DATA, typename C>
+TournamentM<F, DATA, C>::TournamentM(const int maxChromosome)
+    : Population<F, DATA, C>(maxChromosome == -1 ? this->m_sNbMaxChromosomes : maxChromosome)
 {
 }
 
-template<typename T, typename T2, typename C>
-TournamentM<T, T2, C>::TournamentM(const TournamentM& other)
-    : Population<T, T2, C>(other)
+template<typename F, typename DATA, typename C>
+TournamentM<F, DATA, C>::TournamentM(const TournamentM& other)
+    : Population<F, DATA, C>(other)
 {
     copy(other);
 }
 
-template<typename T, typename T2, typename C>
-void TournamentM<T, T2, C>::destroy()
+template<typename F, typename DATA, typename C>
+void TournamentM<F, DATA, C>::destroy()
 {
-    Population<T, T2, C>::destroy();
+    Population<F, DATA, C>::destroy();
 }
 
-template<typename T, typename T2, typename C>
-void TournamentM<T, T2, C>::copy(const TournamentM<T, T2, C> &other)
+template<typename F, typename DATA, typename C>
+void TournamentM<F, DATA, C>::copy(const TournamentM<F, DATA, C> &other)
 {
-    Population<T, T2, C>::copy(other);
+    Population<F, DATA, C>::copy(other);
 }
 
-template<typename T, typename T2, typename C>
-C TournamentM<T, T2, C>::selectOneChromosome()
+template<typename F, typename DATA, typename C>
+C TournamentM<F, DATA, C>::selectOneChromosome()
 {
     std::uniform_int_distribution<> distributionPoolSize(2, this->m_nbMaxChromosomes);
     int poolSize = distributionPoolSize(generator);
@@ -103,8 +103,8 @@ C TournamentM<T, T2, C>::selectOneChromosome()
     return chromosome;
 }
 
-template<typename T, typename T2, typename C>
-void TournamentM<T, T2, C>::evaluateFitness()
+template<typename F, typename DATA, typename C>
+void TournamentM<F, DATA, C>::evaluateFitness()
 {
     for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
         this->m_chromosomes[i].computeFitness();
@@ -114,7 +114,7 @@ void TournamentM<T, T2, C>::evaluateFitness()
 
     unsigned int nbObjectives = this->m_chromosomes[0].getFitness().size();
     m_sortedChromosomes.clear();
-    Ascending<C> comparator;    // Comaparator using to sort on ascending order each objectives
+    Ascending< C > comparator;    // Comaparator using to sort on ascending order each objectives
     // Sort chromosomes to have m_chromosomes[0] with the lower fitness
     // and m_chromosomes[m_chromosomes.size()] with the hightest
     // On each objectives
@@ -126,14 +126,14 @@ void TournamentM<T, T2, C>::evaluateFitness()
     }
 }
 
-template<typename T, typename T2, typename C>
-std::pair< C, C > TournamentM<T, T2, C>::selectChromosomesPair()
+template<typename F, typename DATA, typename C>
+std::pair< C, C > TournamentM<F, DATA, C>::selectChromosomesPair()
 {
     return std::pair< C, C >(selectOneChromosome(), selectOneChromosome());
 }
 
-template<typename T, typename T2, typename C>
-C TournamentM<T, T2, C>::crossOver(std::pair< C, C > parents)
+template<typename F, typename DATA, typename C>
+C TournamentM<F, DATA, C>::crossOver(std::pair< C, C > parents)
 {
     // Children Chromosome
     C offspring;
@@ -177,26 +177,26 @@ C TournamentM<T, T2, C>::crossOver(std::pair< C, C > parents)
     return offspring;
 }
 
-template<typename T, typename T2, typename C>
-std::vector< C > TournamentM<T, T2, C>::getBestSolution() const
+template<typename F, typename DATA, typename C>
+std::vector< C > TournamentM<F, DATA, C>::getBestSolution() const
 {
     return this->m_chromosomes;
 }
 
-template<typename T, typename T2, typename C>
-TournamentM<T, T2, C>& TournamentM<T, T2, C>::add(const TournamentM& op)
+template<typename F, typename DATA, typename C>
+TournamentM<F, DATA, C>& TournamentM<F, DATA, C>::add(const TournamentM& op)
 {
-    Population<T, T2, C>::add(op);
+    Population<F, DATA, C>::add(op);
 
     evaluateFitness();
 
     return *this;
 }
 
-template<typename T, typename T2, typename C>
-TournamentM<T, T2, C>& TournamentM<T, T2, C>::operator=(const TournamentM& other)
+template<typename F, typename DATA, typename C>
+TournamentM<F, DATA, C>& TournamentM<F, DATA, C>::operator=(const TournamentM& other)
 {
-    if(this != dynamic_cast<const TournamentM<T, T2, C>*>(&other))
+    if(this != dynamic_cast<const TournamentM<F, DATA, C>*>(&other))
     {
         destroy();
         copy(other);

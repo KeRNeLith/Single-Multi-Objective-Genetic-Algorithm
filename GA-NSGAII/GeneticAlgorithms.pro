@@ -17,7 +17,7 @@ SOURCES +=  example/main.cpp \
             src/nsgaii.cpp \
             example/roulettewheel.cpp \
             example/chromosomeintint.cpp \
-            example/chromosomemintint.cpp \
+            example/chromosomemdoubleint.cpp \
             example/tournamentm.cpp
 
 HEADERS +=  include/ga.h \
@@ -29,6 +29,6 @@ HEADERS +=  include/ga.h \
             include/nsgaii.h \
             example/roulettewheel.h \
             example/chromosomeintint.h \
-            example/chromosomemintint.h \
+            example/chromosomemdoubleint.h \
             example/tournamentm.h
 

@@ -4,15 +4,15 @@
 #include <vector>
 #include <functional>
 
-template<typename T, typename T2>
+template<typename F, typename DATA>
 /**
  * @brief The Chromosome class Provide some basic datas and functions to manage a Chromosome in GAs.
  */
 class Chromosome
 {
 protected:
-    std::vector < T > m_fitness;        ///> Fitness of the individual for the given problem
-    std::vector< T2> m_datas;           ///> Describe how the chromosome is represented to apply the GA
+    std::vector < F > m_fitness;        ///> Fitness of the individual for the given problem
+    std::vector< DATA > m_datas;        ///> Describe how the chromosome is represented to apply the GA
     static unsigned int m_nbGenes;      ///> Number of genes
 
 public:
@@ -39,7 +39,7 @@ public:
      * @brief getFitness Fitness of the chromosome.
      * @return The fitness.
      */
-    virtual std::vector < T > getFitness() const { return m_fitness; }
+    virtual std::vector < F > getFitness() const { return m_fitness; }
 
     /**
      * @brief getNbObjective Get the number of objective.
@@ -51,12 +51,12 @@ public:
      * @brief getDatas Allow to get all genes of the chromosome.
      * @return Genes's vector of the chromosome.
      */
-    virtual std::vector< T2 > getDatas() const { return m_datas; }
+    virtual std::vector< DATA > getDatas() const { return m_datas; }
     /**
      * @brief setDatas Set all genes of the chromosome to the parameter value.
      * @param datas Genes's vector of the chromosome
      */
-    virtual void setDatas(const std::vector< T2 > datas) { m_datas = datas; }
+    virtual void setDatas(const std::vector< DATA > datas) { m_datas = datas; }
 
     /**
      * @brief setNbGenes Set the number of genes composing the chromosome.
@@ -70,20 +70,20 @@ public:
     static int getNbGenes() { return m_nbGenes; }
 
     // Operator
-    bool operator<(const Chromosome<T, T2>& chromosome) const { return m_fitness < chromosome.m_fitness; }
-    bool operator ==(const Chromosome<T, T2>& chromosome) const { return m_fitness == chromosome.m_fitness && m_datas == chromosome.m_datas; }
+    bool operator<(const Chromosome<F, DATA>& chromosome) const { return m_fitness < chromosome.m_fitness; }
+    bool operator ==(const Chromosome<F, DATA>& chromosome) const { return m_fitness == chromosome.m_fitness && m_datas == chromosome.m_datas; }
 };
 
-template<typename T, typename T2>
-unsigned int Chromosome<T, T2>::m_nbGenes = 10;
+template<typename F, typename DATA>
+unsigned int Chromosome<F, DATA>::m_nbGenes = 10;
 
-template<typename T, typename T2>
-Chromosome<T, T2>::Chromosome()
+template<typename F, typename DATA>
+Chromosome<F, DATA>::Chromosome()
 {
 }
 
-template<typename T, typename T2>
-Chromosome<T, T2>::~Chromosome()
+template<typename F, typename DATA>
+Chromosome<F, DATA>::~Chromosome()
 {
 }
 

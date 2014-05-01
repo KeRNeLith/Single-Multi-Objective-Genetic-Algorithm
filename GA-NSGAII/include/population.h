@@ -7,7 +7,7 @@
 #include "chromosome.h"
 #include "General.h"
 
-template<typename T, typename T2, typename C>
+template<typename F, typename DATA, typename C>
 /**
  * @brief The Population class Provide the storage of multiple chromosomes in order to apply a GA.
  */
@@ -77,7 +77,7 @@ public:
      * @param chromosomes Will be add to m_chromosomes vector.
      * @param number Number of element that will be added from chromosomes
      */
-    virtual void addChromosomes(std::vector<C> chromosomes, int number = -1);
+    virtual void addChromosomes(const std::vector< C > &chromosomes, int number = -1);
 
     /**
      * @brief isFull Check if the population is completely filled.
@@ -176,57 +176,57 @@ public:
 };
 
 // Init static variables
-template<typename T, typename T2, typename C>
-unsigned int Population<T, T2, C>::m_sNbMaxChromosomes = 100;
-template<typename T, typename T2, typename C>
-double Population<T, T2, C>::m_proportionalChromosomesKeep = 0.2;
+template<typename F, typename DATA, typename C>
+unsigned int Population<F, DATA, C>::m_sNbMaxChromosomes = 100;
+template<typename F, typename DATA, typename C>
+double Population<F, DATA, C>::m_proportionalChromosomesKeep = 0.2;
 
-template<typename T, typename T2, typename C>
-double Population<T, T2, C>::m_crossOverProbability = 0.3;
-template<typename T, typename T2, typename C>
-double Population<T, T2, C>::m_mutateProbability = 0.04;
+template<typename F, typename DATA, typename C>
+double Population<F, DATA, C>::m_crossOverProbability = 0.3;
+template<typename F, typename DATA, typename C>
+double Population<F, DATA, C>::m_mutateProbability = 0.04;
 
 
-template<typename T, typename T2, typename C>
-Population<T, T2, C>::Population(const int maxChromosome)
+template<typename F, typename DATA, typename C>
+Population<F, DATA, C>::Population(const int maxChromosome)
     : m_nbMaxChromosomes(maxChromosome == -1 ? m_sNbMaxChromosomes : maxChromosome)
     , m_chromosomes()
 {
 }
 
-template<typename T, typename T2, typename C>
-Population<T, T2, C>::Population(const Population<T, T2, C>& other)
+template<typename F, typename DATA, typename C>
+Population<F, DATA, C>::Population(const Population<F, DATA, C>& other)
 {
     copy(other);
 }
 
-template<typename T, typename T2, typename C>
-Population<T, T2, C>::~Population()
+template<typename F, typename DATA, typename C>
+Population<F, DATA, C>::~Population()
 {
 }
 
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::destroy()
+template<typename F, typename DATA, typename C>
+void Population<F, DATA, C>::destroy()
 {
     m_chromosomes.clear();
 }
 
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::copy(const Population<T, T2, C>& other)
+template<typename F, typename DATA, typename C>
+void Population<F, DATA, C>::copy(const Population<F, DATA, C>& other)
 {
     m_nbMaxChromosomes = other.m_nbMaxChromosomes;
     m_chromosomes = other.m_chromosomes;
 }
 
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::mutate()
+template<typename F, typename DATA, typename C>
+void Population<F, DATA, C>::mutate()
 {
     for (unsigned int i = 0 ; i < m_chromosomes.size() ; i++)
         m_chromosomes[i].mutate();
 }
 
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::generateRandomChromosomes()
+template<typename F, typename DATA, typename C>
+void Population<F, DATA, C>::generateRandomChromosomes()
 {
     m_chromosomes.clear();
     // Fill the population until it is full
@@ -238,15 +238,15 @@ void Population<T, T2, C>::generateRandomChromosomes()
     }
 }
 
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::addChromosome(const C &chromosome)
+template<typename F, typename DATA, typename C>
+void Population<F, DATA, C>::addChromosome(const C &chromosome)
 {
     if (!isFull())
         m_chromosomes.push_back(chromosome);
 }
 
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::addChromosomes(std::vector<C> chromosomes, int number)
+template<typename F, typename DATA, typename C>
+void Population<F, DATA, C>::addChromosomes(const std::vector< C >& chromosomes, int number)
 {
     unsigned int limit = number == -1 ? chromosomes.size() : number;
     int i = 0;
@@ -257,31 +257,31 @@ void Population<T, T2, C>::addChromosomes(std::vector<C> chromosomes, int number
     }
 }
 
-template<typename T, typename T2, typename C>
-bool Population<T, T2, C>::isFull()
+template<typename F, typename DATA, typename C>
+bool Population<F, DATA, C>::isFull()
 {
     if (m_chromosomes.empty())
         return false;
     return m_chromosomes.size() >= m_nbMaxChromosomes;
 }
 
-template<typename T, typename T2, typename C>
-void Population<T, T2, C>::reset()
+template<typename F, typename DATA, typename C>
+void Population<F, DATA, C>::reset()
 {
     m_chromosomes.clear();
     m_nbMaxChromosomes = m_sNbMaxChromosomes;
 }
 
-template<typename T, typename T2, typename C>
-int Population<T, T2, C>::getCurrentNbChromosomes() const
+template<typename F, typename DATA, typename C>
+int Population<F, DATA, C>::getCurrentNbChromosomes() const
 {
     if (m_chromosomes.empty())
         return 0;
     return m_chromosomes.size();
 }
 
-template<typename T, typename T2, typename C>
-Population<T, T2, C>& Population<T, T2, C>::add(const Population<T, T2, C>& op)
+template<typename F, typename DATA, typename C>
+Population<F, DATA, C>& Population<F, DATA, C>::add(const Population<F, DATA, C>& op)
 {
     this->m_chromosomes.reserve(this->m_chromosomes.size() + op.m_chromosomes.size());
     this->m_chromosomes.insert(this->m_chromosomes.end(), op.m_chromosomes.begin(), op.m_chromosomes.end());
@@ -290,10 +290,10 @@ Population<T, T2, C>& Population<T, T2, C>::add(const Population<T, T2, C>& op)
     return *this;
 }
 
-template<typename T, typename T2, typename C>
-Population<T, T2, C>& Population<T, T2, C>::operator=(const Population<T, T2, C>& other)
+template<typename F, typename DATA, typename C>
+Population<F, DATA, C>& Population<F, DATA, C>::operator=(const Population<F, DATA, C>& other)
 {
-    if(this != dynamic_cast<Population<T, T2, C>*>(&other))
+    if(this != dynamic_cast<Population<F, DATA, C>*>(&other))
     {
         destroy();
         copy(other);

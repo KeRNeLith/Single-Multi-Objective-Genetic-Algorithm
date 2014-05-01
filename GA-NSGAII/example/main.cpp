@@ -6,7 +6,7 @@
 #include "roulettewheel.h"
 #include "tournamentm.h"
 #include "chromosomeintint.h"
-#include "chromosomemintint.h"
+#include "chromosomemdoubleint.h"
 
 int main()
 {
@@ -39,14 +39,14 @@ int main()
         std::cout << std::endl << "Result : " << ret << std::endl;*/
 
         ////////////////// MULTI OBJECTIVE GA (NSGA-II) //////////////////
-        NSGAII<int, TournamentM<int, int, ChromosomeMIntInt>, ChromosomeMIntInt> nsga2;
+        NSGAII<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt> nsga2;
         nsga2.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
         // Same method, described above, except there isn't function setElitism and setProportionalKeeping.
 
         nsga2.initialize();
-        std::vector<ChromosomeMIntInt> results = nsga2.performGA();
+        std::vector<ChromosomeMDoubleInt> results = nsga2.performGA();
         std::cout << std::endl << std::endl << "Solutions : " << std::endl;
         for (unsigned int i = 0 ; i < results.size() ; i++)
             std::cout << "(" << i+1 << ")\t Rank : " << results[i].getRank() << " || Distance : " << results[i].getDistance() << std::endl;

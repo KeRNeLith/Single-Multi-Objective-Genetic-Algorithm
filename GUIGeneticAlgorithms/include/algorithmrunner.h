@@ -17,7 +17,7 @@
 #include "chromosomeintint.h"
 
 #include "tournamentm.h"
-#include "chromosomemintint.h"
+#include "chromosomemdoubleint.h"
 
 #include "mainwindow.h"
 

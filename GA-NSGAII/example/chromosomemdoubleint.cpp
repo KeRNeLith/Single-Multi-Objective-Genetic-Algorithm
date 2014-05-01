@@ -1,7 +1,7 @@
-#include "chromosomemintint.h"
+#include "chromosomemdoubleint.h"
 
-ChromosomeMIntInt::ChromosomeMIntInt()
-    : Chromosome<int, int>()
+ChromosomeMDoubleInt::ChromosomeMDoubleInt()
+    : Chromosome<double, int>()
     , m_crowdingDistance(0)
     , m_rank(-1)
     , m_dominatedSolutions()
@@ -9,13 +9,13 @@ ChromosomeMIntInt::ChromosomeMIntInt()
 {
 }
 
-void ChromosomeMIntInt::resetDominance()
+void ChromosomeMDoubleInt::resetDominance()
 {
     m_nbSolutionDominatesMe = 0;
     m_dominatedSolutions.clear();
 }
 
-bool ChromosomeMIntInt::dominates(const ChromosomeMIntInt& other)
+bool ChromosomeMDoubleInt::dominates(const ChromosomeMDoubleInt& other)
 {
     unsigned int nbMaxObjective = std::min(m_fitness.size(), other.m_fitness.size());
 
@@ -41,7 +41,7 @@ bool ChromosomeMIntInt::dominates(const ChromosomeMIntInt& other)
     return false;
 }
 
-bool ChromosomeMIntInt::mutate()
+bool ChromosomeMDoubleInt::mutate()
 {
     // Flip bit according to mutate probability
     // and indicate if there has been a mutation with a flag.
@@ -51,7 +51,7 @@ bool ChromosomeMIntInt::mutate()
     for (unsigned int i = 0 ; i < m_datas.size() ; i++)
     {
         float rand = distribution(generator);
-        float proba = Population<int, int, ChromosomeMIntInt>::getMutateProbability();
+        float proba = Population<int, int, ChromosomeMDoubleInt>::getMutateProbability();
 
         if (rand > proba)
             continue;
@@ -65,17 +65,39 @@ bool ChromosomeMIntInt::mutate()
     return flag;
 }
 
-void ChromosomeMIntInt::computeFitness()
+void ChromosomeMDoubleInt::computeFitness()
 {
     m_fitness.clear();
 
-    // TO TEST
-    std::uniform_int_distribution<> distribution(0, 100);
-    for (int i = 0 ; i < 3 ; i++)
-        this->m_fitness.push_back(distribution(generator));
+    // Problem SCH1 :
+    // Minimize f1 = x²
+    // Minimize f2 = (x-2)²
+
+    const int forbidenValue1 = 0;
+    const int forbidenValue2 = 2;
+
+    int value = getDecimalFromBinary(m_datas);
+
+    if(value == forbidenValue1)
+    {
+        double dvalue = value + 0.00001;
+        this->m_fitness.push_back(1/(double)((dvalue-forbidenValue1)*(dvalue-forbidenValue1)));
+        this->m_fitness.push_back(1/(double)((value-forbidenValue2)*(value-forbidenValue2)));
+        return;
+    }
+    if(value == forbidenValue2)
+    {
+        double dvalue = value + 0.00001;
+        this->m_fitness.push_back(1/(double)((value-forbidenValue1)*(value-forbidenValue1)));
+        this->m_fitness.push_back(1/(double)((dvalue-forbidenValue2)*(dvalue-forbidenValue2)));
+        return;
+    }
+
+    this->m_fitness.push_back(1/(double)((value-forbidenValue1)*(value-forbidenValue1)));
+    this->m_fitness.push_back(1/(double)((value-forbidenValue2)*(value-forbidenValue2)));
 }
 
-void ChromosomeMIntInt::generateRandomChromosome()
+void ChromosomeMDoubleInt::generateRandomChromosome()
 {
     std::uniform_int_distribution<> distribution(0, 1);
 
@@ -83,7 +105,7 @@ void ChromosomeMIntInt::generateRandomChromosome()
         m_datas.push_back(distribution(generator));
 }
 
-void ChromosomeMIntInt::addDominatedSolution(ChromosomeMIntInt* other)
+void ChromosomeMDoubleInt::addDominatedSolution(ChromosomeMDoubleInt* other)
 {
     m_dominatedSolutions.push_back(other);
 }

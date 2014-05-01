@@ -5,9 +5,9 @@
 
 #include "ga.h"
 
-template<typename T, typename P, typename C>
+template<typename F, typename P, typename C>
 class NSGAII
-        : public GA<T, P, C>
+        : public GA<F, P, C>
 {
 protected:
 
@@ -73,37 +73,47 @@ public:
     virtual bool getConsoleDsiplay() const { return m_consoleDisplay; }
 };
 
-template<typename T, typename P, typename C>
-NSGAII<T, P, C>::NSGAII(bool consoleDisplay)
-    : GA<T, P, C>()
+template<typename F, typename P, typename C>
+NSGAII<F, P, C>::NSGAII(bool consoleDisplay)
+    : GA<F, P, C>()
     , m_offspring(nullptr)
     , m_consoleDisplay(consoleDisplay)
 {
 }
 
-template<typename T, typename P, typename C>
-NSGAII<T, P, C>::~NSGAII()
+template<typename F, typename P, typename C>
+NSGAII<F, P, C>::~NSGAII()
 {
     releaseMemory();
 }
 
-template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::releaseMemory()
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::releaseMemory()
 {
-    GA<T, P, C>::releaseMemory();
+    GA<F, P, C>::releaseMemory();
     if (m_offspring)
         delete m_offspring;
     m_offspring = nullptr;
 }
 
-template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::runOneGeneration()
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::runOneGeneration()
 {
     // Combine parent and offsprings population
     this->m_population->add(*m_offspring);
 
     // Determine all non dominated fronts
     std::vector < P > fronts = fastNonDominatedSort(this->m_population);
+
+    // TO REMOVE
+    /*std::cout << "front1 : => \t\t\t\t";
+    for(unsigned int i = 0 ; i < fronts[0].getCurrentNbChromosomes() ; i++)
+    {
+        std::vector<int> bits = fronts[0].getChromosomes()[i].getDatas();
+        std::cout << " " << getDecimalFromBinary(bits)<< "("<< &(fronts[0].getChromosomes()[i]) <<")";
+    }
+    std::cout << std::endl;*/
+    // TO REMOVE
 
     // Secure check if it's not empty (should never arrived)
     if (fronts.empty())
@@ -119,6 +129,20 @@ void NSGAII<T, P, C>::runOneGeneration()
     {
         // Calculate crowding-distance in ith Front
         crowdingDistanceAssignement(&fronts[i]);
+
+        // TO REMOVE
+        /*if (i == 0)
+        {
+            std::cout << "front1 (added sure) : => \t\t\t";
+            for(unsigned int i = 0 ; i < fronts[0].getCurrentNbChromosomes() ; i++)
+            {
+                std::vector<int> bits = fronts[0].getChromosomes()[i].getDatas();
+                std::cout << " " << getDecimalFromBinary(bits)<< "("<< &(fronts[0].getChromosomes())[i] <<")";
+            }
+            std::cout << std::endl;
+        }*/
+        // TO REMOVE
+
         // Include ith non-dominated front in the population
         newParents->addChromosomes(fronts[i].getChromosomes());
         i++;    // Check the next front for inclusion
@@ -131,11 +155,49 @@ void NSGAII<T, P, C>::runOneGeneration()
         std::vector< C > chromosomes = fronts[i].getChromosomes();
 
         // Sort in descending order the ith front using crowding operator
-        std::sort(chromosomes.begin(), chromosomes.end(), crowdingOperator<C>);
+        std::sort(chromosomes.begin(), chromosomes.end(), crowdingOperator< C >);
+
+        // TO REMOVE
+        /*if (i == 0)
+        {
+            std::cout << "front1 sorted (size > newPop) : => \t\t";
+            for(unsigned int i = 0 ; i < chromosomes.size() ; i++)
+            {
+                std::vector<int> bits = chromosomes[i].getDatas();
+                std::cout << " " << getDecimalFromBinary(bits)<< "("<< &chromosomes[i] <<")";
+            }
+            std::cout << std::endl;
+
+            std::cout << "front1 sorted (kept) : => \t\t\t";
+            for(unsigned int i = 0 ; i < newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes() ; i++)
+            {
+                std::vector<int> bits = chromosomes[i].getDatas();
+                std::cout << " " << getDecimalFromBinary(bits) << "("<< &chromosomes[i] <<")";
+            }
+            std::cout << std::endl;
+        }*/
+        // TO REMOVE
 
         // Choose the first (max chromosomes - size newParents) of ith front
-        newParents->addChromosomes(fronts[i].getChromosomes(), newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes());
+        newParents->addChromosomes(chromosomes, newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes());
+        // CHANGED
+        /*int j = 0;
+        while (!newParents->isFull())
+        {
+            newParents->addChromosome(&fronts[i].getChromosomes()[j]);
+            j++;
+        }*/
     }
+
+    // TO REMOVE
+    /*std::cout << "newPop contain : => \t\t\t";
+    for(unsigned int i = 0 ; i < newParents->getCurrentNbChromosomes() ; i++)
+    {
+        std::vector<int> bits = newParents->getChromosomes()[i].getDatas();
+        std::cout << " " << getDecimalFromBinary(bits) << "("<< &(newParents->getChromosomes())[i] <<")";
+    }
+    std::cout << std::endl;*/
+    // TO REMOVE
 
     delete this->m_population;
     this->m_population = new P;
@@ -150,10 +212,14 @@ void NSGAII<T, P, C>::runOneGeneration()
         displayAdvancement();
 
     this->m_currentGeneration++;    // Generation counter
+
+    // TO REMOVE
+    //std::cout<<"-----------------------------------------"<<std::endl;
+    // TO REMOVE
 }
 
-template<typename T, typename P, typename C>
-P* NSGAII<T, P, C>::breeding()
+template<typename F, typename P, typename C>
+P* NSGAII<F, P, C>::breeding()
 {
     P* newPop = new P;
 
@@ -169,8 +235,8 @@ P* NSGAII<T, P, C>::breeding()
     return newPop;
 }
 
-template<typename T, typename P, typename C>
-std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
+template<typename F, typename P, typename C>
+std::vector< P > NSGAII<F, P, C>::fastNonDominatedSort(P* popToSort)
 {
     // Will contain all fronts
     std::vector< P > fronts;
@@ -229,15 +295,15 @@ std::vector<P> NSGAII<T, P, C>::fastNonDominatedSort(P* popToSort)
         fronts.push_back(*Q);
     }
     // Delete fronts created if it is empty.
-    auto removeEnd = std::remove_if(fronts.begin(), fronts.end(), emptyPopulation<P>);
+    auto removeEnd = std::remove_if(fronts.begin(), fronts.end(), emptyPopulation< P >);
     if (removeEnd != fronts.end())
         fronts.erase(removeEnd, fronts.end());
 
     return fronts;
 }
 
-template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance)
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance)
 {
     if (popToAssignCrowdingDistance->getChromosomes().empty())
         return;
@@ -249,7 +315,7 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
     for (unsigned int i = 0 ; i < nbSolutions ; i++)
         popToAssignCrowdingDistance->getChromosomes()[i].setDistance(0);
 
-    Ascending<C> comparator;    // Comparator using to sort on ascending order each objectives
+    Ascending< C > comparator;    // Comparator using to sort on ascending order each objectives
     unsigned int nbObjective = popToAssignCrowdingDistance->getChromosomes()[0].getNbObjective();
     for (unsigned int m = 0 ; m < nbObjective ; m++)
     {
@@ -262,10 +328,10 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
                   comparator);
 
         // Assigne value of max minus min of fitness for the objective m
-        T maxMinusMinFitness = chromosomes[nbSolutions-1].getFitness()[m] - chromosomes[0].getFitness()[m];
+        F maxMinusMinFitness = chromosomes[nbSolutions-1].getFitness()[m] - chromosomes[0].getFitness()[m];
 
         if (maxMinusMinFitness == 0) // Little cheat to prevent division by 0
-            maxMinusMinFitness = 0.000000001;
+            maxMinusMinFitness = 0.00001;
         if (chromosomes.size() == 1) // Little cheat to prevent out of range access
         {
             double distance =   chromosomes[0].getDistance()
@@ -299,16 +365,16 @@ void NSGAII<T, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
     }
 }
 
-template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::addChromosomeWithoutControl(P* pop, C* chromosome)
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::addChromosomeWithoutControl(P* pop, C* chromosome)
 {
     if (pop->isFull())
         pop->setNbMaxChromosomes(pop->getNbMaxChromosomes()+1);
     pop->addChromosome(*chromosome);
 }
 
-template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::displayAdvancement()
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::displayAdvancement()
 {
     const int nbSymbols = 40;
     double advancement = this->m_currentGeneration / (double)this->m_nbGenerationsWanted;
@@ -324,9 +390,13 @@ void NSGAII<T, P, C>::displayAdvancement()
     std::cout << "]" << "\t" << advancement*100 << "%";
 }
 
-template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::initialize()
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::initialize()
 {
+    // TO REMOVE
+    //std::cout <<std::endl<<std::endl<< "NEW RUN !"<<std::endl;
+    // TO REMOVE
+
     if(this->m_isInitialized)   // already initialized
         return;
 
@@ -345,8 +415,8 @@ void NSGAII<T, P, C>::initialize()
     this->m_isInitialized = true;
 }
 
-template<typename T, typename P, typename C>
-std::vector< C > NSGAII<T, P, C>::performGA()
+template<typename F, typename P, typename C>
+std::vector< C > NSGAII<F, P, C>::performGA()
 {
     // Run the algorithm if it is initialized, and return Pareto Optimal Set
     if (!this->m_isInitialized)
@@ -358,8 +428,8 @@ std::vector< C > NSGAII<T, P, C>::performGA()
     return this->m_population->getBestSolution();
 }
 
-template<typename T, typename P, typename C>
-void NSGAII<T, P, C>::reset()
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::reset()
 {
     this->m_currentGeneration = 1;
     this->m_isInitialized = false;

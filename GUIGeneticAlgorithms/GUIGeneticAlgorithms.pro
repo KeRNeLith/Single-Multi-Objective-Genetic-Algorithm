@@ -22,14 +22,14 @@ SOURCES +=  ./src/main.cpp \
             ./src/mainwindow.cpp \
             ./src/paramsdockwidget.cpp \
             ../GA-NSGAII/example/chromosomeintint.cpp \
-            ../GA-NSGAII/example/chromosomemintint.cpp \
+            ../GA-NSGAII/example/chromosomemdoubleint.cpp \
             ./src/solutionlisterdockwidget.cpp \
             ./src/algorithmrunner.cpp
 
 HEADERS  += ./include/mainwindow.h \
             ./include/paramsdockwidget.h \
             ../GA-NSGAII/example/chromosomeintint.h \
-            ../GA-NSGAII/example/chromosomemintint.h \
+            ../GA-NSGAII/example/chromosomemdoubleint.h \
             ./include/solutionlisterdockwidget.h \
             ./include/algorithmrunner.h
 
