@@ -166,9 +166,9 @@ void SingleObjectiveGA<F, P, C>::dumpToFile(const char* fileName)
         std::vector< C > chromosomes = this->m_population->getBestSolution();
         for (unsigned int i = 0 ; i < this->m_population->getBestSolution().size() ; i++)
         {
-            file << "N° " << i << "\tDatas : " << chromosomes[i].datasToStr() << " Fitness : ";
+            file << "N° " << i << " |\tDatas : " << chromosomes[i].datasToStr() << " | Fitness : ";
             if (!this->m_population->getBestSolution()[0].getFitness().empty())
-                file << chromosomes[i].getFitness()[0] << std::endl;
+                file << chromosomes[i].getFitness()[0];
         }
     }
     else

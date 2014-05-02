@@ -61,9 +61,9 @@ public slots:
     void runNSGA2Algorithm();
     void handleResults(const std::vector<QString>& result);
     void showFileUnknownMessage();
-    void showAlgorithmFailureMessage(const char* message);
+    void showAlgorithmFailureMessage(const QString& message);
     void updateProgressBarValue(int value);
-    void updateParetoOptimalFrontWidget();
+    void updateParetoOptimalFrontWidget(const QString& fileName);
 
     void about();
 

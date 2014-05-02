@@ -96,7 +96,7 @@ void MainWindow::showFileUnknownMessage()
                          tr("You haven't specified settings file."));
 }
 
-void MainWindow::showAlgorithmFailureMessage(const char *message)
+void MainWindow::showAlgorithmFailureMessage(const QString &message)
 {
     QMessageBox::critical(this,
                           tr("Process Error"),
@@ -130,13 +130,24 @@ void MainWindow::initThreadAlgorithm()
     // To recover results
     connect(algorithmRunner, SIGNAL(algorithmExecuted(std::vector<QString>)), this, SLOT(handleResults(std::vector<QString>)));
     // To update graph drawing
-    connect(algorithmRunner, SIGNAL(needToUpdateGraph()), this, SLOT(updateParetoOptimalFrontWidget()));
+    connect(algorithmRunner, SIGNAL(needToUpdateGraph(const QString&)), this, SLOT(updateParetoOptimalFrontWidget(const QString&)));
     m_mainWindowThread.start();
 }
 
-void MainWindow::updateParetoOptimalFrontWidget()
+void MainWindow::updateParetoOptimalFrontWidget(const QString& fileName)
 {
     m_paretoOptimalFrontW->show();
+
+    try {
+        m_paretoOptimalFrontW->loadFile(fileName.toStdString());
+    }
+    catch(std::runtime_error& e)
+    {
+        QMessageBox::critical(this,
+                              tr("Incorrect File"),
+                              e.what());
+    }
+
     m_paretoOptimalFrontW->repaint();
 }
 

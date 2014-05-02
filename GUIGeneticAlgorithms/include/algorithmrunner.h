@@ -54,9 +54,9 @@ public slots:
 signals:
     void algorithmExecuted(const std::vector<QString>& result);
     void fileUnknown();
-    void algorithmFailure(const char* message);
+    void algorithmFailure(const QString& message);
     void updateProgressBar(int progress);
-    void needToUpdateGraph();
+    void needToUpdateGraph(const QString& fileName);
 
 public:
     AlgorithmRunner(MainWindow *mainWindow);

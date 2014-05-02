@@ -4,7 +4,7 @@ AlgorithmRunner::AlgorithmRunner(MainWindow *mainWindow)
     : m_mainwindow(mainWindow)
 {
     connect(this, SIGNAL(fileUnknown()), mainWindow, SLOT(showFileUnknownMessage()));
-    connect(this, SIGNAL(algorithmFailure(const char*)), mainWindow, SLOT(showAlgorithmFailureMessage(const char*)));
+    connect(this, SIGNAL(algorithmFailure(const QString&)), mainWindow, SLOT(showAlgorithmFailureMessage(const QString&)));
     connect(this, SIGNAL(updateProgressBar(int)), mainWindow, SLOT(updateProgressBarValue(int)));
 }
 
@@ -57,7 +57,6 @@ void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
     }
     catch (std::runtime_error& e)
     {
-        std::cerr << e.what() << std::endl;
         emit algorithmFailure(e.what());
         emit algorithmExecuted(std::vector<QString>());
         delete algorithm;
@@ -83,9 +82,21 @@ void AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
     {
         emit updateProgressBar(algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted()*100);
         algorithm->runOneGeneration();
-        algorithm->dumpToFile("generation" + QString::number(algorithm->getIndexCurrentGeneration()-1).toStdString() + ".txt");
+        QString fileName = "generation" + QString::number(algorithm->getIndexCurrentGeneration()-1) + ".txt";
+
+        try {
+            algorithm->dumpToFile(fileName.toStdString());
+        }
+        catch(std::runtime_error& e)
+        {
+            emit algorithmFailure(e.what());
+            emit algorithmExecuted(std::vector<QString>());
+            delete algorithm;
+            return;
+        }
+
         if (dynamic_cast< NSGAII<T, P, C>* > (algorithm))
-            emit needToUpdateGraph();
+            emit needToUpdateGraph(fileName);
     }
 }
 

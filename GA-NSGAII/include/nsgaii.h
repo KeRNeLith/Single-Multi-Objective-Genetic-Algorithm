@@ -392,10 +392,11 @@ void NSGAII<F, P, C>::dumpToFile(const char* fileName)
         unsigned int nbObjectives = this->m_population->getBestSolution()[0].getFitness().empty() ? 0 : this->m_population->getBestSolution()[0].getFitness().size();
         for (unsigned int i = 0 ; i < this->m_population->getBestSolution().size() ; i++)
         {
-            file << "N° " << i << "\tRank : " << chromosomes[i].getRank() << " Datas : " << chromosomes[i].datasToStr() << " Fitness : ";
+            file << "N° " << i << " |\tRank : " << chromosomes[i].getRank() << " | Datas : " << chromosomes[i].datasToStr() << " | Fitness : ";
             for (unsigned int o = 0 ; o < nbObjectives ; o++)
-                file << chromosomes[i].getFitness()[o] << " | ";
-            file << std::endl;
+                file << chromosomes[i].getFitness()[o] << " / ";
+            if (i != this->m_population->getBestSolution().size()-1)
+                file << std::endl;
         }
     }
     else
