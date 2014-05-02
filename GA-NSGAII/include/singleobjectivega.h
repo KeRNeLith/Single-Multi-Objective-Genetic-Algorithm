@@ -27,6 +27,7 @@ public:
     virtual void initialize();
     virtual std::vector< C > performGA();
     virtual void reset();
+    virtual void dumpToFile(const char* fileName);
 
     /**
      * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
@@ -153,6 +154,25 @@ void SingleObjectiveGA<F, P, C>::displayAdvancement()
             std::cout << " ";
     }
     std::cout << "]" << "\t" << advancement*100 << "%";
+}
+
+template<typename F, typename P, typename C>
+void SingleObjectiveGA<F, P, C>::dumpToFile(const char* fileName)
+{
+    std::ofstream file(fileName, std::ios::out | std::ios::trunc);
+
+    if (file)
+    {
+        std::vector< C > chromosomes = this->m_population->getBestSolution();
+        for (unsigned int i = 0 ; i < this->m_population->getBestSolution().size() ; i++)
+        {
+            file << "N° " << i << "\tDatas : " << chromosomes[i].datasToStr() << " Fitness : ";
+            if (!this->m_population->getBestSolution()[0].getFitness().empty())
+                file << chromosomes[i].getFitness()[0] << std::endl;
+        }
+    }
+    else
+        throw std::runtime_error("Impossible to open file to write in it!");
 }
 
 #endif // SINGLEOBJECTIVEGA_H

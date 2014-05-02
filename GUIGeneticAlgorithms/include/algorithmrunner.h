@@ -44,7 +44,9 @@ private:
     SingleObjectiveGA<T, P, C>* createSingleObjectiveAlgorithm();
 
     template<typename C>
-    std::vector<QString> formattingSolutions(const std::vector<C> solutions);
+    std::vector<QString> formattingSingleObjectiveSolution(const std::vector<C> solutions);
+    template<typename C>
+    std::vector<QString> formattingNSGAIISolutions(const std::vector<C> solutions);
 
 public slots:
     void runAlgorithm(const QString& parameter);

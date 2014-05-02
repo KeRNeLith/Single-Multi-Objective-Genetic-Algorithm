@@ -63,6 +63,17 @@ public:
      */
     virtual void readParamsFromFile(const std::string& fileName);
 
+    /**
+     * @brief dumpToFile Write in the file with the name fileName, the log of the current population.
+     * @param fileName Name of the file to save.
+     */
+    virtual void dumpToFile(const char* fileName) =0;
+    /**
+     * @brief dumpToFile Write in the file with the name fileName, the log of the current population.
+     * @param fileName Name of the file to save.
+     */
+    virtual void dumpToFile(const std::string& fileName) { dumpToFile(fileName.c_str()); }
+
 
     ////////////// Accessors/Setters //////////////
     /**

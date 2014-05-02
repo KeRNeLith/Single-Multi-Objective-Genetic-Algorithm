@@ -63,7 +63,10 @@ void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
         return;
     }
 
-    emit algorithmExecuted(formattingSolutions<C>(algorithm->getPopulation().getBestSolution()));
+    if (dynamic_cast< NSGAII<T, P, C>* > (algorithm))
+        emit algorithmExecuted(formattingNSGAIISolutions<C>(algorithm->getPopulation().getBestSolution()));
+    else
+        emit algorithmExecuted(formattingSingleObjectiveSolution<C>(algorithm->getPopulation().getBestSolution()));
 
     delete algorithm;
 }
@@ -79,6 +82,7 @@ void AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
     {
         emit updateProgressBar(algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted()*100);
         algorithm->runOneGeneration();
+        algorithm->dumpToFile("generation" + QString::number(algorithm->getIndexCurrentGeneration()-1).toStdString() + ".txt");
     }
 }
 
@@ -95,7 +99,38 @@ SingleObjectiveGA<T, P, C>* AlgorithmRunner::createSingleObjectiveAlgorithm()
 }
 
 template<typename C>
-std::vector<QString> AlgorithmRunner::formattingSolutions(const std::vector<C> solutions)
+std::vector<QString> AlgorithmRunner::formattingSingleObjectiveSolution(const std::vector<C> solutions)
+{
+    std::vector<QString> stringSolutions;
+
+    QString datas = "";
+    std::vector<int> genes;
+    int index = 0;
+    for (auto it = solutions.begin() ; it != solutions.end() ; it++)
+    {
+        genes = it->getDatas();
+
+        datas += QString::number(index) += " => ";
+
+        for (auto it2 = genes.begin() ; it2 != genes.end() ; it2++)
+            datas += QString::number(*it2);
+
+        datas += " => | ";
+        datas += QString::number(it->getFitness()[0]);
+        datas += " |";
+
+        stringSolutions.push_back(datas);
+
+        datas = "";
+        genes.clear();
+        index++;
+    }
+
+    return stringSolutions;
+}
+
+template<typename C>
+std::vector<QString> AlgorithmRunner::formattingNSGAIISolutions(const std::vector<C> solutions)
 {
     std::vector<QString> stringSolutions;
 

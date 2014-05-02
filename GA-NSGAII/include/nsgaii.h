@@ -54,6 +54,8 @@ public:
     virtual void initialize();
     virtual std::vector< C > performGA();
     virtual void reset();
+    virtual void dumpToFile(const char* fileName);
+
 
     /**
      * @brief runOneGeneration Do all steps needed for one generation (iteration), like mutation and crossover operators, etc...
@@ -446,6 +448,27 @@ void NSGAII<F, P, C>::reset()
 {
     this->m_currentGeneration = 1;
     this->m_isInitialized = false;
+}
+
+template<typename F, typename P, typename C>
+void NSGAII<F, P, C>::dumpToFile(const char* fileName)
+{
+    std::ofstream file(fileName, std::ios::out | std::ios::trunc);
+
+    if (file)
+    {
+        std::vector< C > chromosomes = this->m_population->getBestSolution();
+        unsigned int nbObjectives = this->m_population->getBestSolution()[0].getFitness().empty() ? 0 : this->m_population->getBestSolution()[0].getFitness().size();
+        for (unsigned int i = 0 ; i < this->m_population->getBestSolution().size() ; i++)
+        {
+            file << "N° " << i << "\tRank : " << chromosomes[i].getRank() << " Datas : " << chromosomes[i].datasToStr() << " Fitness : ";
+            for (unsigned int o = 0 ; o < nbObjectives ; o++)
+                file << chromosomes[i].getFitness()[o] << " | ";
+            file << std::endl;
+        }
+    }
+    else
+        throw std::runtime_error("Impossible to open file to write in it!");
 }
 
 #endif // NSGAII_H

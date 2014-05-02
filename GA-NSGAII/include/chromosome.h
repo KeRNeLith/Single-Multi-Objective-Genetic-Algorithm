@@ -59,6 +59,17 @@ public:
     virtual void setDatas(const std::vector< DATA > datas) { m_datas = datas; }
 
     /**
+     * @brief datasToStr Convert the vector of DATA into a string.
+     * @return String representing m_datas.
+     */
+    virtual std::string datasToStr();
+    /**
+     * @brief datasToChar Convert the vector of DATA into a string.
+     * @return Chain of character representing m_datas.
+     */
+    virtual const char* datasToChar() { return datasToStr().c_str(); }
+
+    /**
      * @brief setNbGenes Set the number of genes composing the chromosome.
      * @param nbGenes The number of genes wanted.
      */
@@ -85,6 +96,15 @@ Chromosome<F, DATA>::Chromosome()
 template<typename F, typename DATA>
 Chromosome<F, DATA>::~Chromosome()
 {
+}
+
+template<typename F, typename DATA>
+std::string Chromosome<F, DATA>::datasToStr()
+{
+    std::string datasStr = "";
+    for (unsigned int i = 0 ; i < m_datas.size() ; i++)
+        datasStr += m_datas[i] + '0';
+    return datasStr;
 }
 
 #endif // CHROMOSOME_H
