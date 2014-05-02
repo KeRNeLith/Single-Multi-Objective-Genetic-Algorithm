@@ -23,7 +23,7 @@ bool ChromosomeMDoubleInt::dominates(const ChromosomeMDoubleInt& other)
     // The current solution is no worse than other solution in all objectives
     for (unsigned int o = 0 ; o < nbMaxObjective ; o++)
     {
-        if (m_fitness[o] >= other.m_fitness[o])
+        if (m_fitness[o] <= other.m_fitness[o])
             continue;
         else
             return false;
@@ -32,7 +32,7 @@ bool ChromosomeMDoubleInt::dominates(const ChromosomeMDoubleInt& other)
     // The current solution is strictly better than other solution in at least one objective
     for (unsigned int o = 0 ; o < nbMaxObjective ; o++)
     {
-        if (m_fitness[o] > other.m_fitness[o])
+        if (m_fitness[o] < other.m_fitness[o])
             return true;
         else
             continue;
@@ -73,12 +73,12 @@ void ChromosomeMDoubleInt::computeFitness()
     // Minimize f1 =   x²
     // Minimize f2 = (x-2)²
 
-    const int forbidenValue1 = 0;
-    const int forbidenValue2 = 2;
+    //const int forbidenValue1 = 0;
+    const int minusValue = 2;
 
     double value = getDoubleFromBinary(m_datas);
 
-    if(value == forbidenValue1)
+    /*if(value == forbidenValue1)
     {
         double dvalue = value + 0.00001;
         this->m_fitness.push_back(1/(double)((dvalue-forbidenValue1)*(dvalue-forbidenValue1)));
@@ -91,10 +91,10 @@ void ChromosomeMDoubleInt::computeFitness()
         this->m_fitness.push_back(1/(double)((value-forbidenValue1)*(value-forbidenValue1)));
         this->m_fitness.push_back(1/(double)((dvalue-forbidenValue2)*(dvalue-forbidenValue2)));
         return;
-    }
+    }*/
 
-    this->m_fitness.push_back(1/(double)((value-forbidenValue1)*(value-forbidenValue1)));
-    this->m_fitness.push_back(1/(double)((value-forbidenValue2)*(value-forbidenValue2)));
+    this->m_fitness.push_back(value*value);
+    this->m_fitness.push_back((value-minusValue)*(value-minusValue));
 }
 
 void ChromosomeMDoubleInt::generateRandomChromosome()
