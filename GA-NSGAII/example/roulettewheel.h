@@ -25,6 +25,7 @@ public:
     RouletteWheel(const RouletteWheel& other);
 
     virtual void evaluateFitness();
+    virtual C selectOneChromosome();
     virtual std::pair< C, C > selectChromosomesPair();
     virtual C crossOver(std::pair< C, C > parents);
     virtual std::vector< C > getBestSolution() const;
@@ -107,6 +108,30 @@ void RouletteWheel<F, DATA, C>::evaluateFitness()
 }
 
 template<typename F, typename DATA, typename C>
+C RouletteWheel<F, DATA, C>::selectOneChromosome()
+{
+    // Select a chromosome
+    std::uniform_real_distribution<float> distribution(0.0, 1.0);
+    float prob = distribution(generator);
+
+    unsigned int index;
+
+    // Find index of the chromosome
+    for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
+    {
+        if (prob > this->m_selectingProba[i])
+            continue;
+        else
+        {
+            index = i;
+            break;
+        }
+    }
+
+    return this->m_chromosomes[index];
+}
+
+template<typename F, typename DATA, typename C>
 std::pair<C, C> RouletteWheel<F, DATA, C>::selectChromosomesPair()
 {
     // Select 2 chromosomes based on their probability beteween [0, 1] to be selected
@@ -114,36 +139,7 @@ std::pair<C, C> RouletteWheel<F, DATA, C>::selectChromosomesPair()
     // Have larger interval of probability to be selected
 
     // Select a chromosome mum and a chromosome dad
-    std::uniform_real_distribution<float> distribution(0.0, 1.0);
-    float probaMum = distribution(generator);
-    float probaDad = distribution(generator);
-    unsigned int indexMum, indexDad;
-
-    // Find index of the mother
-    for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
-    {
-        if (probaMum > this->m_selectingProba[i])
-            continue;
-        else
-        {
-            indexMum = i;
-            break;
-        }
-    }
-
-    // Find index of the father
-    for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
-    {
-        if (probaDad > this->m_selectingProba[i])
-            continue;
-        else
-        {
-            indexDad = i;
-            break;
-        }
-    }
-
-    return std::pair< C, C >(this->m_chromosomes[indexMum], this->m_chromosomes[indexDad]);
+    return std::pair< C, C >(selectOneChromosome(), selectOneChromosome());
 }
 
 template<typename F, typename DATA, typename C>
@@ -168,7 +164,7 @@ C RouletteWheel<F, DATA, C>::crossOver(std::pair<C, C> parents)
     std::uniform_int_distribution<> distributionInt(0, C::getNbGenes()-1);
     int indexCrossover = distributionInt(generator);
 
-    if (probaCrossOver <= this->m_crossOverProbability)
+    if (probaCrossOver <= 0.5)  // Crossover with mum genes before
     {
         for (unsigned int i = 0 ; i < indexCrossover ; i++)
             offspringGenes.push_back(mumGenes[i]);
@@ -176,7 +172,7 @@ C RouletteWheel<F, DATA, C>::crossOver(std::pair<C, C> parents)
         for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
             offspringGenes.push_back(dadGenes[i]);
     }
-    else
+    else    // Crossover with dad genes before
     {
         for (unsigned int i = 0 ; i < indexCrossover ; i++)
             offspringGenes.push_back(dadGenes[i]);

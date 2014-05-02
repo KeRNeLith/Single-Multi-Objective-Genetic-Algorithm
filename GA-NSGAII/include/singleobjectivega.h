@@ -73,9 +73,24 @@ void SingleObjectiveGA<F, P, C>::runOneGeneration()
     {
         if (m_elitism)
             newPop->addKeptChromosomes(this->m_population->getKeptChromosomes());
-        C chromosome = this->m_population->crossOver(this->m_population->selectChromosomesPair());
-        newPop->addChromosome(chromosome);
+
+        // CrossOver only if prob <= prob crossover
+        std::uniform_real_distribution<float> distribution(0.0, 1.0);
+        float probaCrossOver = distribution(generator);
+
+        C chromosome;
+        if (probaCrossOver <= P::getCrossOverProbability()) // Crossover
+        {
+            chromosome = this->m_population->crossOver(this->m_population->selectChromosomesPair());
+            newPop->addChromosome(chromosome);
+        }
+        else    // Don't Crossover
+        {
+            chromosome = this->m_population->selectOneChromosome();
+            newPop->addChromosome(chromosome);
+        }
     }
+
     newPop->mutate();
     newPop->evaluateFitness();
     delete this->m_population;

@@ -22,15 +22,10 @@ public:
     TournamentM(const TournamentM &other);
 
     virtual void evaluateFitness();
+    virtual C selectOneChromosome();
     virtual std::pair< C, C > selectChromosomesPair();
     virtual C crossOver(std::pair< C, C > parents);
     virtual std::vector< C > getBestSolution() const;
-
-    /**
-     * @brief selectOneChromosome Select one chromosome from m_chromosomes based on the crowded tournament.
-     * @return A chromosome.
-     */
-    virtual C selectOneChromosome();
 
     // Operator Like
     TournamentM& add(const TournamentM& op);

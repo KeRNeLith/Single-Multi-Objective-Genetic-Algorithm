@@ -50,6 +50,12 @@ public:
     virtual void mutate();
 
     /**
+     * @brief selectOneChromosome Select one chromosome from m_chromosomes based on the crowded tournament.
+     * @return A chromosome.
+     */
+    virtual C selectOneChromosome() =0;
+
+    /**
      * @brief select a pair of Chromosomes.
      * @return the pair of chromosomes chose as parent.
      */
