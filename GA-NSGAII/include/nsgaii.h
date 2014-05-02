@@ -225,8 +225,21 @@ P* NSGAII<F, P, C>::breeding()
 
     while (!newPop->isFull())
     {
-        C chromosome = this->m_population->crossOver(this->m_population->selectChromosomesPair());
-        newPop->addChromosome(chromosome);
+        // CrossOver only if prob <= prob crossover
+        std::uniform_real_distribution<float> distribution(0.0, 1.0);
+        float probaCrossOver = distribution(generator);
+
+        C chromosome;
+        if (probaCrossOver <= P::getCrossOverProbability()) // Crossover
+        {
+            chromosome = this->m_population->crossOver(this->m_population->selectChromosomesPair());
+            newPop->addChromosome(chromosome);
+        }
+        else    // Don't Crossover
+        {
+            chromosome = this->m_population->selectOneChromosome();
+            newPop->addChromosome(chromosome);
+        }
     }
 
     newPop->mutate();

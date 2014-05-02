@@ -16,11 +16,6 @@ protected:
 
     virtual void destroy();
     virtual void copy(const TournamentM<F, DATA, C> &other);
-    /**
-     * @brief selectOneChromosome Select one chromosome from m_chromosomes based on the crowded tournament.
-     * @return A chromosome.
-     */
-    virtual C selectOneChromosome();
 
 public:
     TournamentM(const int maxChromosome = -1);
@@ -30,6 +25,12 @@ public:
     virtual std::pair< C, C > selectChromosomesPair();
     virtual C crossOver(std::pair< C, C > parents);
     virtual std::vector< C > getBestSolution() const;
+
+    /**
+     * @brief selectOneChromosome Select one chromosome from m_chromosomes based on the crowded tournament.
+     * @return A chromosome.
+     */
+    virtual C selectOneChromosome();
 
     // Operator Like
     TournamentM& add(const TournamentM& op);
@@ -154,7 +155,7 @@ C TournamentM<F, DATA, C>::crossOver(std::pair< C, C > parents)
     std::uniform_int_distribution<> distributionInt(0, C::getNbGenes()-1);
     int indexCrossover = distributionInt(generator);
 
-    if (probaCrossOver <= this->m_crossOverProbability)
+    if (probaCrossOver <= 0.5)  // Take mum genes before dad, with 1/2
     {
         for (unsigned int i = 0 ; i < indexCrossover ; i++)
             offspringGenes.push_back(mumGenes[i]);
@@ -162,7 +163,7 @@ C TournamentM<F, DATA, C>::crossOver(std::pair< C, C > parents)
         for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
             offspringGenes.push_back(dadGenes[i]);
     }
-    else
+    else    // Take dad genes before mum
     {
         for (unsigned int i = 0 ; i < indexCrossover ; i++)
             offspringGenes.push_back(dadGenes[i]);
