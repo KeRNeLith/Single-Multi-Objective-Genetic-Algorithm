@@ -24,14 +24,16 @@ SOURCES +=  ./src/main.cpp \
             ../GA-NSGAII/example/chromosomeintint.cpp \
             ../GA-NSGAII/example/chromosomemdoubleint.cpp \
             ./src/solutionlisterdockwidget.cpp \
-            ./src/algorithmrunner.cpp
+            ./src/algorithmrunner.cpp \
+            ./src/paretooptimalfrontwidget.cpp
 
 HEADERS  += ./include/mainwindow.h \
             ./include/paramsdockwidget.h \
             ../GA-NSGAII/example/chromosomeintint.h \
             ../GA-NSGAII/example/chromosomemdoubleint.h \
             ./include/solutionlisterdockwidget.h \
-            ./include/algorithmrunner.h
+            ./include/algorithmrunner.h \
+            ./include/paretooptimalfrontwidget.h
 
 FORMS    += ./gui/mainwindow.ui \
             ./gui/paramsdockwidget.ui \

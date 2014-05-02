@@ -107,16 +107,6 @@ void NSGAII<F, P, C>::runOneGeneration()
     // Determine all non dominated fronts
     std::vector < P > fronts = fastNonDominatedSort(this->m_population);
 
-    // TO REMOVE
-    /*std::cout << "front1 : => \t\t\t\t";
-    for(unsigned int i = 0 ; i < fronts[0].getCurrentNbChromosomes() ; i++)
-    {
-        std::vector<int> bits = fronts[0].getChromosomes()[i].getDatas();
-        std::cout << " " << getDecimalFromBinary(bits)<< "("<< &(fronts[0].getChromosomes()[i]) <<")";
-    }
-    std::cout << std::endl;*/
-    // TO REMOVE
-
     // Secure check if it's not empty (should never arrived)
     if (fronts.empty())
     {
@@ -132,19 +122,6 @@ void NSGAII<F, P, C>::runOneGeneration()
         // Calculate crowding-distance in ith Front
         crowdingDistanceAssignement(&fronts[i]);
 
-        // TO REMOVE
-        /*if (i == 0)
-        {
-            std::cout << "front1 (added sure) : => \t\t\t";
-            for(unsigned int i = 0 ; i < fronts[0].getCurrentNbChromosomes() ; i++)
-            {
-                std::vector<int> bits = fronts[0].getChromosomes()[i].getDatas();
-                std::cout << " " << getDecimalFromBinary(bits)<< "("<< &(fronts[0].getChromosomes())[i] <<")";
-            }
-            std::cout << std::endl;
-        }*/
-        // TO REMOVE
-
         // Include ith non-dominated front in the population
         newParents->addChromosomes(fronts[i].getChromosomes());
         i++;    // Check the next front for inclusion
@@ -159,47 +136,9 @@ void NSGAII<F, P, C>::runOneGeneration()
         // Sort in descending order the ith front using crowding operator
         std::sort(chromosomes.begin(), chromosomes.end(), crowdingOperator< C >);
 
-        // TO REMOVE
-        /*if (i == 0)
-        {
-            std::cout << "front1 sorted (size > newPop) : => \t\t";
-            for(unsigned int i = 0 ; i < chromosomes.size() ; i++)
-            {
-                std::vector<int> bits = chromosomes[i].getDatas();
-                std::cout << " " << getDecimalFromBinary(bits)<< "("<< &chromosomes[i] <<")";
-            }
-            std::cout << std::endl;
-
-            std::cout << "front1 sorted (kept) : => \t\t\t";
-            for(unsigned int i = 0 ; i < newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes() ; i++)
-            {
-                std::vector<int> bits = chromosomes[i].getDatas();
-                std::cout << " " << getDecimalFromBinary(bits) << "("<< &chromosomes[i] <<")";
-            }
-            std::cout << std::endl;
-        }*/
-        // TO REMOVE
-
         // Choose the first (max chromosomes - size newParents) of ith front
         newParents->addChromosomes(chromosomes, newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes());
-        // CHANGED
-        /*int j = 0;
-        while (!newParents->isFull())
-        {
-            newParents->addChromosome(&fronts[i].getChromosomes()[j]);
-            j++;
-        }*/
     }
-
-    // TO REMOVE
-    /*std::cout << "newPop contain : => \t\t\t";
-    for(unsigned int i = 0 ; i < newParents->getCurrentNbChromosomes() ; i++)
-    {
-        std::vector<int> bits = newParents->getChromosomes()[i].getDatas();
-        std::cout << " " << getDecimalFromBinary(bits) << "("<< &(newParents->getChromosomes())[i] <<")";
-    }
-    std::cout << std::endl;*/
-    // TO REMOVE
 
     delete this->m_population;
     this->m_population = new P;
@@ -214,10 +153,6 @@ void NSGAII<F, P, C>::runOneGeneration()
         displayAdvancement();
 
     this->m_currentGeneration++;    // Generation counter
-
-    // TO REMOVE
-    //std::cout<<"-----------------------------------------"<<std::endl;
-    // TO REMOVE
 }
 
 template<typename F, typename P, typename C>
@@ -408,10 +343,6 @@ void NSGAII<F, P, C>::displayAdvancement()
 template<typename F, typename P, typename C>
 void NSGAII<F, P, C>::initialize()
 {
-    // TO REMOVE
-    //std::cout <<std::endl<<std::endl<< "NEW RUN !"<<std::endl;
-    // TO REMOVE
-
     if(this->m_isInitialized)   // already initialized
         return;
 

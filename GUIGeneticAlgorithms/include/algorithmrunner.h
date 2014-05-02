@@ -56,6 +56,7 @@ signals:
     void fileUnknown();
     void algorithmFailure(const char* message);
     void updateProgressBar(int progress);
+    void needToUpdateGraph();
 
 public:
     AlgorithmRunner(MainWindow *mainWindow);

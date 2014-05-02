@@ -12,6 +12,7 @@
 #include "paramsdockwidget.h"
 #include "solutionlisterdockwidget.h"
 #include "algorithmrunner.h"
+#include "paretooptimalfrontwidget.h"
 
 #include "ui_mainwindow.h"
 
@@ -29,8 +30,12 @@ class MainWindow
 private:
     Ui::MainWindow *ui;
 
+    QAction * m_paramsDockVisibility;
+    QAction * m_solutionDockVisibility;
     ParamsDockWidget* m_paramsDW;
     SolutionListerDockWidget* m_solutionsDW;
+
+    ParetoOptimalFrontWidget* m_paretoOptimalFrontW;
 
     QString m_paramsFileName;
 
@@ -47,6 +52,9 @@ public:
     Ui::MainWindow* getUI() { return ui; }
     ParamsDockWidget* getParamsDockWidget() { return m_paramsDW; }
 
+protected:
+    void closeEvent(QCloseEvent* event);
+
 public slots:
     void openParamsFile();
     void runGAAlgorithm();
@@ -55,6 +63,7 @@ public slots:
     void showFileUnknownMessage();
     void showAlgorithmFailureMessage(const char* message);
     void updateProgressBarValue(int value);
+    void updateParetoOptimalFrontWidget();
 
     void about();
 

@@ -57,6 +57,7 @@ void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
     }
     catch (std::runtime_error& e)
     {
+        std::cerr << e.what() << std::endl;
         emit algorithmFailure(e.what());
         emit algorithmExecuted(std::vector<QString>());
         delete algorithm;
@@ -83,6 +84,8 @@ void AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
         emit updateProgressBar(algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted()*100);
         algorithm->runOneGeneration();
         algorithm->dumpToFile("generation" + QString::number(algorithm->getIndexCurrentGeneration()-1).toStdString() + ".txt");
+        if (dynamic_cast< NSGAII<T, P, C>* > (algorithm))
+            emit needToUpdateGraph();
     }
 }
 

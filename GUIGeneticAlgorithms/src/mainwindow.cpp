@@ -10,8 +10,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_paramsDW = new ParamsDockWidget;
     addDockWidget(Qt::LeftDockWidgetArea, m_paramsDW);
+    m_paramsDockVisibility = m_paramsDW->toggleViewAction();
+    m_paramsDockVisibility->setCheckable(true);
+    m_paramsDockVisibility->setChecked(true);
+    ui->menuDock_Widget->addAction(m_paramsDockVisibility);
     m_solutionsDW = new SolutionListerDockWidget;
+
     addDockWidget(Qt::BottomDockWidgetArea, m_solutionsDW);
+    m_solutionDockVisibility = m_solutionsDW->toggleViewAction();
+    m_solutionDockVisibility->setCheckable(true);
+    m_solutionDockVisibility->setChecked(true);
+    ui->menuDock_Widget->addAction(m_solutionDockVisibility);
+
+    m_paretoOptimalFrontW = new ParetoOptimalFrontWidget;
 
     m_paramsFileName = "";
 
@@ -118,7 +129,21 @@ void MainWindow::initThreadAlgorithm()
     connect(this, SIGNAL(launchAlgorithm(QString)), algorithmRunner, SLOT(runAlgorithm(QString)));
     // To recover results
     connect(algorithmRunner, SIGNAL(algorithmExecuted(std::vector<QString>)), this, SLOT(handleResults(std::vector<QString>)));
+    // To update graph drawing
+    connect(algorithmRunner, SIGNAL(needToUpdateGraph()), this, SLOT(updateParetoOptimalFrontWidget()));
     m_mainWindowThread.start();
+}
+
+void MainWindow::updateParetoOptimalFrontWidget()
+{
+    m_paretoOptimalFrontW->show();
+    m_paretoOptimalFrontW->repaint();
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    m_paretoOptimalFrontW->close();
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::about()
