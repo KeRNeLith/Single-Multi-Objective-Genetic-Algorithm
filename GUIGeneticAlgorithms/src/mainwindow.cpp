@@ -147,8 +147,6 @@ void MainWindow::updateParetoOptimalFrontWidget(const QString& fileName)
                               tr("Incorrect File"),
                               e.what());
     }
-
-    m_paretoOptimalFrontW->repaint();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

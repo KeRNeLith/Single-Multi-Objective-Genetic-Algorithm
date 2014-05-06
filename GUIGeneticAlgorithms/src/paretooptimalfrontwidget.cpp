@@ -3,6 +3,7 @@
 ParetoOptimalFrontWidget::ParetoOptimalFrontWidget(QWidget *parent) :
     QWidget(parent)
 {
+    setMinimumSize(200, 225);
 }
 
 void ParetoOptimalFrontWidget::loadFile(const char* fileName)
@@ -44,15 +45,115 @@ void ParetoOptimalFrontWidget::loadFile(const char* fileName)
     }
     else
         throw std::runtime_error("Impossible to open file or file doesn't exist!");
+    update();
 }
 
 void ParetoOptimalFrontWidget::paintEvent(QPaintEvent* event)
 {
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
-    int min = width() < height() ? width() : height();
+    int min = std::min(width(), height());
     p.setViewport((width()-min)/2, (height()-min)/2, min, min);
-    p.setWindow(-400, -400, 800, 800);
+
+    if (!m_coordinates.empty()
+            && m_coordinates[0].size() < 2)
+        return;
+
+    //////////// Search extremes value on X and Y axis ////////////
+        // Init axis
+    PairMinMax axisX, axisY;
+    axisX.index = 0;
+    axisX.m_minMax = std::pair<double, double>(m_coordinates[0][0], m_coordinates[0][0]);
+    axisY.index = 1;
+    axisY.m_minMax = std::pair<double, double>(m_coordinates[0][1], m_coordinates[0][1]);
+
+        // Search
+    axisX = std::for_each(m_coordinates.begin(), m_coordinates.end(), axisX);
+    axisY = std::for_each(m_coordinates.begin(), m_coordinates.end(), axisY);
+
+        // Determine graph width and height, and keep them to 800 for the window
+    double width, height, cWidth, cHeight;
+    width = axisX.m_minMax.second - axisX.m_minMax.first;
+    height = axisY.m_minMax.second - axisY.m_minMax.first;
+
+    if(width == 0)
+        width = 800;
+    if(height == 0)
+        height = 800;
+
+    double coefficientW = 800/width;
+    double coefficientH = 800/height;
+
+    cWidth = width*coefficientW;
+    cHeight = height*coefficientH;
+
+        // Window to have a system like
+        // 0---> x
+        // |
+        // \/
+        // y
+    p.setWindow(0,
+                -800,
+                cWidth,
+                cHeight);
+
+    QPen pen;
+    pen.setWidth(1);
+    p.setPen(pen);
+
+    //////////// Border and background ////////////
+    p.fillRect(0,
+               0,
+               cWidth,
+               -cHeight,
+               Qt::white);
+    p.drawRect(0,
+               0,
+               cWidth,
+               -cHeight);
+
+    //////////// Draw Axis ////////////
+    int nbGraduation = (8/500.0)*min + (2-(8/500.0));
+    double incremXGraduation, incremYGraduation;    // use to compute graduation labels
+    incremXGraduation = width/(double)nbGraduation;
+    incremYGraduation = height/(double)nbGraduation;
+
+    // Text Font
+    QFont font;
+    font.setPointSizeF(15);
+    p.setFont(font);
+
+    QFontMetrics fontMetrics(p.font());
+    QString gradutationLabel;
+    // Start Graduation Label, will be increase each loop
+    double wGrad = axisX.m_minMax.first;
+    double hGrad = axisY.m_minMax.first;
+    int i = 0;
+    while (i < nbGraduation)
+    {
+        gradutationLabel = QString::number(floorValue(wGrad, 1));
+        double graduationX = (i/(double)nbGraduation)*cWidth;
+        p.drawLine(QPointF(graduationX, 0), QPointF(graduationX, -4));
+        p.drawText(QPointF(graduationX - fontMetrics.width(gradutationLabel)/2, -15), gradutationLabel);
+
+        gradutationLabel = QString::number(floorValue(hGrad, 1));
+        double graduationY = (i/(double)nbGraduation)*cHeight;
+        p.drawLine(QPointF(0, -graduationY), QPointF(4, -graduationY));
+        p.drawText(QPointF(15, -(graduationY - p.font().pointSize()/2)), gradutationLabel);
+
+        i++;
+        wGrad += incremXGraduation;
+        hGrad += incremYGraduation;
+    }
+
+    //////////// Draw Points ////////////
+    pen.setColor(Qt::red);
+    p.setPen(pen);
+    p.setBrush(QBrush(Qt::red));
+    for (unsigned int i = 0 ; i < m_coordinates.size() ; i++)
+    {
+        p.drawEllipse(QPointF(m_coordinates[i][0]*coefficientW, -m_coordinates[i][1]*coefficientH), 5, 5);
+    }
 
     QWidget::paintEvent(event);
 }

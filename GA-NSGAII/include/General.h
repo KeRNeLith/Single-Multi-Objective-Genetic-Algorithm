@@ -116,6 +116,26 @@ union number
 void display(double d);
 void display(union number n);
 
+class PairMinMax
+{
+public:
+    int index;
+    std::pair<double, double> m_minMax;
+
+    void operator()(const std::vector<double>& param)
+    {
+        m_minMax = std::pair<double, double>(std::min(param[index], m_minMax.first), std::max(param[index], m_minMax.second));
+    }
+};
+
+/**
+ * @brief Compute the truncate floor value of number value.
+ * @param value Number that will be floor and truncate.
+ * @param nbDecimal Number of decimal you want to keep.
+ * @return The truncate floor value.
+ */
+template <typename T> inline T floorValue(const T& value, int nbDecimal);
+
 // Random number generator
 static std::mt19937 generator(std::chrono::system_clock::now().time_since_epoch().count());
 
@@ -278,6 +298,15 @@ T power(T nb, int pow)
     }
 
     return result;
+}
+
+template <typename T>
+inline T floorValue(const T& value, int nbDecimal)
+{
+    if (nbDecimal < 0)
+        nbDecimal = 0;
+    double power = pow(10, nbDecimal);
+    return (floor(value * power)) / (T)power;
 }
 
 #endif // GENERAL_H
