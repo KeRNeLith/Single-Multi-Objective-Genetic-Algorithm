@@ -38,11 +38,13 @@ private:
     ParetoOptimalFrontWidget* m_paretoOptimalFrontW;
 
     QString m_paramsFileName;
+    QString m_graphFileName;
 
     QThread m_mainWindowThread;
 
     void changePushButtonState(bool state = true);
     void initThreadAlgorithm();
+    void loadGraph();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -57,6 +59,7 @@ protected:
 
 public slots:
     void openParamsFile();
+    void openGraphFile();
     void runGAAlgorithm();
     void runNSGA2Algorithm();
     void handleResults(const std::vector<QString>& result);

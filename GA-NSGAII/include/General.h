@@ -7,6 +7,7 @@
 #include <locale>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <algorithm>
 #include <limits>
 
@@ -135,6 +136,9 @@ public:
  * @return The truncate floor value.
  */
 template <typename T> inline T floorValue(const T& value, int nbDecimal);
+
+template <typename T>
+T extractNumberFromStr(const std::string& str);
 
 // Random number generator
 static std::mt19937 generator(std::chrono::system_clock::now().time_since_epoch().count());
@@ -307,6 +311,34 @@ inline T floorValue(const T& value, int nbDecimal)
         nbDecimal = 0;
     double power = pow(10, nbDecimal);
     return (floor(value * power)) / (T)power;
+}
+
+template <typename T>
+T extractNumberFromStr(const std::string& str)
+{
+    std::string tmpNumber;
+    T number = 0;
+
+    for (unsigned int i = 0 ; i < str.size() ; i++)
+    {
+        // iterate the string to find the first "number" character
+        // if found create another loop to extract it
+        // and then break the current one
+        // extract the first encountered numeric block
+        if (isdigit(str[i]))
+        {
+            for (unsigned int a=i; a<str.size(); a++)
+            {
+                tmpNumber += str[a];
+            }
+            //the first numeric block is extracted
+            break;
+        }
+    }
+
+    std::istringstream iss(tmpNumber);
+    iss >> number;
+    return number;
 }
 
 #endif // GENERAL_H

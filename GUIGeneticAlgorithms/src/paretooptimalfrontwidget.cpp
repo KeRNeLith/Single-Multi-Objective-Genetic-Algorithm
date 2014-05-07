@@ -8,6 +8,8 @@ ParetoOptimalFrontWidget::ParetoOptimalFrontWidget(QWidget *parent) :
 
 void ParetoOptimalFrontWidget::loadFile(const char* fileName)
 {
+    m_currentLoadedGraph = fileName;
+    setWindowTitle(QString(m_currentLoadedGraph.c_str()));
     m_coordinates.clear();
 
     std::ifstream file(fileName, std::ios::in);  // Open file
@@ -60,18 +62,18 @@ void ParetoOptimalFrontWidget::paintEvent(QPaintEvent* event)
         return;
 
     //////////// Search extremes value on X and Y axis ////////////
-        // Init axis
+    // Init axis
     PairMinMax axisX, axisY;
     axisX.index = 0;
     axisX.m_minMax = std::pair<double, double>(m_coordinates[0][0], m_coordinates[0][0]);
     axisY.index = 1;
     axisY.m_minMax = std::pair<double, double>(m_coordinates[0][1], m_coordinates[0][1]);
 
-        // Search
+    // Search
     axisX = std::for_each(m_coordinates.begin(), m_coordinates.end(), axisX);
     axisY = std::for_each(m_coordinates.begin(), m_coordinates.end(), axisY);
 
-        // Determine graph width and height, and keep them to 800 for the window
+    // Determine graph width and height, and keep them to 800 for the window
     double width, height, cWidth, cHeight;
     width = axisX.m_minMax.second - axisX.m_minMax.first;
     height = axisY.m_minMax.second - axisY.m_minMax.first;
@@ -87,11 +89,11 @@ void ParetoOptimalFrontWidget::paintEvent(QPaintEvent* event)
     cWidth = width*coefficientW;
     cHeight = height*coefficientH;
 
-        // Window to have a system like
-        // 0---> x
-        // |
-        // \/
-        // y
+    // Window to have a system like
+    // 0---> x
+    // |
+    // \/
+    // y
     p.setWindow(0,
                 -800,
                 cWidth,
@@ -156,4 +158,52 @@ void ParetoOptimalFrontWidget::paintEvent(QPaintEvent* event)
     }
 
     QWidget::paintEvent(event);
+}
+
+void ParetoOptimalFrontWidget::keyPressEvent(QKeyEvent* event)
+{
+    int ID;
+    switch (event->key())
+    {
+    case Qt::Key_Left:
+        ID = getLoadedGraphId();
+        --ID;
+        break;
+    case Qt::Key_Right:
+        ID = getLoadedGraphId();
+        ++ID;
+        break;
+    default:
+        return;
+    }
+
+    std::ostringstream fileName;
+    fileName << "generation" << ID << ".txt";
+    if (fileExist(fileName.str()))
+        loadFile(fileName.str());
+
+    QWidget::keyPressEvent(event);
+}
+
+int ParetoOptimalFrontWidget::getLoadedGraphId()
+{
+    if (m_currentLoadedGraph == "")
+        return -1;
+
+    return extractNumberFromStr<int>(m_currentLoadedGraph);
+}
+
+bool ParetoOptimalFrontWidget::fileExist(const std::string& fileName)
+{
+    std::ifstream f(fileName.c_str());
+    if (f.good())
+    {
+        f.close();
+        return true;
+    }
+    else
+    {
+        f.close();
+        return false;
+    }
 }

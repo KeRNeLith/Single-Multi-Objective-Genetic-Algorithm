@@ -25,9 +25,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_paretoOptimalFrontW = new ParetoOptimalFrontWidget;
 
     m_paramsFileName = "";
+    m_graphFileName = "";
 
     // Connect
     connect(ui->action_Search_Params, SIGNAL(triggered()), this, SLOT(openParamsFile()));
+    connect(ui->action_Load_Graph, SIGNAL(triggered()), this, SLOT(openGraphFile()));
     connect(ui->gaPushButton, SIGNAL(released()), this, SLOT(runGAAlgorithm()));
     connect(ui->nsga2PushButton, SIGNAL(released()), this, SLOT(runNSGA2Algorithm()));
     connect(ui->gaPushButton, SIGNAL(pressed()), ui->algorithmProgressBar, SLOT(reset()));
@@ -60,6 +62,16 @@ void MainWindow::openParamsFile()
     }
 
     statusBar()->showMessage(tr("File ready to be load in the next algorithm run ..."), 7000);
+}
+
+void MainWindow::openGraphFile()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Graph File"), "./", tr("Graph Descriptors (*.txt)"));
+    if (!filename.isEmpty())
+    {
+        m_graphFileName = filename;
+        loadGraph();
+    }
 }
 
 void MainWindow::runGAAlgorithm()
@@ -147,6 +159,31 @@ void MainWindow::updateParetoOptimalFrontWidget(const QString& fileName)
                               tr("Incorrect File"),
                               e.what());
     }
+}
+
+void MainWindow::loadGraph()
+{
+    if (m_graphFileName == "")
+    {
+        QMessageBox::warning(this,
+                             tr("Unknown File"),
+                             tr("No file specified!"));
+        return;
+    }
+
+    m_paretoOptimalFrontW->show();
+
+    try {
+        m_paretoOptimalFrontW->loadFile(m_graphFileName.toStdString());
+    }
+    catch(std::runtime_error& e)
+    {
+        QMessageBox::critical(this,
+                              tr("Incorrect File"),
+                              e.what());
+    }
+
+    statusBar()->showMessage(tr("Graph Loaded..."), 3000);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

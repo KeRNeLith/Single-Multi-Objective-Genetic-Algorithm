@@ -81,6 +81,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_Search_Params"/>
+    <addaction name="action_Load_Graph"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
@@ -146,6 +147,14 @@
    </property>
    <property name="text">
     <string>&amp;Solutions</string>
+   </property>
+  </action>
+  <action name="action_Load_Graph">
+   <property name="text">
+    <string>&amp;Load Graph</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G, Ctrl+S</string>
    </property>
   </action>
  </widget>
