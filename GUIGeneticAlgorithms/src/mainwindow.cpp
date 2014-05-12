@@ -230,7 +230,21 @@ void MainWindow::stopChrono()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    m_paretoOptimalFrontW->close();
+    m_mainWindowThread.quit();
+    m_mainWindowThread.exit();
+
+    if (m_mainWindowThread.isRunning())
+    {
+        QMessageBox::warning(this,
+                             tr("Forbidden Close"),
+                             tr("You cannot close the application while algorithm is running!"));
+
+        event->ignore();
+        return;
+    }
+    else
+        m_paretoOptimalFrontW->close();
+
     QMainWindow::closeEvent(event);
 }
 
