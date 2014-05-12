@@ -65,6 +65,20 @@ public:
 
 template<typename T>
 /**
+ * @brief The Descending class Use to perform comparisons pair by pair in descending order.
+ */
+class Descending
+{
+public:
+    int index;
+    virtual bool operator()(const T& param1, const T& param2) const
+    {
+        return param1.getFitness()[index] > param2.getFitness()[index];
+    }
+};
+
+template<typename T>
+/**
  * @brief emptyPopulation Check if the popualtion is empty.
  * @param param Population to check.
  * @return true if it's empty, otherwise return false.
@@ -90,7 +104,7 @@ unsigned int getUnsignedIntegerFromBinary(std::vector<T> binary);
 template <typename T>
 /**
  * @brief getDoubleFromBinary Compute the double decimal number corresponding to the parameter.
- * @param binary Vector of bits (first 0.75% of bits correspond to the entire part of the number).
+ * @param binary Vector of bits (first 60% of bits correspond to the entire part of the number).
  * @return Double decimal number.
  */
 double getDoubleFromBinary(std::vector<T> binary);
@@ -141,8 +155,8 @@ template <typename T>
 T extractNumberFromStr(const std::string& str);
 
 // Random number generator
-static std::mt19937 generator(std::chrono::system_clock::now().time_since_epoch().count());
-
+// Other possible seed : std::chrono::system_clock::now().time_since_epoch().count()
+static std::mt19937 generator(686452231);
 
 /////////////////////////////////////////////////////////////
 //////////////////////// Definitions ////////////////////////
@@ -173,7 +187,7 @@ template<typename T>
 bool crowdingOperator(const T& param1, const T& param2)
 {
     return (param1.getRank() < param2.getRank())
-            || ((param1.getRank() == param2.getRank()) && (param1.getDistance() > param2.getDistance()));
+            || (param1.getRank() == param2.getRank() && param1.getDistance() > param2.getDistance());
 }
 
 template<typename T>
@@ -255,7 +269,7 @@ double getDoubleFromBinary(std::vector<T> binary)
         return value;
     }
 
-    const int beforeDecimalPoint = 0.75*binary.size();
+    const int beforeDecimalPoint = 0.6*binary.size();
 
     // Entire part
     int index = 0;
@@ -298,7 +312,7 @@ T power(T nb, int pow)
             return std::numeric_limits<double>::max();
 
         for (int i = -1 ; i >= pow ; i--)
-            result *= 1/nb;
+            result *= 1/(double)nb;
     }
 
     return result;

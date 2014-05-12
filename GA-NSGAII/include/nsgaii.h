@@ -260,17 +260,19 @@ void NSGAII<F, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
 
     // Number of solutions in popToAssignCrowdingDistance
     unsigned int nbSolutions = popToAssignCrowdingDistance->getCurrentNbChromosomes();
+    std::vector< C > chromosomes = popToAssignCrowdingDistance->getChromosomes();
 
-    // Initialize distance
+    // Initialize distance to 0
     for (unsigned int i = 0 ; i < nbSolutions ; i++)
-        popToAssignCrowdingDistance->getChromosomes()[i].setDistance(0);
+        chromosomes[i].setDistance(0);
 
-    Ascending< C > comparator;    // Comparator using to sort on ascending order each objectives
-    unsigned int nbObjective = popToAssignCrowdingDistance->getChromosomes()[0].getNbObjective();
+    // Normaly it has to sort in ascending order, but in this example, fitness must be sort in descending order
+    Descending< C > comparator;    // Comparator using to sort on descending order each objectives
+    //Ascending< C > comparator;    // Comparator using to sort on ascending order each objectives
+    unsigned int nbObjective = chromosomes[0].getNbObjective();
+
     for (unsigned int m = 0 ; m < nbObjective ; m++)
     {
-        std::vector< C > chromosomes = popToAssignCrowdingDistance->getChromosomes();
-
         // Sort using each objective value
         comparator.index = m;
         std::sort(chromosomes.begin(),
@@ -278,20 +280,21 @@ void NSGAII<F, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
                   comparator);
 
         // Assigne value of max minus min of fitness for the objective m
-        F maxMinusMinFitness = chromosomes[nbSolutions-1].getFitness()[m] - chromosomes[0].getFitness()[m];
+        // Normaly max fitness is a the last position, but in this example, it's the inverse
+        double maxMinusMinFitness = chromosomes[0].getFitness()[m] - chromosomes[nbSolutions-1].getFitness()[m];
+        //F maxMinusMinFitness = chromosomes[nbSolutions-1].getFitness()[m] - chromosomes[0].getFitness()[m];
 
         if (maxMinusMinFitness == 0) // Little cheat to prevent division by 0
             maxMinusMinFitness = 0.00001;
-        if (chromosomes.size() == 1) // Little cheat to prevent out of range access
+        if (chromosomes.size() == 1)    // Alone solution
         {
-            double distance =   chromosomes[0].getDistance()
-                                + (chromosomes[0].getFitness()[m] - chromosomes[0].getFitness()[m])
-                                / (double)(maxMinusMinFitness);
-
-            chromosomes[0].setDistance(distance);
-
-            // Reaffect chromosomes to the population
-            popToAssignCrowdingDistance->setChromosomes(chromosomes);
+            chromosomes[0].setDistance(0);
+            continue;
+        }
+        else if (chromosomes.size() == 2)
+        {
+            chromosomes[0].setDistance(std::numeric_limits<double>::max());
+            chromosomes[1].setDistance(std::numeric_limits<double>::max());
             continue;
         }
 
@@ -301,18 +304,22 @@ void NSGAII<F, P, C>::crowdingDistanceAssignement(P* popToAssignCrowdingDistance
         chromosomes[nbSolutions-1].setDistance(std::numeric_limits<double>::max());
 
         // For all other points
-        for (unsigned int i = 1 ; i < nbSolutions-2 ; i++)
+        for (unsigned int i = 1 ; i < nbSolutions-1 ; i++)
         {
+            // Because fitness are in descending order
             double distance =   chromosomes[i].getDistance()
-                                + (chromosomes[i+1].getFitness()[m] - chromosomes[i-1].getFitness()[m])
-                                / (double)(maxMinusMinFitness);
+                                + (chromosomes[i-1].getFitness()[m] - chromosomes[i+1].getFitness()[m])
+                                / (maxMinusMinFitness);
 
+            /*double distance =   chromosomes[i].getDistance()
+                                + (chromosomes[i+1].getFitness()[m] - chromosomes[i-1].getFitness()[m])
+                                / (maxMinusMinFitness);*/
             chromosomes[i].setDistance(distance);
         }
-
-        // Reaffect chromosomes to the population
-        popToAssignCrowdingDistance->setChromosomes(chromosomes);
     }
+
+    // Reaffect chromosomes to the population
+    popToAssignCrowdingDistance->setChromosomes(chromosomes);
 }
 
 template<typename F, typename P, typename C>
