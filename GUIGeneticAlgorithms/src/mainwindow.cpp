@@ -80,6 +80,9 @@ void MainWindow::runGAAlgorithm()
 
     emit launchAlgorithm(QString("ga"));
 
+    resetChrono();
+    startChrono();
+
     statusBar()->showMessage(tr("Launch GA algorithm..."), 2000);
 }
 
@@ -89,11 +92,16 @@ void MainWindow::runNSGA2Algorithm()
 
     emit launchAlgorithm(QString("nsga2"));
 
+    resetChrono();
+    startChrono();
+
     statusBar()->showMessage(tr("Launch NSGA-II algorithm..."), 2000);
 }
 
 void MainWindow::handleResults(const std::vector<QString> &result)
 {
+    stopChrono();
+
     m_mainWindowThread.quit();
     m_solutionsDW->setSolutionList(result);
 
@@ -184,6 +192,40 @@ void MainWindow::loadGraph()
     }
 
     statusBar()->showMessage(tr("Graph Loaded..."), 3000);
+}
+
+void MainWindow::updateGUIChrono()
+{
+    QTime newChronoTime(0, 0, 0);
+
+    newChronoTime = newChronoTime.addMSecs(m_chrono->elapsed());  // Recover time elapsed = 0 + chrono time
+    ui->timeElapsed->setText(newChronoTime.toString("h:mm:ss"));
+}
+
+void MainWindow::resetChrono()
+{
+    // m_chrono count time and m_chronoTimer déclenche l'affichage toutes les 1 secondes
+    if (!m_chrono)
+        delete m_chrono;
+    m_chrono = new QTime(0, 0, 0);
+    if (!m_chronoTimer)
+        delete m_chronoTimer;
+    m_chronoTimer = new QTimer();
+
+    connect(m_chronoTimer, SIGNAL(timeout()), this, SLOT(updateGUIChrono()));
+}
+
+void MainWindow::startChrono()
+{
+    m_chrono->start();             // Launch chrono
+    m_chronoTimer->start(1000);    // Timer 1000 miliseconds
+    updateGUIChrono();
+}
+
+void MainWindow::stopChrono()
+{
+    m_chronoTimer->stop();   // Stop timer used for GUI update
+    updateGUIChrono();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

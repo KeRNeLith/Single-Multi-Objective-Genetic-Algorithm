@@ -8,6 +8,8 @@
 #include <QFileDialog>
 #include <QThread>
 #include <QMetaType>
+#include <QTime>
+#include <QTimer>
 
 #include "paramsdockwidget.h"
 #include "solutionlisterdockwidget.h"
@@ -37,6 +39,9 @@ private:
 
     ParetoOptimalFrontWidget* m_paretoOptimalFrontW;
 
+    QTime* m_chrono;        // Count the time elapsed
+    QTimer* m_chronoTimer;  // Timer to update time elapsed display
+
     QString m_paramsFileName;
     QString m_graphFileName;
 
@@ -45,6 +50,9 @@ private:
     void changePushButtonState(bool state = true);
     void initThreadAlgorithm();
     void loadGraph();
+    void resetChrono();
+    void startChrono();
+    void stopChrono();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -67,6 +75,7 @@ public slots:
     void showAlgorithmFailureMessage(const QString& message);
     void updateProgressBarValue(int value);
     void updateParetoOptimalFrontWidget(const QString& fileName);
+    void updateGUIChrono();
 
     void about();
 

@@ -59,6 +59,32 @@
      <string>Run NSGA-II Algorithm</string>
     </property>
    </widget>
+   <widget class="QLabel" name="timeElapsedLabel">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>80</y>
+      <width>70</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Time elapsed :</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="timeElapsed">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>80</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
