@@ -17,11 +17,10 @@
 
 template<typename T>
 /**
- * @brief The Less class Compare the 2 parameters.
+ * @brief The Less struct Compare the 2 parameters.
  */
-class Less
+struct Less
 {
-public:
     /**
      * @brief operator() Compare the 2 parameters.
      * @param param1 First Operand.
@@ -52,11 +51,10 @@ T getNumber(const std::string& s);
 
 template<typename T>
 /**
- * @brief The CrowdingOperator class Compare the 2 parameters according to their crowding distance and rank.
+ * @brief The CrowdingOperator struct Compare the 2 parameters according to their crowding distance and rank.
  */
-class CrowdingOperator
+struct CrowdingOperator
 {
-public:
     /**
      * @brief operator() Compare the 2 parameters according to their crowding distance and rank.
      * @param param1 First Operand.
@@ -72,16 +70,15 @@ public:
 
 template<typename T>
 /**
- * @brief The Ascending class Use to perform comparisons pair by pair in ascending order.
+ * @brief The Ascending struct Use to perform comparisons pair by pair in ascending order.
  */
-class Ascending
+struct Ascending
 {
-public:
     int index;  ///> Array index
     /**
      * @return param1.getFitness()[index] < param2.getFitness()[index]
      */
-    virtual bool operator()(const T& param1, const T& param2) const
+    bool operator()(const T& param1, const T& param2) const
     {
         return param1.getFitness()[index] < param2.getFitness()[index];
     }
@@ -89,16 +86,15 @@ public:
 
 template<typename T>
 /**
- * @brief The Descending class Use to perform comparisons pair by pair in descending order.
+ * @brief The Descending struct Use to perform comparisons pair by pair in descending order.
  */
-class Descending
+struct Descending
 {
-public:
     int index;  ///> Array index
     /**
      * @return param1.getFitness()[index] > param2.getFitness()[index]
      */
-    virtual bool operator()(const T& param1, const T& param2) const
+    bool operator()(const T& param1, const T& param2) const
     {
         return param1.getFitness()[index] > param2.getFitness()[index];
     }
@@ -106,11 +102,20 @@ public:
 
 template<typename T>
 /**
- * @brief emptyPopulation Check if the popualtion is empty.
- * @param param Population to check.
- * @return true if it's empty, otherwise return false.
+ * @brief The EmptyPopulation struct Check if the popualtion is empty.
  */
-bool emptyPopulation(const T& param);
+struct EmptyPopulation
+{
+    /**
+     * @brief operator() Check if the popualtion is empty.
+     * @param param Population to check.
+     * @return true if it's empty, otherwise return false.
+     */
+    bool operator()(const T& param) const
+    {
+        return param.getCurrentNbChromosomes() == 0;
+    }
+};
 
 template <typename T>
 /**
@@ -176,7 +181,8 @@ public:
  * @param nbDecimal Number of decimal you want to keep.
  * @return The truncate floor value.
  */
-template <typename T> inline T floorValue(const T& value, int nbDecimal);
+template <typename T>
+inline T floorValue(const T& value, int nbDecimal);
 
 template <typename T>
 T extractNumberFromStr(const std::string& str);
@@ -202,12 +208,6 @@ T getNumber(const std::string& s)
     std::stringstream ss(s);
     T ret;
     return ss >> ret ? ret : std::numeric_limits<T>::max();
-}
-
-template<typename T>
-bool emptyPopulation(const T& param)
-{
-    return param.getCurrentNbChromosomes() == 0;
 }
 
 template <typename T>

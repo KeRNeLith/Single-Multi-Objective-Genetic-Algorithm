@@ -245,7 +245,7 @@ std::vector< P > NSGAII<F, P, C>::fastNonDominatedSort(P* popToSort)
         fronts.push_back(*Q);
     }
     // Delete fronts created if it is empty.
-    auto removeEnd = std::remove_if(fronts.begin(), fronts.end(), emptyPopulation< P >);
+    auto removeEnd = std::remove_if(fronts.begin(), fronts.end(), EmptyPopulation< P >());
     if (removeEnd != fronts.end())
         fronts.erase(removeEnd, fronts.end());
 
