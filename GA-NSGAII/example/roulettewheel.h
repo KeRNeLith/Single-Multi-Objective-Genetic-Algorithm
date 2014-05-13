@@ -27,7 +27,7 @@ public:
     virtual void evaluateFitness();
     virtual C selectOneChromosome();
     virtual std::pair< C, C > selectChromosomesPair();
-    virtual C crossOver(std::pair< C, C > parents);
+    virtual C crossOver(const std::pair< C, C > parents);
     virtual std::vector< C > getBestSolution() const;
 
     /**
@@ -82,12 +82,13 @@ void RouletteWheel<F, DATA, C>::copy(const RouletteWheel<F, DATA, C>& other)
 template<typename F, typename DATA, typename C>
 void RouletteWheel<F, DATA, C>::evaluateFitness()
 {
-    for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
+    const unsigned int nbChromosomes = this->m_chromosomes.size();
+    for (unsigned int i = 0 ; i < nbChromosomes ; ++i)
         this->m_chromosomes[i].computeFitness();
 
     // Sort chromosomes to have m_chromosomes[0] with the lower fitness
     // and m_chromosomes[m_chromosomes.size()] with the hightest
-    std::sort(this->m_chromosomes.begin(), this->m_chromosomes.end(), less< C >);
+    std::sort(this->m_chromosomes.begin(), this->m_chromosomes.end(), Less< C >());
 
 
     if (this->m_chromosomes.empty())
@@ -95,15 +96,14 @@ void RouletteWheel<F, DATA, C>::evaluateFitness()
 
     // Compute the cumulated fitness
     this->m_cumulatedFitness.clear();
-    //m_cumulatedFitness.reserve(m_chromosomes.size());
     this->m_cumulatedFitness.push_back(this->m_chromosomes[0].getFitness()[0]);
-    for (unsigned int i = 1 ; i < this->m_chromosomes.size() ; i++)
+    for (unsigned int i = 1 ; i < nbChromosomes ; ++i)
         this->m_cumulatedFitness.push_back(this->m_cumulatedFitness[i-1] + this->m_chromosomes[i].getFitness()[0]);
 
     // Compute probability to be selected by the roulette wheel
     this->m_selectingProba.clear();
     F maxFitness = this->m_cumulatedFitness[this->m_chromosomes.size()-1];
-    for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
+    for (unsigned int i = 0 ; i < nbChromosomes ; ++i)
          this->m_selectingProba.push_back(this->m_cumulatedFitness[i] / (double)maxFitness);
 }
 
@@ -117,7 +117,8 @@ C RouletteWheel<F, DATA, C>::selectOneChromosome()
     unsigned int index;
 
     // Find index of the chromosome
-    for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
+    const unsigned int nbChromosomes = this->m_chromosomes.size();
+    for (unsigned int i = 0 ; i < nbChromosomes ; ++i)
     {
         if (prob > this->m_selectingProba[i])
             continue;
@@ -143,7 +144,7 @@ std::pair<C, C> RouletteWheel<F, DATA, C>::selectChromosomesPair()
 }
 
 template<typename F, typename DATA, typename C>
-C RouletteWheel<F, DATA, C>::crossOver(std::pair<C, C> parents)
+C RouletteWheel<F, DATA, C>::crossOver(const std::pair<C, C> parents)
 {
     // Children Chromosome
     C offspring;
@@ -157,27 +158,28 @@ C RouletteWheel<F, DATA, C>::crossOver(std::pair<C, C> parents)
     std::uniform_real_distribution<float> distribution(0.0, 1.0);
     float probaCrossOver = distribution(generator);
 
-    if (C::getNbGenes() == 0)
+    const unsigned int nbGenes = C::getNbGenes();
+    if (nbGenes == 0)
         return offspring;
 
     // Random number to define on which genes crossover begin
     std::uniform_int_distribution<> distributionInt(0, C::getNbGenes()-1);
-    int indexCrossover = distributionInt(generator);
+    const unsigned int indexCrossover = distributionInt(generator);
 
     if (probaCrossOver <= 0.5)  // Crossover with mum genes before
     {
-        for (unsigned int i = 0 ; i < indexCrossover ; i++)
+        for (unsigned int i = 0 ; i < indexCrossover ; ++i)
             offspringGenes.push_back(mumGenes[i]);
 
-        for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
+        for (unsigned int i = indexCrossover ; i < nbGenes ; ++i)
             offspringGenes.push_back(dadGenes[i]);
     }
     else    // Crossover with dad genes before
     {
-        for (unsigned int i = 0 ; i < indexCrossover ; i++)
+        for (unsigned int i = 0 ; i < indexCrossover ; ++i)
             offspringGenes.push_back(dadGenes[i]);
 
-        for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
+        for (unsigned int i = indexCrossover ; i < nbGenes ; ++i)
             offspringGenes.push_back(mumGenes[i]);
     }
 
@@ -205,19 +207,22 @@ void RouletteWheel<F, DATA, C>::addKeptChromosomes(std::vector< C > chromosomes)
     // Fill the population of chromosomes until it's full with chromosomes in parameter
     unsigned int i = 0;
     while (!this->isFull() && i < chromosomes.size())
+    {
         this->m_chromosomes.push_back(chromosomes[i]);
+        ++i;
+    }
 }
 
 template<typename F, typename DATA, typename C>
 std::vector< C > RouletteWheel<F, DATA, C>::getKeptChromosomes()
 {
     // Determine the number of chromosome that will be kept
-    int nbChromosomesKeep = this->m_proportionalChromosomesKeep * this->m_sNbMaxChromosomes;
+    const unsigned int nbChromosomesKeep = this->m_proportionalChromosomesKeep * this->m_sNbMaxChromosomes;
 
     // Create a vector with the previous number of chromosome
     // Those which have the best fitness (so begin to the end of vector)
     std::vector< C > chromosomesKept;
-    for (unsigned int i = 0 ; i < nbChromosomesKeep ; i++)
+    for (unsigned int i = 0 ; i < nbChromosomesKeep ; ++i)
         chromosomesKept.push_back(this->m_chromosomes[this->m_chromosomes.size()-(1+i)]);
     return chromosomesKept;
 }

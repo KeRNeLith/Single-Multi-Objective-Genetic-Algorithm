@@ -24,7 +24,7 @@ public:
     virtual void evaluateFitness();
     virtual C selectOneChromosome();
     virtual std::pair< C, C > selectChromosomesPair();
-    virtual C crossOver(std::pair< C, C > parents);
+    virtual C crossOver(const std::pair<C, C> parents);
     virtual std::vector< C > getBestSolution() const;
 
     // Operator Like
@@ -62,7 +62,7 @@ template<typename F, typename DATA, typename C>
 C TournamentM<F, DATA, C>::selectOneChromosome()
 {
     std::uniform_int_distribution<> distributionPoolSize(2, this->m_nbMaxChromosomes);
-    int poolSize = distributionPoolSize(generator);
+    const unsigned int poolSize = distributionPoolSize(generator);
     int proba[poolSize];
 
     std::uniform_int_distribution<> distribution(0, this->m_nbMaxChromosomes-1);
@@ -74,7 +74,7 @@ C TournamentM<F, DATA, C>::selectOneChromosome()
         do{
             equalIndex = false;
             proba[counter] = distribution(generator);
-            for (int i = 0; i < counter; i++)
+            for (int i = 0; i < counter; ++i)
             {
                 if( proba[counter] == proba[i] )
                 {
@@ -89,7 +89,7 @@ C TournamentM<F, DATA, C>::selectOneChromosome()
     } while(counter != poolSize);
 
     C chromosome = this->m_chromosomes[proba[0]];
-    for (int i = 0 ; i < poolSize ; i++)
+    for (unsigned int i = 0 ; i < poolSize ; ++i)
     {
         if( this->m_chromosomes[proba[i]].getRank() < chromosome.getRank() // rank i < rank chromosome
             || (this->m_chromosomes[proba[i]].getRank() == chromosome.getRank() && this->m_chromosomes[proba[i]].getDistance() > chromosome.getDistance())) // rank i == rank chromosome && dist i > dist chromosome
@@ -102,19 +102,20 @@ C TournamentM<F, DATA, C>::selectOneChromosome()
 template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::evaluateFitness()
 {
-    for (unsigned int i = 0 ; i < this->m_chromosomes.size() ; i++)
+    const unsigned int nbChromosomes = this->m_chromosomes.size();
+    for (unsigned int i = 0 ; i < nbChromosomes ; ++i)
         this->m_chromosomes[i].computeFitness();
 
     if (this->m_chromosomes.empty())
         return;
 
-    unsigned int nbObjectives = this->m_chromosomes[0].getFitness().size();
+    const unsigned int nbObjectives = this->m_chromosomes[0].getFitness().size();
     m_sortedChromosomes.clear();
     Ascending< C > comparator;    // Comaparator using to sort on ascending order each objectives
     // Sort chromosomes to have m_chromosomes[0] with the lower fitness
     // and m_chromosomes[m_chromosomes.size()] with the hightest
     // On each objectives
-    for (unsigned int o = 0 ; o < nbObjectives ; o++)
+    for (unsigned int o = 0 ; o < nbObjectives ; ++o)
     {
         comparator.index = o;
         m_sortedChromosomes.push_back(this->m_chromosomes);
@@ -129,7 +130,7 @@ std::pair< C, C > TournamentM<F, DATA, C>::selectChromosomesPair()
 }
 
 template<typename F, typename DATA, typename C>
-C TournamentM<F, DATA, C>::crossOver(std::pair< C, C > parents)
+C TournamentM<F, DATA, C>::crossOver(const std::pair< C, C > parents)
 {
     // Children Chromosome
     C offspring;
@@ -143,27 +144,28 @@ C TournamentM<F, DATA, C>::crossOver(std::pair< C, C > parents)
     std::uniform_real_distribution<float> distribution(0.0, 1.0);
     float probaCrossOver = distribution(generator);
 
-    if (C::getNbGenes() == 0)
+    const unsigned int nbGenes = C::getNbGenes();
+    if (nbGenes == 0)
         return offspring;
 
     // Random number to define on which genes crossover begin
     std::uniform_int_distribution<> distributionInt(0, C::getNbGenes()-1);
-    int indexCrossover = distributionInt(generator);
+    const unsigned int indexCrossover = distributionInt(generator);
 
     if (probaCrossOver <= 0.5)  // Take mum genes before dad, with 1/2
     {
-        for (unsigned int i = 0 ; i < indexCrossover ; i++)
+        for (unsigned int i = 0 ; i < indexCrossover ; ++i)
             offspringGenes.push_back(mumGenes[i]);
 
-        for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
+        for (unsigned int i = indexCrossover ; i < nbGenes ; ++i)
             offspringGenes.push_back(dadGenes[i]);
     }
     else    // Take dad genes before mum
     {
-        for (unsigned int i = 0 ; i < indexCrossover ; i++)
+        for (unsigned int i = 0 ; i < indexCrossover ; ++i)
             offspringGenes.push_back(dadGenes[i]);
 
-        for (unsigned int i = indexCrossover ; i < C::getNbGenes() ; i++)
+        for (unsigned int i = indexCrossover ; i < nbGenes ; ++i)
             offspringGenes.push_back(mumGenes[i]);
     }
 

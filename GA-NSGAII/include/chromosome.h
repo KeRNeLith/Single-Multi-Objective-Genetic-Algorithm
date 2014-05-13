@@ -39,24 +39,24 @@ public:
      * @brief getFitness Fitness of the chromosome.
      * @return The fitness.
      */
-    virtual std::vector < F > getFitness() const { return m_fitness; }
+    inline std::vector < F > getFitness() const { return m_fitness; }
 
     /**
      * @brief getNbObjective Get the number of objective.
      * @return Number of Objective.
      */
-    virtual unsigned int getNbObjective() const { return m_fitness.size(); }
+    inline unsigned int getNbObjective() const { return m_fitness.size(); }
 
     /**
      * @brief getDatas Allow to get all genes of the chromosome.
      * @return Genes's vector of the chromosome.
      */
-    virtual std::vector< DATA > getDatas() const { return m_datas; }
+    inline std::vector< DATA > getDatas() const { return m_datas; }
     /**
      * @brief setDatas Set all genes of the chromosome to the parameter value.
      * @param datas Genes's vector of the chromosome
      */
-    virtual void setDatas(const std::vector< DATA > datas) { m_datas = datas; }
+    inline void setDatas(const std::vector< DATA > datas) { m_datas = datas; }
 
     /**
      * @brief datasToStr Convert the vector of DATA into a string.

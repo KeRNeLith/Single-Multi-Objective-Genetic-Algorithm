@@ -12,10 +12,12 @@ bool ChromosomeIntInt::mutate()
     std::uniform_real_distribution<> distribution(0.0, 1.0);
     bool flag = false;
 
-    for (unsigned int i = 0 ; i < m_datas.size() ; i++)
+    const unsigned int nbBits = m_datas.size();
+    float rand;
+    const float proba = Population<int, int, ChromosomeIntInt>::getMutateProbability();
+    for (unsigned int i = 0 ; i < nbBits ; ++i)
     {
-        float rand = distribution(generator);
-        float proba = Population<int, int, ChromosomeIntInt>::getMutateProbability();
+        rand = distribution(generator);
 
         if (rand > proba)
             continue;
@@ -42,6 +44,6 @@ void ChromosomeIntInt::generateRandomChromosome()
 {
     std::uniform_int_distribution<> distribution(0, 1);
 
-    for (unsigned int i = 0 ; i < m_nbGenes ; i++)
+    for (unsigned int i = 0 ; i < m_nbGenes ; ++i)
         m_datas.push_back(distribution(generator));
 }

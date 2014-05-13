@@ -17,12 +17,22 @@
 
 template<typename T>
 /**
- * @brief less Compare the 2 parameters.
- * @param param1 First Operand.
- * @param param2 Second Operand.
- * @return true if param1 < param2, otherwise return false.
+ * @brief The Less class Compare the 2 parameters.
  */
-bool less(const T& param1, const T& param2);
+class Less
+{
+public:
+    /**
+     * @brief operator() Compare the 2 parameters.
+     * @param param1 First Operand.
+     * @param param2 Second Operand.
+     * @return true if param1 < param2, otherwise return false.
+     */
+    bool operator()(const T& param1, const T& param2) const
+    {
+        return param1 < param2;
+    }
+};
 
 template<typename T>
 /**
@@ -38,16 +48,27 @@ template<typename T>
  * @param s String in which we want to extract a number.
  * @return Number extrated with the type T.
  */
-T getNumber(std::string& s);
+T getNumber(const std::string& s);
 
 template<typename T>
 /**
- * @brief crowdingOperator Compare the 2 parameters according to their crowding.
- * @param param1 First Operand.
- * @param param2 Second Operand.
- * @return true if (rank param1 < rank param2) or (rank param1 = rank param2 and distance param1 > distance param2), otherwise return false.
+ * @brief The CrowdingOperator class Compare the 2 parameters according to their crowding distance and rank.
  */
-bool crowdingOperator(const T& param1, const T& param2);
+class CrowdingOperator
+{
+public:
+    /**
+     * @brief operator() Compare the 2 parameters according to their crowding distance and rank.
+     * @param param1 First Operand.
+     * @param param2 Second Operand.
+     * @return true if (rank param1 < rank param2) or (rank param1 = rank param2 and distance param1 > distance param2), otherwise return false.
+     */
+    bool operator()(const T& param1, const T& param2) const
+    {
+        return (param1.getRank() < param2.getRank())
+                || (param1.getRank() == param2.getRank() && param1.getDistance() > param2.getDistance());
+    }
+};
 
 template<typename T>
 /**
@@ -56,7 +77,10 @@ template<typename T>
 class Ascending
 {
 public:
-    int index;
+    int index;  ///> Array index
+    /**
+     * @return param1.getFitness()[index] < param2.getFitness()[index]
+     */
     virtual bool operator()(const T& param1, const T& param2) const
     {
         return param1.getFitness()[index] < param2.getFitness()[index];
@@ -70,7 +94,10 @@ template<typename T>
 class Descending
 {
 public:
-    int index;
+    int index;  ///> Array index
+    /**
+     * @return param1.getFitness()[index] > param2.getFitness()[index]
+     */
     virtual bool operator()(const T& param1, const T& param2) const
     {
         return param1.getFitness()[index] > param2.getFitness()[index];
@@ -91,7 +118,7 @@ template <typename T>
  * @param binary Vector of bits.
  * @return Integer decimal number.
  */
-int getIntegerFromBinary(std::vector<T> binary);
+int getIntegerFromBinary(const std::vector<T> binary);
 
 template <typename T>
 /**
@@ -99,7 +126,7 @@ template <typename T>
  * @param binary Vector of bits.
  * @return Unsigned integer decimal number.
  */
-unsigned int getUnsignedIntegerFromBinary(std::vector<T> binary);
+unsigned int getUnsignedIntegerFromBinary(const std::vector<T> binary);
 
 template <typename T>
 /**
@@ -107,7 +134,7 @@ template <typename T>
  * @param binary Vector of bits (first 60% of bits correspond to the entire part of the number).
  * @return Double decimal number.
  */
-double getDoubleFromBinary(std::vector<T> binary);
+double getDoubleFromBinary(const std::vector<T> binary);
 
 /**
  * @brief power Compute the number nb^pow.
@@ -116,7 +143,7 @@ double getDoubleFromBinary(std::vector<T> binary);
  * @return nb^pow.
  */
 template <typename T>
-T power(T nb, int pow);
+T power(const T nb, const int pow);
 
 union number
 {
@@ -163,12 +190,6 @@ static std::mt19937 generator(686452231);
 /////////////////////////////////////////////////////////////
 
 template<typename T>
-bool less(const T &param1, const T &param2)
-{
-    return param1 < param2;
-}
-
-template<typename T>
 std::basic_string<T> lowerCase(std::basic_string<T>& s)
 {
     std::transform(s.begin(), s.end(), s.begin(), tolower);
@@ -176,18 +197,11 @@ std::basic_string<T> lowerCase(std::basic_string<T>& s)
 }
 
 template<typename T>
-T getNumber(std::string& s)
+T getNumber(const std::string& s)
 {
     std::stringstream ss(s);
     T ret;
     return ss >> ret ? ret : std::numeric_limits<T>::max();
-}
-
-template<typename T>
-bool crowdingOperator(const T& param1, const T& param2)
-{
-    return (param1.getRank() < param2.getRank())
-            || (param1.getRank() == param2.getRank() && param1.getDistance() > param2.getDistance());
 }
 
 template<typename T>
@@ -197,11 +211,11 @@ bool emptyPopulation(const T& param)
 }
 
 template <typename T>
-int getIntegerFromBinary(std::vector<T> binary)
+int getIntegerFromBinary(const std::vector<T> binary)
 {
     int value = 0;
     int index = 0;
-    for (unsigned int i = binary.size()-1 ; i >= 1 ; i--)
+    for (unsigned int i = binary.size()-1 ; i >= 1 ; --i)
     {
         if (binary[i] == 1)
             value += power(2, index);
@@ -215,11 +229,11 @@ int getIntegerFromBinary(std::vector<T> binary)
 }
 
 template <typename T>
-unsigned int getUnsignedIntegerFromBinary(std::vector<T> binary)
+unsigned int getUnsignedIntegerFromBinary(const std::vector<T> binary)
 {
     unsigned int value = 0;
     int index = 0;
-    for (int i = binary.size()-1 ; i >= 0 ; i--)
+    for (int i = binary.size()-1 ; i >= 0 ; --i)
     {
         if (binary[i] == 1)
             value += power(2, index);
@@ -230,7 +244,7 @@ unsigned int getUnsignedIntegerFromBinary(std::vector<T> binary)
 }
 
 template <typename T>
-double getDoubleFromBinary(std::vector<T> binary)
+double getDoubleFromBinary(const std::vector<T> binary)
 {
     /*char base_bin[binary.size()];
 
@@ -250,16 +264,17 @@ double getDoubleFromBinary(std::vector<T> binary)
 
     return *(double *)&value;*/
 
+    const unsigned int nbBits = binary.size();
     double value = 0;
 
-    if (binary.size() == 1)
+    if (nbBits == 1)
     {
         if (binary[0] == 1)
             return -1;
         else
             return 1;
     }
-    else if (binary.size() == 2)
+    else if (nbBits == 2)
     {
         if (binary[1] == 1)
             value = 1;
@@ -269,11 +284,11 @@ double getDoubleFromBinary(std::vector<T> binary)
         return value;
     }
 
-    const int beforeDecimalPoint = 0.6*binary.size();
+    const unsigned int beforeDecimalPoint = 0.6*nbBits;
 
     // Entire part
     int index = 0;
-    for (unsigned int i = beforeDecimalPoint ; i >= 1 ; i--)
+    for (unsigned int i = beforeDecimalPoint ; i >= 1 ; --i)
     {
         if (binary[i] == 1)
             value += power(2, index);
@@ -282,7 +297,7 @@ double getDoubleFromBinary(std::vector<T> binary)
 
     // After decimal point part
     index = 1;
-    for (int i = binary.size()-1 ; i > beforeDecimalPoint ; i--)
+    for (int i = nbBits-1 ; i > beforeDecimalPoint ; --i)
     {
         if (binary[i] == 1)
             value += power(2.0, -index);
@@ -296,14 +311,14 @@ double getDoubleFromBinary(std::vector<T> binary)
 }
 
 template <typename T>
-T power(T nb, int pow)
+T power(const T nb, const int pow)
 {
     T result = 1;
     if (pow == 0)
         return result;
     else if (pow > 0)
     {
-        for (int i = 1 ; i <= pow ; i++)
+        for (int i = 1 ; i <= pow ; ++i)
             result *= nb;
     }
     else
@@ -311,7 +326,7 @@ T power(T nb, int pow)
         if (nb == 0)
             return std::numeric_limits<double>::max();
 
-        for (int i = -1 ; i >= pow ; i--)
+        for (int i = -1 ; i >= pow ; --i)
             result *= 1/(double)nb;
     }
 

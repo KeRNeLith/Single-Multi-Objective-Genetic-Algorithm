@@ -80,31 +80,31 @@ public:
      * @brief setNbGenerationsWanted Set the number of generation that will be run to nbGenerationsWanted.
      * @param nbGenerationsWanted number of generations wanted.
      */
-    void setNbGenerationsWanted(const int nbGenerationsWanted) { m_nbGenerationsWanted = nbGenerationsWanted; }
+    inline void setNbGenerationsWanted(const int nbGenerationsWanted) { m_nbGenerationsWanted = nbGenerationsWanted; }
 
     /**
      * @brief getNbGenerationsWanted Get the number of generation that will be run to nbGenerationsWanted.
      * @return the number of generations wanted for the run.
      */
-    int getNbGenerationsWanted() const { return m_nbGenerationsWanted; }
+    inline int getNbGenerationsWanted() const { return m_nbGenerationsWanted; }
 
     /**
      * @brief getIndexCurrentGeneration Get the index of the current generation.
      * @return the index of the current generation.
      */
-    int getIndexCurrentGeneration() const { return m_currentGeneration; }
+    inline int getIndexCurrentGeneration() const { return m_currentGeneration; }
 
     /**
      * @brief getIfIsInitialized Get the state of the algorithm : initialized or not.
      * @return Algorithm initialization state.
      */
-    bool getIfIsInitialized() const { return m_isInitialized; }
+    inline bool getIfIsInitialized() const { return m_isInitialized; }
 
     /**
      * @brief getPopulation Get the current population of the algorithm.
      * @return m_population content.
      */
-    virtual const P& getPopulation() const {return *m_population;}
+    inline const P& getPopulation() const {return *m_population;}
 };
 
 template<typename F, typename P, typename C>

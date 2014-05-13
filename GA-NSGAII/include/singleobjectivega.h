@@ -39,23 +39,23 @@ public:
      * @brief setElistism Enable/Disable the elitism selection.
      * @param elitismState State enable or disable of the elitism selection.
      */
-    void setElistism(const bool elitismState) { m_elitism = elitismState; }
+    inline void setElistism(const bool elitismState) { m_elitism = elitismState; }
     /**
      * @brief getElistism Get the state of the elitism selection.
      * @return State of the elitism selection.
      */
-    bool getElistism() { return m_elitism; }
+    inline bool getElistism() { return m_elitism; }
 
     /**
      * @brief setConsoleDisplay Enable/Disable console display of the advancement of algorithm.
      * @param state true if want display, else false.
      */
-    virtual void setConsoleDisplay(bool state) { m_consoleDisplay = state; }
+    inline void setConsoleDisplay(bool state) { m_consoleDisplay = state; }
     /**
      * @brief getConsoleDsiplay Get state Enable/Disable of the console display of the advancement of algorithm.
      * @return Bool of the state (m_consoleDisplay).
      */
-    virtual bool getConsoleDsiplay() const { return m_consoleDisplay; }
+    inline bool getConsoleDsiplay() const { return m_consoleDisplay; }
 };
 
 template<typename F, typename P, typename C>

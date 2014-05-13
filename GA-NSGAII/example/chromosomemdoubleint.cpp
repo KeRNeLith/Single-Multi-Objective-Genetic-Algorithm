@@ -4,8 +4,8 @@ ChromosomeMDoubleInt::ChromosomeMDoubleInt()
     : Chromosome<double, int>()
     , m_crowdingDistance(0)
     , m_rank(-1)
-    , m_dominatedSolutions()
     , m_nbSolutionDominatesMe(0)
+    , m_dominatedSolutions()
 {
 }
 
@@ -17,11 +17,11 @@ void ChromosomeMDoubleInt::resetDominance()
 
 bool ChromosomeMDoubleInt::dominates(const ChromosomeMDoubleInt& other)
 {
-    unsigned int nbMaxObjective = std::min(m_fitness.size(), other.m_fitness.size());
+    const unsigned int nbMaxObjective = std::min(m_fitness.size(), other.m_fitness.size());
 
     // 2 conditions :
     // The current solution is no worse than other solution in all objectives
-    for (unsigned int o = 0 ; o < nbMaxObjective ; o++)
+    for (unsigned int o = 0 ; o < nbMaxObjective ; ++o)
     {
         if (m_fitness[o] <= other.m_fitness[o])
             continue;
@@ -30,7 +30,7 @@ bool ChromosomeMDoubleInt::dominates(const ChromosomeMDoubleInt& other)
     }
 
     // The current solution is strictly better than other solution in at least one objective
-    for (unsigned int o = 0 ; o < nbMaxObjective ; o++)
+    for (unsigned int o = 0 ; o < nbMaxObjective ; ++o)
     {
         if (m_fitness[o] < other.m_fitness[o])
             return true;
@@ -48,10 +48,12 @@ bool ChromosomeMDoubleInt::mutate()
     std::uniform_real_distribution<> distribution(0.0, 1.0);
     bool flag = false;
 
-    for (unsigned int i = 0 ; i < m_datas.size() ; i++)
+    const unsigned int nbBits = m_datas.size();
+    float rand;
+    const float proba = Population<int, int, ChromosomeMDoubleInt>::getMutateProbability();
+    for (unsigned int i = 0 ; i < nbBits ; ++i)
     {
-        float rand = distribution(generator);
-        float proba = Population<int, int, ChromosomeMDoubleInt>::getMutateProbability();
+        rand = distribution(generator);
 
         if (rand > proba)
             continue;
@@ -73,25 +75,9 @@ void ChromosomeMDoubleInt::computeFitness()
     // Minimize f1 =   x²
     // Minimize f2 = (x-2)²
 
-    //const int forbidenValue1 = 0;
     const int minusValue = 2;
 
-    double value = getDoubleFromBinary(m_datas);
-
-    /*if(value == forbidenValue1)
-    {
-        double dvalue = value + 0.00001;
-        this->m_fitness.push_back(1/(double)((dvalue-forbidenValue1)*(dvalue-forbidenValue1)));
-        this->m_fitness.push_back(1/(double)((value-forbidenValue2)*(value-forbidenValue2)));
-        return;
-    }
-    if(value == forbidenValue2)
-    {
-        double dvalue = value + 0.00001;
-        this->m_fitness.push_back(1/(double)((value-forbidenValue1)*(value-forbidenValue1)));
-        this->m_fitness.push_back(1/(double)((dvalue-forbidenValue2)*(dvalue-forbidenValue2)));
-        return;
-    }*/
+    const double value = getDoubleFromBinary(m_datas);
 
     this->m_fitness.push_back(value*value);
     this->m_fitness.push_back((value-minusValue)*(value-minusValue));
@@ -101,7 +87,7 @@ void ChromosomeMDoubleInt::generateRandomChromosome()
 {
     std::uniform_int_distribution<> distribution(0, 1);
 
-    for (unsigned int i = 0 ; i < m_nbGenes ; i++)
+    for (unsigned int i = 0 ; i < m_nbGenes ; ++i)
         m_datas.push_back(distribution(generator));
 }
 

@@ -65,7 +65,7 @@ public:
      * @param parents pair of chromosomes that will be use as parents.
      * @return children Chromosomes generated.
      */
-    virtual C crossOver(std::pair< C, C > parents) =0;
+    virtual C crossOver(const std::pair< C, C > parents) =0;
 
     /**
      * @brief generateRandomChromosomes generate a random population of chromosomes.
@@ -112,18 +112,18 @@ public:
      * @brief setNbMaxChromosomes Set the number max of chromosomes for a population for this population.
      * @param nbMaxChromosomes Number max of chromosomes.
      */
-    void setNbMaxChromosomes(const int nbMaxChromosomes) { this->m_nbMaxChromosomes = nbMaxChromosomes; }
+    inline void setNbMaxChromosomes(const int nbMaxChromosomes) { this->m_nbMaxChromosomes = nbMaxChromosomes; }
     /**
      * @brief getNbMaxChromosomes Get the numbr max of chromosomes for this population.
      * @return Number max of chromosomes for this population.
      */
-    int getNbMaxChromosomes() { return this->m_nbMaxChromosomes; }
+    inline int getNbMaxChromosomes() { return this->m_nbMaxChromosomes; }
 
     /**
      * @brief getCurrentNbChromosomes Get the current number of chromosomes in the population.
      * @return Number of members currently in the population.
      */
-    int getCurrentNbChromosomes() const;
+    inline int getCurrentNbChromosomes() const { if (m_chromosomes.empty()) return 0; return m_chromosomes.size(); }
 
     /**
      * @brief setCrossOverProbability Set the probability to crossover.
@@ -162,12 +162,12 @@ public:
      * @brief getChromosomes Get the vector storing all chromosomes composing the Population.
      * @return Vector of chromosomes.
      */
-    std::vector< C > getChromosomes() { return m_chromosomes; }
+    inline std::vector< C > getChromosomes() { return m_chromosomes; }
     /**
      * @brief setChromosomes Set the vector storing all chromosomes composing the Population to those in parameter.
      * @param chromosomes Vector of chromosomes
      */
-    void setChromosomes(const std::vector< C > chromosomes) { m_chromosomes = chromosomes; }
+    inline void setChromosomes(const std::vector< C > chromosomes) { m_chromosomes = chromosomes; }
 
     /**
      * @brief getBestSolution Best solution found by GA.
@@ -227,7 +227,8 @@ void Population<F, DATA, C>::copy(const Population<F, DATA, C>& other)
 template<typename F, typename DATA, typename C>
 void Population<F, DATA, C>::mutate()
 {
-    for (unsigned int i = 0 ; i < m_chromosomes.size() ; i++)
+    const unsigned int nbChromosomes = m_chromosomes.size();
+    for (unsigned int i = 0 ; i < nbChromosomes ; ++i)
         m_chromosomes[i].mutate();
 }
 
@@ -259,7 +260,7 @@ void Population<F, DATA, C>::addChromosomes(const std::vector< C >& chromosomes,
     while (!isFull() && i < limit)
     {
         m_chromosomes.push_back(chromosomes[i]);
-        i++;
+        ++i;
     }
 }
 
@@ -276,14 +277,6 @@ void Population<F, DATA, C>::reset()
 {
     m_chromosomes.clear();
     m_nbMaxChromosomes = m_sNbMaxChromosomes;
-}
-
-template<typename F, typename DATA, typename C>
-int Population<F, DATA, C>::getCurrentNbChromosomes() const
-{
-    if (m_chromosomes.empty())
-        return 0;
-    return m_chromosomes.size();
 }
 
 template<typename F, typename DATA, typename C>

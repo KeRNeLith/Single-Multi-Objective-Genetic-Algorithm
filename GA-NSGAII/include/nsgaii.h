@@ -67,12 +67,12 @@ public:
      * @brief setConsoleDisplay Enable/Disable console display of the advancement of algorithm.
      * @param state true if want display, else false.
      */
-    virtual void setConsoleDisplay(bool state) { m_consoleDisplay = state; }
+    inline void setConsoleDisplay(bool state) { m_consoleDisplay = state; }
     /**
      * @brief getConsoleDsiplay Get state Enable/Disable of the console display of the advancement of algorithm.
      * @return Bool of the state (m_consoleDisplay).
      */
-    virtual bool getConsoleDsiplay() const { return m_consoleDisplay; }
+    inline bool getConsoleDsiplay() const { return m_consoleDisplay; }
 };
 
 template<typename F, typename P, typename C>
@@ -134,7 +134,7 @@ void NSGAII<F, P, C>::runOneGeneration()
         std::vector< C > chromosomes = fronts[i].getChromosomes();
 
         // Sort in descending order the ith front using crowding operator
-        std::sort(chromosomes.begin(), chromosomes.end(), crowdingOperator< C >);
+        std::sort(chromosomes.begin(), chromosomes.end(), CrowdingOperator< C >());
 
         // Choose the first (max chromosomes - size newParents) of ith front
         newParents->addChromosomes(chromosomes, newParents->getNbMaxChromosomes() - newParents->getCurrentNbChromosomes());
