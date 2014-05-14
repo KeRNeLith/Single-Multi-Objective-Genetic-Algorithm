@@ -1,7 +1,8 @@
 #include "algorithmrunner.h"
 
 AlgorithmRunner::AlgorithmRunner(MainWindow *mainWindow)
-    : m_mainwindow(mainWindow)
+    : m_breakAlgorithm(false)
+    , m_mainwindow(mainWindow)
 {
     connect(this, SIGNAL(fileUnknown()), mainWindow, SLOT(showFileUnknownMessage()));
     connect(this, SIGNAL(algorithmFailure(const QString&)), mainWindow, SLOT(showAlgorithmFailureMessage(const QString&)));
@@ -24,7 +25,7 @@ void AlgorithmRunner::runAlgorithm(const QString& parameter)
     else if (identificator == "nsga2")
         configureAndRunAlgorithm<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt>(createNSGAIIAlgorithm<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt>());
     else
-        emit algorithmExecuted(std::vector<QString>());
+        emit algorithmBroken();
 }
 
 template<typename T, typename P, typename C>
@@ -36,7 +37,7 @@ void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
             if (m_mainwindow->getParamsFileName() == "") // No file known
             {
                 emit fileUnknown();
-                emit algorithmExecuted(std::vector<QString>());
+                emit algorithmBroken();
                 delete algorithm;
                 return;
             }
@@ -53,26 +54,27 @@ void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
         }
 
         algorithm->initialize();
-        performAlgorithm<T, P, C>(algorithm);
+        if (performAlgorithm<T, P, C>(algorithm))
+        {
+            if (dynamic_cast< NSGAII<T, P, C>* > (algorithm))
+                emit algorithmExecuted(formattingNSGAIISolutions<C>(algorithm->getPopulation().getBestSolution()));
+            else
+                emit algorithmExecuted(formattingSingleObjectiveSolution<C>(algorithm->getPopulation().getBestSolution()));
+        }
+        else
+            delete algorithm;
     }
     catch (std::runtime_error& e)
     {
         emit algorithmFailure(e.what());
-        emit algorithmExecuted(std::vector<QString>());
+        emit algorithmBroken();
         delete algorithm;
         return;
     }
-
-    if (dynamic_cast< NSGAII<T, P, C>* > (algorithm))
-        emit algorithmExecuted(formattingNSGAIISolutions<C>(algorithm->getPopulation().getBestSolution()));
-    else
-        emit algorithmExecuted(formattingSingleObjectiveSolution<C>(algorithm->getPopulation().getBestSolution()));
-
-    delete algorithm;
 }
 
 template<typename T, typename P, typename C>
-void AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
+bool AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
 {
     // Run the algorithm if it is initialized
     if (!algorithm->getIfIsInitialized())
@@ -80,6 +82,12 @@ void AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
 
     while (algorithm->getIndexCurrentGeneration() <= algorithm->getNbGenerationsWanted())
     {
+        if (m_breakAlgorithm)
+        {
+            emit algorithmBroken();
+            return false;
+        }
+
         emit updateProgressBar(algorithm->getIndexCurrentGeneration() / (double)algorithm->getNbGenerationsWanted()*100);
         algorithm->runOneGeneration();
         QString fileName = "generation" + QString::number(algorithm->getIndexCurrentGeneration()-1) + ".txt";
@@ -90,14 +98,15 @@ void AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
         catch(std::runtime_error& e)
         {
             emit algorithmFailure(e.what());
-            emit algorithmExecuted(std::vector<QString>());
-            delete algorithm;
-            return;
+            emit algorithmBroken();
+            return false;
         }
 
-        if (dynamic_cast< NSGAII<T, P, C>* > (algorithm))
+        if (dynamic_cast< NSGAII<T, P, C>* > (algorithm) && !m_breakAlgorithm)
             emit needToUpdateGraph(fileName);
     }
+
+    return true;
 }
 
 template<typename T, typename P, typename C>
@@ -180,4 +189,9 @@ std::vector<QString> AlgorithmRunner::formattingNSGAIISolutions(const std::vecto
     }
 
     return stringSolutions;
+}
+
+void AlgorithmRunner::breakAlgorithm(bool breakLoop)
+{
+    m_breakAlgorithm = breakLoop;
 }

@@ -70,7 +70,9 @@ public slots:
     void openGraphFile();
     void runGAAlgorithm();
     void runNSGA2Algorithm();
+    void breakAlgorithm();
     void handleResults(const std::vector<QString>& result);
+    void handleAlgorithmProblem();
     void showFileUnknownMessage();
     void showAlgorithmFailureMessage(const QString& message);
     void updateProgressBarValue(int value);
@@ -81,6 +83,7 @@ public slots:
 
 signals:
     void launchAlgorithm(const QString& parameters);
+    void breakCurrentAlgorithm(bool stop);
 };
 
 #endif // MAINWINDOW_H

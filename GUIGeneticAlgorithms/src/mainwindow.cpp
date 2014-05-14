@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->nsga2PushButton, SIGNAL(released()), this, SLOT(runNSGA2Algorithm()));
     connect(ui->gaPushButton, SIGNAL(pressed()), ui->algorithmProgressBar, SLOT(reset()));
     connect(ui->nsga2PushButton, SIGNAL(pressed()), ui->algorithmProgressBar, SLOT(reset()));
+    connect(ui->stopPushButton, SIGNAL(pressed()), this, SLOT(breakAlgorithm()));
 
     connect(ui->action_About, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -48,8 +49,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-    m_mainWindowThread.quit();
-    m_mainWindowThread.wait();
 }
 
 void MainWindow::openParamsFile()
@@ -98,6 +97,13 @@ void MainWindow::runNSGA2Algorithm()
     statusBar()->showMessage(tr("Launch NSGA-II algorithm..."), 2000);
 }
 
+void MainWindow::breakAlgorithm()
+{
+    ui->stopPushButton->setEnabled(false);
+    repaint();
+    emit breakCurrentAlgorithm(true);
+}
+
 void MainWindow::handleResults(const std::vector<QString> &result)
 {
     stopChrono();
@@ -107,6 +113,15 @@ void MainWindow::handleResults(const std::vector<QString> &result)
 
     changePushButtonState();
     statusBar()->showMessage(tr("Algorithm finished..."), 4000);
+}
+
+void MainWindow::handleAlgorithmProblem()
+{
+    stopChrono();
+    m_mainWindowThread.quit();
+
+    changePushButtonState();
+    statusBar()->showMessage(tr("Algorithm failure..."), 4000);
 }
 
 void MainWindow::showFileUnknownMessage()
@@ -132,6 +147,7 @@ void MainWindow::changePushButtonState(bool state)
 {
     ui->gaPushButton->setEnabled(state);
     ui->nsga2PushButton->setEnabled(state);
+    ui->stopPushButton->setEnabled(!state);
     repaint();
 }
 
@@ -147,8 +163,13 @@ void MainWindow::initThreadAlgorithm()
     connect(&m_mainWindowThread, SIGNAL(finished()), algorithmRunner, SLOT(deleteLater()));
     // To launch algorithm
     connect(this, SIGNAL(launchAlgorithm(QString)), algorithmRunner, SLOT(runAlgorithm(QString)));
+    // To stop algorithm
+    connect(this, SIGNAL(breakCurrentAlgorithm(bool)), algorithmRunner, SLOT(breakAlgorithm(bool)), Qt::DirectConnection);
     // To recover results
     connect(algorithmRunner, SIGNAL(algorithmExecuted(std::vector<QString>)), this, SLOT(handleResults(std::vector<QString>)));
+    // When algorithm encounter problems
+    connect(algorithmRunner, SIGNAL(algorithmBroken()), this, SLOT(handleAlgorithmProblem()));
+
     // To update graph drawing
     connect(algorithmRunner, SIGNAL(needToUpdateGraph(const QString&)), this, SLOT(updateParetoOptimalFrontWidget(const QString&)));
     m_mainWindowThread.start();
@@ -230,20 +251,28 @@ void MainWindow::stopChrono()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    m_mainWindowThread.quit();
-    m_mainWindowThread.exit();
-
     if (m_mainWindowThread.isRunning())
     {
-        QMessageBox::warning(this,
-                             tr("Forbidden Close"),
-                             tr("You cannot close the application while algorithm is running!"));
+        int result = QMessageBox::warning(this,
+                                          tr("Close Warning"),
+                                          tr("Would you close the application while an algorithm is running?<br><br>The algorithm will finish his current loop BEFORE!"),
+                                          QMessageBox::Yes,
+                                          QMessageBox::No);
 
-        event->ignore();
-        return;
+        switch (result)
+        {
+        case QMessageBox::Yes:
+            breakAlgorithm();
+            m_mainWindowThread.quit();
+            m_mainWindowThread.wait();
+            break;
+        default:
+            event->ignore();
+            return;
+        }
     }
-    else
-        m_paretoOptimalFrontW->close();
+
+    m_paretoOptimalFrontW->close();
 
     QMainWindow::closeEvent(event);
 }

@@ -29,10 +29,12 @@ class AlgorithmRunner
     Q_OBJECT
 
 private:
+    bool m_breakAlgorithm;
+
     MainWindow* m_mainwindow;
 
     template<typename T, typename P, typename C>
-    void performAlgorithm(GA<T, P, C>* algorithm);
+    bool performAlgorithm(GA<T, P, C>* algorithm);
 
     template<typename T, typename P, typename C>
     void configureAndRunAlgorithm(GA<T, P, C>* algorithm);
@@ -50,8 +52,10 @@ private:
 
 public slots:
     void runAlgorithm(const QString& parameter);
+    void breakAlgorithm(bool breakLoop);
 
 signals:
+    void algorithmBroken();
     void algorithmExecuted(const std::vector<QString>& result);
     void fileUnknown();
     void algorithmFailure(const QString& message);
