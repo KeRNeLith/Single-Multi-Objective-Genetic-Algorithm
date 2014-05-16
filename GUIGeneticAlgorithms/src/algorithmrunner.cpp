@@ -29,7 +29,7 @@ void AlgorithmRunner::runAlgorithm(const QString& parameter)
 }
 
 template<typename T, typename P, typename C>
-void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
+void AlgorithmRunner::configureAndRunAlgorithm(smoga::GA<T, P, C> *algorithm)
 {
     try {
         if (m_mainwindow->getParamsDockWidget()->getReadParamsFromFileState())
@@ -56,7 +56,7 @@ void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
         algorithm->initialize();
         if (performAlgorithm<T, P, C>(algorithm))
         {
-            if (dynamic_cast< NSGAII<T, P, C>* > (algorithm))
+            if (dynamic_cast< smoga::NSGAII<T, P, C>* > (algorithm))
                 emit algorithmExecuted(formattingNSGAIISolutions<C>(algorithm->getPopulation().getBestSolution()));
             else
                 emit algorithmExecuted(formattingSingleObjectiveSolution<C>(algorithm->getPopulation().getBestSolution()));
@@ -74,7 +74,7 @@ void AlgorithmRunner::configureAndRunAlgorithm(GA<T, P, C> *algorithm)
 }
 
 template<typename T, typename P, typename C>
-bool AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
+bool AlgorithmRunner::performAlgorithm(smoga::GA<T, P, C>* algorithm)
 {
     // Run the algorithm if it is initialized
     if (!algorithm->getIfIsInitialized())
@@ -102,7 +102,7 @@ bool AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
             return false;
         }
 
-        if (dynamic_cast< NSGAII<T, P, C>* > (algorithm) && !m_breakAlgorithm)
+        if (dynamic_cast< smoga::NSGAII<T, P, C>* > (algorithm) && !m_breakAlgorithm)
             emit needToUpdateGraph(fileName);
     }
 
@@ -110,15 +110,15 @@ bool AlgorithmRunner::performAlgorithm(GA<T, P, C>* algorithm)
 }
 
 template<typename T, typename P, typename C>
-NSGAII<T, P, C>* AlgorithmRunner::createNSGAIIAlgorithm()
+smoga::NSGAII<T, P, C>* AlgorithmRunner::createNSGAIIAlgorithm()
 {
-    return new NSGAII<T, P, C>(false);
+    return new smoga::NSGAII<T, P, C>(false);
 }
 
 template<typename T, typename P, typename C>
-SingleObjectiveGA<T, P, C>* AlgorithmRunner::createSingleObjectiveAlgorithm()
+smoga::SingleObjectiveGA<T, P, C>* AlgorithmRunner::createSingleObjectiveAlgorithm()
 {
-    return new SingleObjectiveGA<T, P, C>(false);
+    return new smoga::SingleObjectiveGA<T, P, C>(false);
 }
 
 template<typename C>

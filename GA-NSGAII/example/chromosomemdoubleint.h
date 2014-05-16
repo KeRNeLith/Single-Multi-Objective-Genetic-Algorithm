@@ -6,13 +6,13 @@
 #include "population.h"
 
 class ChromosomeMDoubleInt
-        : public Chromosome<double, int>
+        : public smoga::Chromosome<double, int>
 {
 protected:
     double m_crowdingDistance;                          ///> Crowding distance (to measure how solutions are crowed).
     int m_rank;                                         ///> Rank of the solution (or front).
     int m_nbSolutionDominatesMe;                        ///> Number of solutions that dominates this solution.
-    std::vector<ChromosomeMDoubleInt*> m_dominatedSolutions;///> Solution dominated by this one.   
+    std::vector<ChromosomeMDoubleInt*> m_dominatedSolutions;///> Solution dominated by this one.
 
 public:
     ChromosomeMDoubleInt();
@@ -61,8 +61,8 @@ public:
     inline std::vector<ChromosomeMDoubleInt*> getDominatedSolution() { return m_dominatedSolutions; }
 
     /**
-     * @brief addDominatedSolution Add a Chromosome to the vector of solutions dominated.
-     * @param other Chromosome to add.
+     * @brief addDominatedSolution Add a chromosome to the vector of solutions dominated.
+     * @param other chromosome to add.
      */
     virtual void addDominatedSolution(ChromosomeMDoubleInt *other);
 

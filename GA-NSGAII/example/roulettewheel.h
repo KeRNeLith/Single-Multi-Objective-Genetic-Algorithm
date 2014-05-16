@@ -11,7 +11,7 @@ template<typename F, typename DATA, typename C>
  * @brief The RouletteWheel class Provide a selection of parents to breeding based on a roulette wheel.
  */
 class RouletteWheel
-        : public Population<F, DATA, C>
+        : public smoga::Population<F, DATA, C>
 {
 protected:
     std::vector< F > m_cumulatedFitness;        ///> Store the cumulated fitness
@@ -50,7 +50,7 @@ public:
 
 template<typename F, typename DATA, typename C>
 RouletteWheel<F, DATA, C>::RouletteWheel(const int maxChromosome)
-    : Population<F, DATA, C>(maxChromosome == -1 ? this->m_sNbMaxChromosomes : maxChromosome)
+    : smoga::Population<F, DATA, C>(maxChromosome == -1 ? this->m_sNbMaxChromosomes : maxChromosome)
     , m_cumulatedFitness()
     , m_selectingProba()
 {
@@ -58,7 +58,7 @@ RouletteWheel<F, DATA, C>::RouletteWheel(const int maxChromosome)
 
 template<typename F, typename DATA, typename C>
 RouletteWheel<F, DATA, C>::RouletteWheel(const RouletteWheel& other)
-    : Population<F, DATA, C>(other)
+    : smoga::Population<F, DATA, C>(other)
 {
     copy(other);
 }
@@ -66,7 +66,7 @@ RouletteWheel<F, DATA, C>::RouletteWheel(const RouletteWheel& other)
 template<typename F, typename DATA, typename C>
 void RouletteWheel<F, DATA, C>::destroy()
 {
-    Population<F, DATA, C>::destroy();
+    smoga::Population<F, DATA, C>::destroy();
     m_cumulatedFitness.clear();
     m_selectingProba.clear();
 }
@@ -74,7 +74,7 @@ void RouletteWheel<F, DATA, C>::destroy()
 template<typename F, typename DATA, typename C>
 void RouletteWheel<F, DATA, C>::copy(const RouletteWheel<F, DATA, C>& other)
 {
-    Population<F, DATA, C>::copy(other);
+    smoga::Population<F, DATA, C>::copy(other);
     m_cumulatedFitness = other.m_cumulatedFitness;
     m_selectingProba = other.m_selectingProba;
 }
@@ -204,7 +204,7 @@ std::vector< C > RouletteWheel<F, DATA, C>::getBestSolution() const
 template<typename F, typename DATA, typename C>
 void RouletteWheel<F, DATA, C>::addKeptChromosomes(std::vector< C > chromosomes)
 {
-    // Fill the population of chromosomes until it's full with chromosomes in parameter
+    // Fill the Population of chromosomes until it's full with chromosomes in parameter
     unsigned int i = 0;
     while (!this->isFull() && i < chromosomes.size())
     {
@@ -230,7 +230,7 @@ std::vector< C > RouletteWheel<F, DATA, C>::getKeptChromosomes()
 template<typename F, typename DATA, typename C>
 RouletteWheel<F, DATA, C>& RouletteWheel<F, DATA, C>::add(const RouletteWheel<F, DATA, C>& op)
 {
-    Population<F, DATA, C>::add(op);
+    smoga::Population<F, DATA, C>::add(op);
 
     this->m_cumulatedFitness.reserve(this->m_cumulatedFitness.size() + op.m_cumulatedFitness.size());
     this->m_selectingProba.reserve(this->m_selectingProba.size() + op.m_selectingProba.size());

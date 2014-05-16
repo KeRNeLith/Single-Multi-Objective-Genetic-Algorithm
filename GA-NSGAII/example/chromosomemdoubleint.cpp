@@ -50,7 +50,7 @@ bool ChromosomeMDoubleInt::mutate()
 
     const unsigned int nbBits = m_datas.size();
     float rand;
-    const float proba = Population<int, int, ChromosomeMDoubleInt>::getMutateProbability();
+    const float proba = smoga::Population<int, int, ChromosomeMDoubleInt>::getMutateProbability();
     for (unsigned int i = 0 ; i < nbBits ; ++i)
     {
         rand = distribution(generator);

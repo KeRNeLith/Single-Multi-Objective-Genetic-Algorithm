@@ -22,7 +22,7 @@ int main()
         //          \-> second : It's the type of data used the chromosomes.
         //          \-> third : It's the type of chromosomes used.
         // third : It's the type of chromosomes used.
-        /*SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
+        /*smoga::SingleObjectiveGA<int, RouletteWheel<int, int, ChromosomeIntInt>, ChromosomeIntInt> sGa;
         sGa.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.
@@ -39,7 +39,7 @@ int main()
         std::cout << std::endl << "Result : " << ret << std::endl;*/
 
         ////////////////// MULTI OBJECTIVE GA (NSGA-II) //////////////////
-        NSGAII<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt> nsga2;
+        smoga::NSGAII<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt> nsga2;
         nsga2.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.

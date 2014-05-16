@@ -34,16 +34,16 @@ private:
     MainWindow* m_mainwindow;
 
     template<typename T, typename P, typename C>
-    bool performAlgorithm(GA<T, P, C>* algorithm);
+    bool performAlgorithm(smoga::GA<T, P, C>* algorithm);
 
     template<typename T, typename P, typename C>
-    void configureAndRunAlgorithm(GA<T, P, C>* algorithm);
+    void configureAndRunAlgorithm(smoga::GA<T, P, C>* algorithm);
 
     template<typename T, typename P, typename C>
-    NSGAII<T, P, C>* createNSGAIIAlgorithm();
+    smoga::NSGAII<T, P, C>* createNSGAIIAlgorithm();
 
     template<typename T, typename P, typename C>
-    SingleObjectiveGA<T, P, C>* createSingleObjectiveAlgorithm();
+    smoga::SingleObjectiveGA<T, P, C>* createSingleObjectiveAlgorithm();
 
     template<typename C>
     std::vector<QString> formattingSingleObjectiveSolution(const std::vector<C> solutions);

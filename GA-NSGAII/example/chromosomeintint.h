@@ -6,7 +6,7 @@
 #include "population.h"
 
 class ChromosomeIntInt
-        : public Chromosome<int, int>
+        : public smoga::Chromosome<int, int>
 {
 public:
     ChromosomeIntInt();
@@ -16,7 +16,7 @@ public:
     virtual void generateRandomChromosome();
 
     // Operator
-    bool operator <(const ChromosomeIntInt& chromosome) const { return Chromosome<int, int>::operator <(chromosome);}
+    bool operator <(const ChromosomeIntInt& chromosome) const { return smoga::Chromosome<int, int>::operator <(chromosome);}
 };
 
 #endif // CHROMOSOMEINTINT_H

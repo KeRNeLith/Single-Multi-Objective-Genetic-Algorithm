@@ -8,7 +8,7 @@ template<typename F, typename DATA, typename C>
  * @brief The RouletteWheel class Provide a selection of parents to breeding based on a Tournament and for Multi objective GA.
  */
 class TournamentM
-        : public Population<F, DATA, C>
+        : public smoga::Population<F, DATA, C>
 {
 protected:
 
@@ -35,13 +35,13 @@ public:
 
 template<typename F, typename DATA, typename C>
 TournamentM<F, DATA, C>::TournamentM(const int maxChromosome)
-    : Population<F, DATA, C>(maxChromosome == -1 ? this->m_sNbMaxChromosomes : maxChromosome)
+    : smoga::Population<F, DATA, C>(maxChromosome == -1 ? this->m_sNbMaxChromosomes : maxChromosome)
 {
 }
 
 template<typename F, typename DATA, typename C>
 TournamentM<F, DATA, C>::TournamentM(const TournamentM& other)
-    : Population<F, DATA, C>(other)
+    : smoga::Population<F, DATA, C>(other)
 {
     copy(other);
 }
@@ -49,13 +49,13 @@ TournamentM<F, DATA, C>::TournamentM(const TournamentM& other)
 template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::destroy()
 {
-    Population<F, DATA, C>::destroy();
+    smoga::Population<F, DATA, C>::destroy();
 }
 
 template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::copy(const TournamentM<F, DATA, C> &other)
 {
-    Population<F, DATA, C>::copy(other);
+    smoga::Population<F, DATA, C>::copy(other);
 }
 
 template<typename F, typename DATA, typename C>
@@ -184,7 +184,7 @@ std::vector< C > TournamentM<F, DATA, C>::getBestSolution() const
 template<typename F, typename DATA, typename C>
 TournamentM<F, DATA, C>& TournamentM<F, DATA, C>::add(const TournamentM& op)
 {
-    Population<F, DATA, C>::add(op);
+    smoga::Population<F, DATA, C>::add(op);
 
     evaluateFitness();
 
