@@ -2,6 +2,7 @@
 
 AlgorithmRunner::AlgorithmRunner(MainWindow *mainWindow)
     : m_breakAlgorithm(false)
+    , m_isInPause(false)
     , m_mainwindow(mainWindow)
 {
     connect(this, SIGNAL(fileUnknown()), mainWindow, SLOT(showFileUnknownMessage()));
@@ -82,6 +83,11 @@ bool AlgorithmRunner::performAlgorithm(smoga::GA<T, P, C>* algorithm)
 
     while (algorithm->getIndexCurrentGeneration() <= algorithm->getNbGenerationsWanted())
     {
+        m_mutex.lock();
+        if (m_isInPause)
+            m_pauseCondition.wait(&m_mutex);
+        m_mutex.unlock();
+
         if (m_breakAlgorithm)
         {
             emit algorithmBroken();
@@ -194,4 +200,13 @@ std::vector<QString> AlgorithmRunner::formattingNSGAIISolutions(const std::vecto
 void AlgorithmRunner::breakAlgorithm(bool breakLoop)
 {
     m_breakAlgorithm = breakLoop;
+    m_isInPause = false;
+    m_pauseCondition.wakeAll();
+}
+
+void AlgorithmRunner::setPause(bool state)
+{
+    m_isInPause = state;
+    if (!m_isInPause)
+        m_pauseCondition.wakeAll();
 }

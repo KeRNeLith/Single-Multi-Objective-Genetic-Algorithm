@@ -91,7 +91,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>70</x>
       <y>170</y>
       <width>75</width>
       <height>23</height>
@@ -99,6 +99,22 @@
     </property>
     <property name="text">
      <string>STOP</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pausePushButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>170</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pause</string>
     </property>
    </widget>
   </widget>

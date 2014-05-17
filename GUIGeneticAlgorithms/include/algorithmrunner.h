@@ -5,6 +5,8 @@
 #include <string>
 
 #include <QObject>
+#include <QWaitCondition>
+#include <QMutex>
 
 #include "General.h"
 #include "AlgoString.h"
@@ -30,8 +32,12 @@ class AlgorithmRunner
 
 private:
     bool m_breakAlgorithm;
+    bool m_isInPause;
 
     MainWindow* m_mainwindow;
+
+    QWaitCondition m_pauseCondition;
+    QMutex m_mutex;
 
     template<typename T, typename P, typename C>
     bool performAlgorithm(smoga::GA<T, P, C>* algorithm);
@@ -53,6 +59,7 @@ private:
 public slots:
     void runAlgorithm(const QString& parameter);
     void breakAlgorithm(bool breakLoop);
+    void setPause(bool state);
 
 signals:
     void algorithmBroken();

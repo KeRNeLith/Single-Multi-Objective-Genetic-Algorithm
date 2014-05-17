@@ -1,9 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+    , m_isPaused(false)
+    , m_chrono(nullptr)
+    , m_chronoTimeElapsed(nullptr)
+    , m_chronoTimer(nullptr)
 {
     ui->setupUi(this);
     setWindowTitle(QApplication::applicationName());
@@ -35,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->gaPushButton, SIGNAL(pressed()), ui->algorithmProgressBar, SLOT(reset()));
     connect(ui->nsga2PushButton, SIGNAL(pressed()), ui->algorithmProgressBar, SLOT(reset()));
     connect(ui->stopPushButton, SIGNAL(pressed()), this, SLOT(breakAlgorithm()));
+    connect(ui->pausePushButton, SIGNAL(pressed()), this, SLOT(pauseResumeAlgorithm()));
 
     connect(ui->action_About, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -49,6 +54,9 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete m_chrono;
+    delete m_chronoTimeElapsed;
+    delete m_chronoTimer;
 }
 
 void MainWindow::openParamsFile()
@@ -100,8 +108,29 @@ void MainWindow::runNSGA2Algorithm()
 void MainWindow::breakAlgorithm()
 {
     ui->stopPushButton->setEnabled(false);
+    ui->pausePushButton->setEnabled(false);
     repaint();
     emit breakCurrentAlgorithm(true);
+    statusBar()->showMessage(tr("Algorithm will be break..."), 1000);
+}
+
+void MainWindow::pauseResumeAlgorithm()
+{
+    m_isPaused = !m_isPaused;
+    if (!m_isPaused)
+    {
+        startChrono();
+        ui->pausePushButton->setText("Pause");
+        statusBar()->showMessage(tr("Resume Algorithm..."), 2000);
+    }
+    else
+    {
+        stopChrono();
+        ui->pausePushButton->setText("Resume");
+        statusBar()->showMessage(tr("Algorithm will be pause..."), 2000);
+    }
+    repaint();
+    emit algorithmPauseState(m_isPaused);
 }
 
 void MainWindow::handleResults(const std::vector<QString> &result)
@@ -148,12 +177,16 @@ void MainWindow::changePushButtonState(bool state)
     ui->gaPushButton->setEnabled(state);
     ui->nsga2PushButton->setEnabled(state);
     ui->stopPushButton->setEnabled(!state);
+    ui->pausePushButton->setEnabled(!state);
     repaint();
 }
 
 void MainWindow::initThreadAlgorithm()
 {
     changePushButtonState(false);
+    ui->pausePushButton->setText("Pause");
+    m_isPaused = false;
+    repaint();
 
     m_solutionsDW->clearSolutionList();
 
@@ -165,6 +198,9 @@ void MainWindow::initThreadAlgorithm()
     connect(this, SIGNAL(launchAlgorithm(QString)), algorithmRunner, SLOT(runAlgorithm(QString)));
     // To stop algorithm
     connect(this, SIGNAL(breakCurrentAlgorithm(bool)), algorithmRunner, SLOT(breakAlgorithm(bool)), Qt::DirectConnection);
+    // To pause/resume algorithm
+    connect(this, SIGNAL(algorithmPauseState(bool)), algorithmRunner, SLOT(setPause(bool)), Qt::DirectConnection);
+
     // To recover results
     connect(algorithmRunner, SIGNAL(algorithmExecuted(std::vector<QString>)), this, SLOT(handleResults(std::vector<QString>)));
     // When algorithm encounter problems
@@ -218,17 +254,20 @@ void MainWindow::loadGraph()
 void MainWindow::updateGUIChrono()
 {
     QTime newChronoTime(0, 0, 0);
+    newChronoTime = m_chronoTimeElapsed->addMSecs(m_chrono->elapsed());
 
-    newChronoTime = newChronoTime.addMSecs(m_chrono->elapsed());  // Recover time elapsed = 0 + chrono time
     ui->timeElapsed->setText(newChronoTime.toString("h:mm:ss"));
 }
 
 void MainWindow::resetChrono()
 {
-    // m_chrono count time and m_chronoTimer déclenche l'affichage toutes les 1 secondes
-    if (!m_chrono)
+    // m_chrono count time, m_chronoTimeElapsed count time elapsed and m_chronoTimer for display every second
+    if (m_chrono)
         delete m_chrono;
     m_chrono = new QTime(0, 0, 0);
+    if (m_chronoTimeElapsed)
+        delete m_chronoTimeElapsed;
+    m_chronoTimeElapsed = new QTime(0, 0, 0);
     if (!m_chronoTimer)
         delete m_chronoTimer;
     m_chronoTimer = new QTimer();
@@ -246,6 +285,9 @@ void MainWindow::startChrono()
 void MainWindow::stopChrono()
 {
     m_chronoTimer->stop();   // Stop timer used for GUI update
+    *m_chronoTimeElapsed = m_chronoTimeElapsed->addMSecs(m_chrono->elapsed());
+    delete m_chrono;
+    m_chrono = new QTime;
     updateGUIChrono();
 }
 

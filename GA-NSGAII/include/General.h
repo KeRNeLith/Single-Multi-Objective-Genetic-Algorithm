@@ -198,7 +198,7 @@ static std::mt19937 generator(686452231);
 template<typename T>
 std::basic_string<T> lowerCase(std::basic_string<T>& s)
 {
-    std::transform(s.begin(), s.end(), s.begin(), tolower);
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
 

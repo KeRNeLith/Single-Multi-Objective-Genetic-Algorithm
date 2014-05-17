@@ -32,6 +32,8 @@ class MainWindow
 private:
     Ui::MainWindow *ui;
 
+    bool m_isPaused;
+
     QAction * m_paramsDockVisibility;
     QAction * m_solutionDockVisibility;
     ParamsDockWidget* m_paramsDW;
@@ -39,8 +41,9 @@ private:
 
     ParetoOptimalFrontWidget* m_paretoOptimalFrontW;
 
-    QTime* m_chrono;        // Count the time elapsed
-    QTimer* m_chronoTimer;  // Timer to update time elapsed display
+    QTime* m_chrono;
+    QTime* m_chronoTimeElapsed; // Count the time elapsed
+    QTimer* m_chronoTimer;      // Timer to update time elapsed display
 
     QString m_paramsFileName;
     QString m_graphFileName;
@@ -71,6 +74,7 @@ public slots:
     void runGAAlgorithm();
     void runNSGA2Algorithm();
     void breakAlgorithm();
+    void pauseResumeAlgorithm();
     void handleResults(const std::vector<QString>& result);
     void handleAlgorithmProblem();
     void showFileUnknownMessage();
@@ -84,6 +88,7 @@ public slots:
 signals:
     void launchAlgorithm(const QString& parameters);
     void breakCurrentAlgorithm(bool stop);
+    void algorithmPauseState(bool state);
 };
 
 #endif // MAINWINDOW_H
