@@ -4,7 +4,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "chromosome.h"
 #include "General.h"
 
 namespace smoga

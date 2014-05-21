@@ -50,12 +50,14 @@ template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::destroy()
 {
     smoga::Population<F, DATA, C>::destroy();
+    m_sortedChromosomes.clear();
 }
 
 template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::copy(const TournamentM<F, DATA, C> &other)
 {
     smoga::Population<F, DATA, C>::copy(other);
+    m_sortedChromosomes = other.m_sortedChromosomes;
 }
 
 template<typename F, typename DATA, typename C>

@@ -151,6 +151,8 @@ namespace smoga
                 for (int i = 0 ; i < lineSplited.size() ; i++)              // Delete all space at the beginning and end of each splited strings
                     lineSplited[i] = trim(lineSplited[i]);
 
+                if (lineSplited.empty())
+                    break;
                 if (lineSplited.size() < 2) // If there aren't 2 arguments (label + value) => error
                     throw std::runtime_error("There is an error in file.");
 
