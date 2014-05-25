@@ -399,7 +399,7 @@ namespace smoga
         if (file)
         {
             std::vector< C > chromosomes = this->m_population->getBestSolution();
-            unsigned int nbObjectives = this->m_population->getBestSolution()[0].getFitness().empty() ? 0 : this->m_population->getBestSolution()[0].getFitness().size();
+            const unsigned int nbObjectives = this->m_population->getBestSolution()[0].getFitness().empty() ? 0 : this->m_population->getBestSolution()[0].getFitness().size();
             for (unsigned int i = 0 ; i < this->m_population->getBestSolution().size() ; i++)
             {
                 file << "N° " << i << " |\tRank : " << chromosomes[i].getRank() << " | Datas : " << chromosomes[i].datasToStr() << " | Fitness : ";

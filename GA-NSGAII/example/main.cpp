@@ -39,7 +39,7 @@ int main()
         std::cout << std::endl << "Result : " << ret << std::endl;*/
 
         ////////////////// MULTI OBJECTIVE GA (NSGA-II) //////////////////
-        smoga::NSGAII<int, TournamentM<int, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt> nsga2;
+        smoga::NSGAII<double, TournamentM<double, int, ChromosomeMDoubleInt>, ChromosomeMDoubleInt> nsga2;
         nsga2.readParamsFromFile("params.txt");
 
         // Example of changing parameters to have a specific configuration of the GA used.

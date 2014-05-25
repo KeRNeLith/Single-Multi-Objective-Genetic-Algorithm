@@ -5,7 +5,7 @@
 
 template<typename F, typename DATA, typename C>
 /**
- * @brief The RouletteWheel class Provide a selection of parents to breeding based on a Tournament and for Multi objective GA.
+ * @brief The TournamentM class Provide a selection of parents to breeding based on a Tournament and for Multi objective GA.
  */
 class TournamentM
         : public smoga::Population<F, DATA, C>
@@ -111,7 +111,7 @@ void TournamentM<F, DATA, C>::evaluateFitness()
     if (this->m_chromosomes.empty())
         return;
 
-    const unsigned int nbObjectives = this->m_chromosomes[0].getFitness().size();
+    const unsigned int nbObjectives = this->m_chromosomes[0].getNbObjective();
     m_sortedChromosomes.clear();
     Ascending< C > comparator;    // Comaparator using to sort on ascending order each objectives
     // Sort chromosomes to have m_chromosomes[0] with the lower fitness
