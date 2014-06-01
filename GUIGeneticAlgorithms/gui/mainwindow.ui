@@ -154,8 +154,15 @@
     </widget>
     <addaction name="menuDock_Widget"/>
    </widget>
+   <widget class="QMenu" name="menu_Options">
+    <property name="title">
+     <string>&amp;Options</string>
+    </property>
+    <addaction name="action_Register_Graphs"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Display"/>
+   <addaction name="menu_Options"/>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -213,6 +220,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+G, Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_Register_Graphs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Register Graphs</string>
    </property>
   </action>
  </widget>

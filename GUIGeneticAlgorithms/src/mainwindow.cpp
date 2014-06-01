@@ -217,6 +217,15 @@ void MainWindow::updateParetoOptimalFrontWidget(const QString& fileName)
 
     try {
         m_paretoOptimalFrontW->loadFile(fileName.toStdString());
+        if (ui->action_Register_Graphs->isChecked())
+        {
+            QImage* render = new QImage(m_paretoOptimalFrontW->width(), m_paretoOptimalFrontW->height(), QImage::Format_RGB32);
+            render->fill(Qt::white);
+            m_paretoOptimalFrontW->draw(render);
+            render->save(fileName.split('.')[0] + ".png", 0, 100);
+            delete render;
+
+        }
     }
     catch(std::runtime_error& e)
     {

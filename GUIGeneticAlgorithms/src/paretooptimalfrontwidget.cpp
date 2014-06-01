@@ -52,7 +52,14 @@ void ParetoOptimalFrontWidget::loadFile(const char* fileName)
 
 void ParetoOptimalFrontWidget::paintEvent(QPaintEvent* event)
 {
-    QPainter p(this);
+    draw(this);
+
+    QWidget::paintEvent(event);
+}
+
+void ParetoOptimalFrontWidget::draw(QPaintDevice* device)
+{
+    QPainter p(device);
     p.setRenderHint(QPainter::Antialiasing);
     int min = std::min(width(), height());
     p.setViewport((width()-min)/2, (height()-min)/2, min, min);
@@ -156,8 +163,6 @@ void ParetoOptimalFrontWidget::paintEvent(QPaintEvent* event)
     {
         p.drawEllipse(QPointF(m_coordinates[i][0]*coefficientW, -m_coordinates[i][1]*coefficientH), 5, 5);
     }
-
-    QWidget::paintEvent(event);
 }
 
 void ParetoOptimalFrontWidget::keyPressEvent(QKeyEvent* event)

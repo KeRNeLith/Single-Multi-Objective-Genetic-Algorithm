@@ -30,3 +30,4 @@ Makefile*
 /GA-NSGAII/build/*.exe
 /GUIGeneticAlgorithms/build/*.exe
 /GUIGeneticAlgorithms/build/*.txt
+/GUIGeneticAlgorithms/build/*.png

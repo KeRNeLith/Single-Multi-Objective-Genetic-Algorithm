@@ -28,6 +28,8 @@ public:
     void loadFile(const char* fileName);
     void loadFile(const std::string& fileName) { loadFile(fileName.c_str()); }
 
+    void draw(QPaintDevice* device);
+
 protected:
     void paintEvent(QPaintEvent* event);
     void keyPressEvent(QKeyEvent* event);
