@@ -1,6 +1,8 @@
 #ifndef TOURNAMENTM_H
 #define TOURNAMENTM_H
 
+#include <future>
+
 #include "population.h"
 
 template<typename F, typename DATA, typename C>
@@ -12,10 +14,9 @@ class TournamentM
 {
 protected:
 
-    std::vector< std::vector< C > > m_sortedChromosomes;
-
     virtual void destroy();
     virtual void copy(const TournamentM<F, DATA, C> &other);
+    void computeFitnessForTheRange(const unsigned int begin, const unsigned int end);
 
 public:
     TournamentM(const int maxChromosome = -1);
@@ -50,14 +51,19 @@ template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::destroy()
 {
     smoga::Population<F, DATA, C>::destroy();
-    m_sortedChromosomes.clear();
 }
 
 template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::copy(const TournamentM<F, DATA, C> &other)
 {
     smoga::Population<F, DATA, C>::copy(other);
-    m_sortedChromosomes = other.m_sortedChromosomes;
+}
+
+template<typename F, typename DATA, typename C>
+void TournamentM<F, DATA, C>::computeFitnessForTheRange(const unsigned int begin, const unsigned int end)
+{
+    for (unsigned int i = begin ; i <= end ; ++i)
+        this->m_chromosomes[i].computeFitness();
 }
 
 template<typename F, typename DATA, typename C>
@@ -104,25 +110,43 @@ C TournamentM<F, DATA, C>::selectOneChromosome()
 template<typename F, typename DATA, typename C>
 void TournamentM<F, DATA, C>::evaluateFitness()
 {
-    const unsigned int nbChromosomes = this->m_chromosomes.size();
-    for (unsigned int i = 0 ; i < nbChromosomes ; ++i)
-        this->m_chromosomes[i].computeFitness();
-
     if (this->m_chromosomes.empty())
         return;
 
-    const unsigned int nbObjectives = this->m_chromosomes[0].getNbObjective();
-    m_sortedChromosomes.clear();
-    Ascending< C > comparator;    // Comaparator using to sort on ascending order each objectives
-    // Sort chromosomes to have m_chromosomes[0] with the lower fitness
-    // and m_chromosomes[m_chromosomes.size()] with the hightest
-    // On each objectives
-    for (unsigned int o = 0 ; o < nbObjectives ; ++o)
+    const unsigned int nbChromosomes = this->m_chromosomes.size();
+    /*const unsigned int maxNbThread = std::thread::hardware_concurrency();
+    if (maxNbThread > 2)    // Parallelize only if there are more than 2 cores
     {
-        comparator.index = o;
-        m_sortedChromosomes.push_back(this->m_chromosomes);
-        std::sort(m_sortedChromosomes[o].begin(), m_sortedChromosomes[o].end(), comparator);
+        const unsigned int nbComputePerAsync = nbChromosomes/maxNbThread;
+
+        unsigned int begin = 0;
+        unsigned int end;
+        std::vector< std::future<void> > computeFitnessPartFunc;
+        for (unsigned int i = 0 ; i < maxNbThread ; ++i)
+        {
+            end = begin + nbComputePerAsync - 1;
+            if (i == maxNbThread-1)
+                end = nbChromosomes-1;
+
+            computeFitnessPartFunc.push_back(std::async(std::launch::async,
+                                                        [this](const unsigned int begin, const unsigned int end)
+                                                        {
+                                                            return this->computeFitnessForTheRange(begin, end);
+                                                        },
+                                                        begin,
+                                                        end));
+
+            begin += nbComputePerAsync;
+        }
+
+        for (unsigned int i = 0 ; i < maxNbThread ; ++i)
+            computeFitnessPartFunc[i].get();
     }
+    else
+    {*/
+        for (unsigned int i = 0 ; i < nbChromosomes ; ++i)
+            this->m_chromosomes[i].computeFitness();
+    //}
 }
 
 template<typename F, typename DATA, typename C>
