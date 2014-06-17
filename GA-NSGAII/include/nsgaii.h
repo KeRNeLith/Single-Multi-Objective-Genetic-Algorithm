@@ -269,9 +269,8 @@ namespace smoga
         for (unsigned int i = 0 ; i < nbSolutions ; i++)
             chromosomes[i].setDistance(0);
 
-        // Normaly it has to sort in ascending order, but in this example, fitness must be sort in descending order
-        Descending< C > comparator;    // Comparator using to sort on descending order each objectives
-        //Ascending< C > comparator;    // Comparator using to sort on ascending order each objectives
+        // Normaly it has to sort in ascending order
+        Ascending< C > comparator;    // Comparator using to sort on ascending order each objectives
         unsigned int nbObjective = chromosomes[0].getNbObjective();
 
         for (unsigned int m = 0 ; m < nbObjective ; m++)
@@ -283,9 +282,7 @@ namespace smoga
                       comparator);
 
             // Assigne value of max minus min of fitness for the objective m
-            // Normaly max fitness is a the last position, but in this example, it's the inverse
-            double maxMinusMinFitness = chromosomes[0].getFitness()[m] - chromosomes[nbSolutions-1].getFitness()[m];
-            //F maxMinusMinFitness = chromosomes[nbSolutions-1].getFitness()[m] - chromosomes[0].getFitness()[m];
+            F maxMinusMinFitness = chromosomes[nbSolutions-1].getFitness()[m] - chromosomes[0].getFitness()[m];
 
             if (maxMinusMinFitness == 0) // Little cheat to prevent division by 0
                 maxMinusMinFitness = 0.00001;
@@ -309,14 +306,9 @@ namespace smoga
             // For all other points
             for (unsigned int i = 1 ; i < nbSolutions-1 ; i++)
             {
-                // Because fitness are in descending order
                 double distance =   chromosomes[i].getDistance()
-                        + (chromosomes[i-1].getFitness()[m] - chromosomes[i+1].getFitness()[m])
-                        / (maxMinusMinFitness);
-
-                /*double distance =   chromosomes[i].getDistance()
                                     + (chromosomes[i+1].getFitness()[m] - chromosomes[i-1].getFitness()[m])
-                                    / (maxMinusMinFitness);*/
+                                    / (maxMinusMinFitness);
                 chromosomes[i].setDistance(distance);
             }
         }
